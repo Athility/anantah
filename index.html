@@ -1,0 +1,898 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Anantah - AI Marketplace for Artisans</title>
+    <!-- Premium Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;600;700;800&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <!-- Main Style -->
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+    <!-- Header Navbar (Visible only when logged in) -->
+    <header class="navbar" id="app-navbar" style="display: none;">
+        <div class="navbar-container">
+            <div class="navbar-brand">
+                <!-- Inline SVG Infinity Loop Logo -->
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="color: var(--primary-color);">
+                    <path d="M12 12c-2-2.67-4-4-6-4a4 4 0 1 0 0 8c2 0 4-1.33 6-4Zm0 0c2 2.67 4 4 6 4a4 4 0 1 0 0-8c-2 0-4 1.33-6 4Z"/>
+                </svg>
+                <span>Anantah</span>
+            </div>
+            <div class="navbar-actions">
+                <div class="user-badge" id="navbar-user-badge">
+                    <span id="user-display-name">Username</span>
+                </div>
+                <button class="btn-nav" id="logout-button">Logout</button>
+            </div>
+        </div>
+    </header>
+
+    <div class="app-wrapper">
+
+        <!-- 1. LANGUAGE ONBOARDING SCREEN -->
+        <section id="screen-language" class="screen active">
+            <div class="onboarding-card">
+                <div class="logo-section">
+                    <h2 class="brand-font" style="font-size: 22px; color: var(--primary-color); margin-bottom: 20px; font-weight: 700;">Choose Your Language<br><span style="font-size: 18px; color: var(--text-secondary); font-weight: 400;">अपनी भाषा चुनिए</span></h2>
+                </div>
+                
+                <div class="lang-list">
+                    <div class="lang-item selected" data-lang="en">
+                        <span>English</span>
+                        <svg class="check-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+                    </div>
+                    <div class="lang-item" data-lang="hi">
+                        <span>हिंदी</span>
+                        <svg class="check-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+                    </div>
+                    <div class="lang-item" data-lang="mr">
+                        <span>मराठी</span>
+                        <svg class="check-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+                    </div>
+                    <div class="lang-item" data-lang="gu">
+                        <span>ગુજરાતી</span>
+                        <svg class="check-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+                    </div>
+                    <div class="lang-item" data-lang="ta">
+                        <span>தமிழ்</span>
+                        <svg class="check-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+                    </div>
+                </div>
+
+                <button class="btn btn-primary" id="btn-language-continue">Continue</button>
+            </div>
+        </section>
+
+        <!-- 2. ROLE ONBOARDING SCREEN -->
+        <section id="screen-onboarding" class="screen">
+            <div class="onboarding-card">
+                <div class="logo-section">
+                    <!-- Elegant Custom SVG Infinity Logo -->
+                    <div style="margin-bottom: 20px;">
+                        <svg width="72" height="72" viewBox="0 0 24 24" fill="none" stroke="url(#logoGrad)" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="filter: drop-shadow(0 4px 10px rgba(75, 40, 109, 0.15));">
+                            <defs>
+                                <linearGradient id="logoGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+                                    <stop offset="0%" stop-color="#4B286D" />
+                                    <stop offset="100%" stop-color="#803DBC" />
+                                </linearGradient>
+                            </defs>
+                            <path d="M12 12c-2-2.67-4-4-6-4a4 4 0 1 0 0 8c2 0 4-1.33 6-4Zm0 0c2 2.67 4 4 6 4a4 4 0 1 0 0-8c-2 0-4 1.33-6 4Z"/>
+                        </svg>
+                    </div>
+                    <h1 class="logo-title">Anantah</h1>
+                    <div class="logo-subtitle">— Infinite —</div>
+                    <p class="logo-tagline">Beauty of the Art Stays Eternal</p>
+                </div>
+
+                <p class="onboarding-desc">Empowering marginalized Indian artisans by showcasing their unique heritage crafts using cutting-edge AI.</p>
+
+                <div style="display: flex; flex-direction: column; gap: 12px;">
+                    <button class="btn btn-primary" id="btn-select-artisan">I'm an Artisan</button>
+                    <button class="btn btn-secondary" id="btn-select-buyer">I'm a Buyer</button>
+                </div>
+
+                <button class="btn-link" id="btn-guest-login">Continue as Guest &rarr;</button>
+            </div>
+        </section>
+
+        <!-- 3. LOGIN SCREEN -->
+        <section id="screen-login" class="screen">
+            <div class="form-container">
+                <div class="form-header">
+                    <h2>Welcome Back</h2>
+                    <p>Enter your credentials to access your dashboard</p>
+                </div>
+                <form id="form-login">
+                    <div class="form-group" id="group-login-username">
+                        <label class="form-label" for="login-username">Username</label>
+                        <input class="form-input" type="text" id="login-username" placeholder="e.g. mohit_artisan" required>
+                        <div class="error-message">Invalid username.</div>
+                    </div>
+                    <div class="form-group" id="group-login-password">
+                        <label class="form-label" for="login-password">Password</label>
+                        <input class="form-input" type="password" id="login-password" placeholder="••••••••" required>
+                        <div class="error-message">Invalid password.</div>
+                    </div>
+                    
+                    <div id="login-general-error" style="color: var(--danger-color); font-size: 14px; text-align: center; margin-bottom: 15px; display: none;"></div>
+
+                    <button class="btn btn-primary" type="submit" id="btn-login-submit">Login</button>
+                </form>
+                <div class="form-footer-text">
+                    Don't have an account? <br>
+                    <a href="#" id="link-goto-artisan-signup">Register as Artisan</a> or <a href="#" id="link-goto-buyer-signup">Register as Buyer</a>
+                </div>
+            </div>
+        </section>
+
+        <!-- 4. ARTISAN SIGNUP SCREEN -->
+        <section id="screen-artisan-signup" class="screen">
+            <div class="form-container">
+                <div class="form-header">
+                    <h2>Artisan Registration</h2>
+                    <p>Create your shop profile and reach millions of buyers</p>
+                </div>
+                <form id="form-artisan-signup">
+                    <div class="form-group" id="group-artisan-username">
+                        <label class="form-label" for="artisan-username">Username</label>
+                        <input class="form-input" type="text" id="artisan-username" placeholder="e.g. rajesh_weaver" required>
+                        <div class="error-message"></div>
+                    </div>
+                    <div class="form-group" id="group-artisan-phone">
+                        <label class="form-label" for="artisan-phone">Phone Number</label>
+                        <input class="form-input" type="tel" id="artisan-phone" placeholder="e.g. 9876543210" required>
+                        <div class="error-message"></div>
+                    </div>
+                    <div class="form-group" id="group-artisan-craft">
+                        <label class="form-label" for="artisan-craft">Craft Type</label>
+                        <input class="form-input" type="text" id="artisan-craft" placeholder="e.g. Madhubani Painting, Blue Pottery" required>
+                        <div class="error-message"></div>
+                    </div>
+                    <div class="form-group" id="group-artisan-email">
+                        <label class="form-label" for="artisan-email">Email (Optional)</label>
+                        <input class="form-input" type="email" id="artisan-email" placeholder="e.g. email@example.com">
+                        <div class="error-message"></div>
+                    </div>
+                    <div class="form-group" id="group-artisan-password">
+                        <label class="form-label" for="artisan-password">Password</label>
+                        <input class="form-input" type="password" id="artisan-password" placeholder="Min. 4 characters" required>
+                        <div class="error-message"></div>
+                    </div>
+
+                    <button class="btn btn-primary" type="submit" id="btn-artisan-signup-submit">Register as Artisan</button>
+                </form>
+                <div class="form-footer-text">
+                    Already have an account? <a href="#" class="link-goto-login">Login here</a>
+                </div>
+            </div>
+        </section>
+
+        <!-- 5. BUYER SIGNUP SCREEN -->
+        <section id="screen-buyer-signup" class="screen">
+            <div class="form-container">
+                <div class="form-header">
+                    <h2>Buyer Registration</h2>
+                    <p>Discover and support authentic handmade Indian crafts</p>
+                </div>
+                <form id="form-buyer-signup">
+                    <div class="form-group" id="group-buyer-username">
+                        <label class="form-label" for="buyer-username">Username</label>
+                        <input class="form-input" type="text" id="buyer-username" placeholder="e.g. anita_delhi" required>
+                        <div class="error-message"></div>
+                    </div>
+                    <div class="form-group" id="group-buyer-phone">
+                        <label class="form-label" for="buyer-phone">Phone Number</label>
+                        <input class="form-input" type="tel" id="buyer-phone" placeholder="e.g. 9988776655" required>
+                        <div class="error-message"></div>
+                    </div>
+                    <div class="form-group" id="group-buyer-email">
+                        <label class="form-label" for="buyer-email">Email (Optional)</label>
+                        <input class="form-input" type="email" id="buyer-email" placeholder="e.g. email@example.com">
+                        <div class="error-message"></div>
+                    </div>
+                    <div class="form-group" id="group-buyer-password">
+                        <label class="form-label" for="buyer-password">Password</label>
+                        <input class="form-input" type="password" id="buyer-password" placeholder="Min. 4 characters" required>
+                        <div class="error-message"></div>
+                    </div>
+
+                    <button class="btn btn-primary" type="submit" id="btn-buyer-signup-submit">Register as Buyer</button>
+                </form>
+                <div class="form-footer-text">
+                    Already have an account? <a href="#" class="link-goto-login">Login here</a>
+                </div>
+            </div>
+        </section>
+
+        <!-- 6. ARTISAN DASHBOARD SCREEN -->
+        <section id="screen-artisan-dashboard" class="screen">
+            <div class="dashboard-header">
+                <div class="dashboard-title">
+                    <h2>Artisan Studio</h2>
+                    <p>Add products and enhance photos using AI</p>
+                </div>
+            </div>
+
+            <div class="dashboard-layout">
+                <!-- Left: Upload & AI Refiner Panel -->
+                <div class="refiner-card">
+                    <h3 class="refiner-card-title">3. AI Photo Refiner</h3>
+                    
+                    <!-- Side-by-side Before/After Viewer -->
+                    <div class="preview-container">
+                        <div class="preview-grid">
+                            <!-- Before box -->
+                            <div class="preview-box" id="box-before">
+                                <span class="preview-badge">Before</span>
+                                <div id="preview-before-placeholder" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; display: flex; flex-direction: column; justify-content: center; align-items: center; padding: 10px; color: var(--text-light);">
+                                    <svg width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><rect width="18" height="18" x="3" y="3" rx="2" ry="2"/><circle cx="9" cy="9" r="2"/><path d="m21 15-3.086-3.086a2 2 0 0 0-2.828 0L6 21"/></svg>
+                                    <span style="font-size: 11px; margin-top: 6px;">Original Photo</span>
+                                </div>
+                                <img src="" alt="Before" class="preview-image" id="img-before" style="display: none;">
+                            </div>
+
+                            <!-- Arrow divider -->
+                            <div class="arrow-divider">
+                                <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+                            </div>
+
+                            <!-- After box -->
+                            <div class="preview-box" id="box-after">
+                                <span class="preview-badge" style="background-color: var(--accent-gold); color: #22162B;">After</span>
+                                <div id="preview-after-placeholder" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; display: flex; flex-direction: column; justify-content: center; align-items: center; padding: 10px; color: var(--text-light);">
+                                    <svg width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="m12 3-1.912 5.886L4.2 9l5.887 1.912L12 21l1.912-5.888L19.8 15l-5.888-1.912Z"/></svg>
+                                    <span style="font-size: 11px; margin-top: 6px;">Refined Output</span>
+                                </div>
+                                <img src="" alt="After" class="preview-image" id="img-after" style="display: none;">
+                                
+                                <!-- Loading overlay -->
+                                <div class="loading-overlay" id="refiner-loading-overlay" style="display: none;">
+                                    <div class="spinner"></div>
+                                    <div class="loading-text">Enhancing Craft...</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Enhancement Tools UI Mock -->
+                    <div class="tools-box">
+                        <div class="tools-title">Enhancement Tools</div>
+                        <div class="tools-grid">
+                            <div class="tool-btn" id="tool-auto-enhance">
+                                <svg class="tool-icon" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M6.34 17.66l-1.41 1.41M19.07 4.93l-1.41 1.41"/></svg>
+                                <span class="tool-label">Auto Enhance</span>
+                            </div>
+                            <div class="tool-btn" id="tool-bg-removal">
+                                <svg class="tool-icon" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M3 7V5a2 2 0 0 1 2-2h2m10 0h2a2 2 0 0 1 2 2v2m0 10v2a2 2 0 0 1-2 2h-2M7 21H5a2 2 0 0 1-2-2v-2m4-5h10M12 7v10"/></svg>
+                                <span class="tool-label">Bg Removal</span>
+                            </div>
+                            <div class="tool-btn" id="tool-lighting-fix">
+                                <svg class="tool-icon" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M15 14c.2-1 .7-1.7 1.5-2.5 1-.9 1.5-2.2 1.5-3.5A6 6 0 0 0 6 8c0 1 .5 2.2 1.5 3.5.7.7 1.3 1.5 1.5 2.5m1.5 4h3m-4.5-2h6"/></svg>
+                                <span class="tool-label">Lighting Fix</span>
+                            </div>
+                            <div class="tool-btn" id="tool-sharpness">
+                                <svg class="tool-icon" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="m12 3 10 18H2L12 3z"/><circle cx="12" cy="13" r="2"/></svg>
+                                <span class="tool-label">Sharpness</span>
+                            </div>
+                            <div class="tool-btn" id="tool-color">
+                                <svg class="tool-icon" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><path d="m9 13.5 6 4M15 6.5l-6 4"/></svg>
+                                <span class="tool-label">Color Bal</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Upload Form -->
+                    <form id="form-product-upload">
+                        <div class="form-group" id="group-upload-image" style="margin-bottom: 15px;">
+                            <label class="form-label">Upload Product Photo</label>
+                            <div class="file-upload-wrapper">
+                                <svg class="file-upload-icon" width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4M17 8l-5-5-5 5M12 3v12"/></svg>
+                                <div class="file-upload-text" id="file-label-text"><span>Tap to select</span> or drag image here</div>
+                                <input class="file-upload-input" type="file" id="upload-image" accept="image/*" required>
+                            </div>
+                            <div class="error-message">Please select a photo.</div>
+                        </div>
+
+                        <div class="form-group" id="group-upload-title" style="margin-bottom: 15px;">
+                            <label class="form-label" for="upload-title">Product Title (English)</label>
+                            <input class="form-input" type="text" id="upload-title" placeholder="e.g. Handmade Terracotta Vase" required>
+                            <div class="error-message">This field is required.</div>
+                        </div>
+
+                        <div class="form-group" id="group-upload-price" style="margin-bottom: 20px;">
+                            <label class="form-label" for="upload-price">Price (₹ INR)</label>
+                            <input class="form-input" type="number" step="0.01" id="upload-price" placeholder="e.g. 750" required>
+                            <div class="error-message">Please provide a valid price.</div>
+                        </div>
+
+                        <div id="upload-general-error" style="color: var(--danger-color); font-size: 14px; text-align: center; margin-bottom: 15px; display: none;"></div>
+
+                        <button class="btn btn-primary" type="submit" id="btn-upload-submit">Apply & Save</button>
+                    </form>
+                </div>
+
+                <!-- Right: My Shop Products list -->
+                <div>
+                    <h3 class="brand-font" style="font-size: 22px; color: var(--primary-color); margin-bottom: 20px;">My Shop Listings</h3>
+                    <div id="artisan-product-list" class="product-grid">
+                        <!-- Filled dynamically -->
+                        <div style="grid-column: 1/-1; text-align: center; color: var(--text-secondary); padding: 40px;" id="artisan-empty-state">
+                            You haven't listed any products yet.
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- 7. BUYER DASHBOARD SCREEN -->
+        <section id="screen-buyer-dashboard" class="screen">
+            <div class="dashboard-header">
+                <div class="dashboard-title">
+                    <h2>Artisan Marketplace</h2>
+                    <p>Directly support marginalized Indian craftspeople</p>
+                </div>
+            </div>
+
+            <h3 class="brand-font" style="font-size: 22px; color: var(--primary-color); margin-bottom: 20px;">Authentic Handmade Listings</h3>
+            
+            <div id="buyer-product-list" class="product-grid">
+                <!-- Filled dynamically -->
+                <div style="grid-column: 1/-1; text-align: center; color: var(--text-secondary); padding: 40px;" id="buyer-empty-state">
+                    No products listed in the marketplace yet.
+                </div>
+            </div>
+        </section>
+
+    </div>
+
+    <!-- Configuration and Javascript core -->
+    <script src="config.js"></script>
+    <script>
+        // Core State variables
+        let selectedLanguage = 'en';
+        let currentUser = null;
+        let accessToken = localStorage.getItem('access_token');
+        let refreshToken = localStorage.getItem('refresh_token');
+
+        // References to DOM elements
+        const screens = {
+            language: document.getElementById('screen-language'),
+            onboarding: document.getElementById('screen-onboarding'),
+            login: document.getElementById('screen-login'),
+            artisanSignup: document.getElementById('screen-artisan-signup'),
+            buyerSignup: document.getElementById('screen-buyer-signup'),
+            artisanDashboard: document.getElementById('screen-artisan-dashboard'),
+            buyerDashboard: document.getElementById('screen-buyer-dashboard')
+        };
+
+        const navbar = document.getElementById('app-navbar');
+        const navbarBadge = document.getElementById('navbar-user-badge');
+        const userDisplayName = document.getElementById('user-display-name');
+        const logoutBtn = document.getElementById('logout-button');
+
+        // Core Helper: Navigation between screens
+        function navigateTo(screenKey) {
+            // Hide navbar by default unless dashboard screens are active
+            if (screenKey === 'artisanDashboard' || screenKey === 'buyerDashboard') {
+                navbar.style.display = 'block';
+                if (currentUser) {
+                    userDisplayName.textContent = currentUser.username;
+                    navbarBadge.style.backgroundColor = currentUser.role === 'artisan' ? 'var(--primary-light)' : '#E5F6DF';
+                    navbarBadge.style.color = currentUser.role === 'artisan' ? 'var(--primary-color)' : '#2E7D32';
+                }
+            } else {
+                navbar.style.display = 'none';
+            }
+
+            // Hide all screens, show target
+            Object.keys(screens).forEach(key => {
+                if (key === screenKey) {
+                    screens[key].classList.add('active');
+                } else {
+                    screens[key].classList.remove('active');
+                }
+            });
+            window.scrollTo(0, 0);
+        }
+
+        // Core Helper: Check JWT token health and load user
+        async function checkAuthState() {
+            if (!accessToken) {
+                // If token does not exist, go to language onboarding
+                navigateTo('language');
+                return;
+            }
+
+            try {
+                const response = await fetch(`${CONFIG.API_BASE_URL}/accounts/me/`, {
+                    headers: {
+                        'Authorization': `Bearer ${accessToken}`
+                    }
+                });
+
+                if (response.ok) {
+                    currentUser = await response.json();
+                    if (currentUser.role === 'artisan') {
+                        navigateTo('artisanDashboard');
+                        loadArtisanProducts();
+                    } else if (currentUser.role === 'buyer') {
+                        navigateTo('buyerDashboard');
+                        loadBuyerProducts();
+                    } else {
+                        // Admin or fallback
+                        navigateTo('buyerDashboard');
+                        loadBuyerProducts();
+                    }
+                } else {
+                    // Try refreshing token
+                    if (refreshToken) {
+                        const refreshResponse = await fetch(`${CONFIG.API_BASE_URL}/accounts/login/refresh/`, {
+                            method: 'POST',
+                            headers: { 'Content-Type': 'application/json' },
+                            body: JSON.stringify({ refresh: refreshToken })
+                        });
+
+                        if (refreshResponse.ok) {
+                            const data = await refreshResponse.json();
+                            accessToken = data.access;
+                            localStorage.setItem('access_token', accessToken);
+                            // Retry checking auth
+                            checkAuthState();
+                        } else {
+                            clearAuth();
+                        }
+                    } else {
+                        clearAuth();
+                    }
+                }
+            } catch (err) {
+                console.error("Auth check failed:", err);
+                navigateTo('language');
+            }
+        }
+
+        function clearAuth() {
+            currentUser = null;
+            accessToken = null;
+            refreshToken = null;
+            localStorage.removeItem('access_token');
+            localStorage.removeItem('refresh_token');
+            navigateTo('language');
+        }
+
+        // Language onboarding events
+        document.querySelectorAll('.lang-item').forEach(item => {
+            item.addEventListener('click', () => {
+                document.querySelectorAll('.lang-item').forEach(li => li.classList.remove('selected'));
+                item.classList.add('selected');
+                selectedLanguage = item.getAttribute('data-lang');
+            });
+        });
+
+        document.getElementById('btn-language-continue').addEventListener('click', () => {
+            navigateTo('onboarding');
+        });
+
+        // Onboarding role buttons
+        document.getElementById('btn-select-artisan').addEventListener('click', () => {
+            navigateTo('login');
+        });
+
+        document.getElementById('btn-select-buyer').addEventListener('click', () => {
+            navigateTo('login');
+        });
+
+        document.getElementById('btn-guest-login').addEventListener('click', () => {
+            // Guests can view the buyer marketplace feed, but can't buy or upload
+            navigateTo('buyerDashboard');
+            loadBuyerProducts(true); // Is guest
+        });
+
+        // Login Page events
+        document.getElementById('link-goto-artisan-signup').addEventListener('click', (e) => {
+            e.preventDefault();
+            navigateTo('artisanSignup');
+        });
+
+        document.getElementById('link-goto-buyer-signup').addEventListener('click', (e) => {
+            e.preventDefault();
+            navigateTo('buyerSignup');
+        });
+
+        document.querySelectorAll('.link-goto-login').forEach(link => {
+            link.addEventListener('click', (e) => {
+                e.preventDefault();
+                navigateTo('login');
+            });
+        });
+
+        logoutBtn.addEventListener('click', () => {
+            clearAuth();
+        });
+
+        // API interaction: Login submission
+        const formLogin = document.getElementById('form-login');
+        formLogin.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            
+            const usernameInput = document.getElementById('login-username');
+            const passwordInput = document.getElementById('login-password');
+            const submitBtn = document.getElementById('btn-login-submit');
+            const generalError = document.getElementById('login-general-error');
+
+            // Reset error messages
+            document.querySelectorAll('#form-login .form-group').forEach(group => group.classList.remove('has-error'));
+            generalError.style.display = 'none';
+
+            // Disable submit button
+            submitBtn.disabled = true;
+            submitBtn.textContent = 'Logging in...';
+
+            try {
+                const response = await fetch(`${CONFIG.API_BASE_URL}/accounts/login/`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        username: usernameInput.value,
+                        password: passwordInput.value
+                    })
+                });
+
+                const data = await response.json();
+
+                if (response.ok) {
+                    accessToken = data.access;
+                    refreshToken = data.refresh;
+                    localStorage.setItem('access_token', accessToken);
+                    localStorage.setItem('refresh_token', refreshToken);
+                    
+                    // Fetch user info immediately after logging in
+                    await checkAuthState();
+                } else {
+                    generalError.textContent = data.detail || "Invalid username or password. Please try again.";
+                    generalError.style.display = 'block';
+                }
+            } catch (err) {
+                console.error("Login request failed:", err);
+                generalError.textContent = "Unable to connect to the backend server.";
+                generalError.style.display = 'block';
+            } finally {
+                submitBtn.disabled = false;
+                submitBtn.textContent = 'Login';
+            }
+        });
+
+        // Helper to show errors inline
+        function handleFormErrors(formElement, errors) {
+            Object.keys(errors).forEach(field => {
+                const group = formElement.querySelector(`#group-artisan-${field}`) || formElement.querySelector(`#group-buyer-${field}`);
+                if (group) {
+                    group.classList.add('has-error');
+                    const errorSpan = group.querySelector('.error-message');
+                    if (errorSpan) {
+                        errorSpan.textContent = errors[field].join(' ');
+                    }
+                }
+            });
+        }
+
+        // API interaction: Artisan signup submission
+        const formArtisanSignup = document.getElementById('form-artisan-signup');
+        formArtisanSignup.addEventListener('submit', async (e) => {
+            e.preventDefault();
+
+            const submitBtn = document.getElementById('btn-artisan-signup-submit');
+            
+            // Clear prior errors
+            document.querySelectorAll('#form-artisan-signup .form-group').forEach(group => group.classList.remove('has-error'));
+            
+            submitBtn.disabled = true;
+            submitBtn.textContent = 'Creating account...';
+
+            const payload = {
+                username: document.getElementById('artisan-username').value,
+                phone: document.getElementById('artisan-phone').value,
+                craft_type: document.getElementById('artisan-craft').value,
+                email: document.getElementById('artisan-email').value,
+                password: document.getElementById('artisan-password').value,
+                role: 'artisan'
+            };
+
+            try {
+                const response = await fetch(`${CONFIG.API_BASE_URL}/accounts/signup/`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(payload)
+                });
+
+                const data = await response.json();
+
+                if (response.ok) {
+                    accessToken = data.access;
+                    refreshToken = data.refresh;
+                    localStorage.setItem('access_token', accessToken);
+                    localStorage.setItem('refresh_token', refreshToken);
+                    
+                    await checkAuthState();
+                } else {
+                    handleFormErrors(formArtisanSignup, data);
+                }
+            } catch (err) {
+                console.error("Signup failed:", err);
+            } finally {
+                submitBtn.disabled = false;
+                submitBtn.textContent = 'Register as Artisan';
+            }
+        });
+
+        // API interaction: Buyer signup submission
+        const formBuyerSignup = document.getElementById('form-buyer-signup');
+        formBuyerSignup.addEventListener('submit', async (e) => {
+            e.preventDefault();
+
+            const submitBtn = document.getElementById('btn-buyer-signup-submit');
+            
+            // Clear prior errors
+            document.querySelectorAll('#form-buyer-signup .form-group').forEach(group => group.classList.remove('has-error'));
+            
+            submitBtn.disabled = true;
+            submitBtn.textContent = 'Creating account...';
+
+            const payload = {
+                username: document.getElementById('buyer-username').value,
+                phone: document.getElementById('buyer-phone').value,
+                email: document.getElementById('buyer-email').value,
+                password: document.getElementById('buyer-password').value,
+                role: 'buyer'
+            };
+
+            try {
+                const response = await fetch(`${CONFIG.API_BASE_URL}/accounts/signup/`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(payload)
+                });
+
+                const data = await response.json();
+
+                if (response.ok) {
+                    accessToken = data.access;
+                    refreshToken = data.refresh;
+                    localStorage.setItem('access_token', accessToken);
+                    localStorage.setItem('refresh_token', refreshToken);
+                    
+                    await checkAuthState();
+                } else {
+                    handleFormErrors(formBuyerSignup, data);
+                }
+            } catch (err) {
+                console.error("Signup failed:", err);
+            } finally {
+                submitBtn.disabled = false;
+                submitBtn.textContent = 'Register as Buyer';
+            }
+        });
+
+        // Artisan dashboard: Image file input selection logic
+        const fileInput = document.getElementById('upload-image');
+        const fileLabelText = document.getElementById('file-label-text');
+        const imgBefore = document.getElementById('img-before');
+        const previewBeforePlaceholder = document.getElementById('preview-before-placeholder');
+
+        fileInput.addEventListener('change', (e) => {
+            const file = fileInput.files[0];
+            if (file) {
+                fileLabelText.innerHTML = `Selected: <strong>${file.name}</strong>`;
+                
+                // Show raw image preview
+                const reader = new FileReader();
+                reader.onload = (e) => {
+                    imgBefore.src = e.target.result;
+                    imgBefore.style.display = 'block';
+                    previewBeforePlaceholder.style.display = 'none';
+                };
+                reader.readAsDataURL(file);
+                
+                // Clear any outputs
+                const imgAfter = document.getElementById('img-after');
+                const previewAfterPlaceholder = document.getElementById('preview-after-placeholder');
+                imgAfter.src = '';
+                imgAfter.style.display = 'none';
+                previewAfterPlaceholder.style.display = 'flex';
+                
+                // Unhighlight enhancement tools
+                document.querySelectorAll('.tool-btn').forEach(btn => btn.classList.remove('active'));
+            }
+        });
+
+        // API interaction: Artisan product upload and image refining
+        const formProductUpload = document.getElementById('form-product-upload');
+        formProductUpload.addEventListener('submit', async (e) => {
+            e.preventDefault();
+
+            const submitBtn = document.getElementById('btn-upload-submit');
+            const fileGroup = document.getElementById('group-upload-image');
+            const titleGroup = document.getElementById('group-upload-title');
+            const priceGroup = document.getElementById('group-upload-price');
+            const loadingOverlay = document.getElementById('refiner-loading-overlay');
+            const uploadGeneralError = document.getElementById('upload-general-error');
+
+            // Reset styles
+            fileGroup.classList.remove('has-error');
+            titleGroup.classList.remove('has-error');
+            priceGroup.classList.remove('has-error');
+            uploadGeneralError.style.display = 'none';
+
+            // Verify a file is present
+            if (!fileInput.files[0]) {
+                fileGroup.classList.add('has-error');
+                return;
+            }
+
+            submitBtn.disabled = true;
+            submitBtn.textContent = 'Uploading & Refining...';
+            loadingOverlay.style.display = 'flex';
+
+            const formData = new FormData();
+            formData.append('title_en', document.getElementById('upload-title').value);
+            formData.append('price', document.getElementById('upload-price').value);
+            formData.append('raw_image', fileInput.files[0]);
+
+            try {
+                const response = await fetch(`${CONFIG.API_BASE_URL}/listings/upload/`, {
+                    method: 'POST',
+                    headers: {
+                        'Authorization': `Bearer ${accessToken}`
+                    },
+                    body: formData
+                });
+
+                const data = await response.json();
+
+                if (response.ok) {
+                    // Success! Update "After" image preview
+                    const imgAfter = document.getElementById('img-after');
+                    const previewAfterPlaceholder = document.getElementById('preview-after-placeholder');
+                    
+                    imgAfter.src = data.refined_image_url;
+                    imgAfter.style.display = 'block';
+                    previewAfterPlaceholder.style.display = 'none';
+
+                    // Toggle enhancement tools to "Active" check state
+                    document.getElementById('tool-auto-enhance').classList.add('active');
+                    document.getElementById('tool-bg-removal').classList.add('active');
+                    document.getElementById('tool-lighting-fix').classList.add('active');
+                    document.getElementById('tool-sharpness').classList.add('active');
+                    document.getElementById('tool-color').classList.add('active');
+
+                    // Reset form fields but keep file label
+                    document.getElementById('upload-title').value = '';
+                    document.getElementById('upload-price').value = '';
+                    
+                    // Reload products list
+                    loadArtisanProducts();
+                } else {
+                    if (data.title_en) titleGroup.classList.add('has-error');
+                    if (data.price) priceGroup.classList.add('has-error');
+                    if (data.raw_image) fileGroup.classList.add('has-error');
+                    if (data.detail) {
+                        uploadGeneralError.textContent = data.detail;
+                        uploadGeneralError.style.display = 'block';
+                    }
+                }
+            } catch (err) {
+                console.error("Upload failed:", err);
+                uploadGeneralError.textContent = "Failed to upload and refine image due to server error.";
+                uploadGeneralError.style.display = 'block';
+            } finally {
+                submitBtn.disabled = false;
+                submitBtn.textContent = 'Apply & Save';
+                loadingOverlay.style.display = 'none';
+            }
+        });
+
+        // API interaction: Fetch and display artisan shop products
+        async function loadArtisanProducts() {
+            try {
+                const response = await fetch(`${CONFIG.API_BASE_URL}/listings/upload/`, {
+                    headers: {
+                        'Authorization': `Bearer ${accessToken}`
+                    }
+                });
+
+                if (response.ok) {
+                    const products = await response.json();
+                    const container = document.getElementById('artisan-product-list');
+                    const emptyState = document.getElementById('artisan-empty-state');
+
+                    if (products.length > 0) {
+                        emptyState.style.display = 'none';
+                        // Remove existing product cards (leaving the empty state elements but hidden)
+                        document.querySelectorAll('#artisan-product-list .product-card').forEach(card => card.remove());
+                        
+                        products.forEach(p => {
+                            const card = document.createElement('div');
+                            card.className = 'product-card';
+                            
+                            // Display the refined image if available, fallback to raw
+                            const displayImage = p.refined_image_url || p.raw_image_url;
+                            
+                            card.innerHTML = `
+                                <div class="product-card-image-box">
+                                    <img class="product-card-image" src="${displayImage}" alt="${p.title_en}">
+                                    <span class="product-card-badge">${p.refined_image_url ? 'AI Refined' : 'Original'}</span>
+                                </div>
+                                <div class="product-card-info">
+                                    <h4 class="product-card-title">${p.title_en}</h4>
+                                    <div class="product-card-price">₹${parseFloat(p.price).toFixed(2)}</div>
+                                </div>
+                            `;
+                            container.appendChild(card);
+                        });
+                    } else {
+                        emptyState.style.display = 'block';
+                        document.querySelectorAll('#artisan-product-list .product-card').forEach(card => card.remove());
+                    }
+                }
+            } catch (err) {
+                console.error("Failed to load artisan products:", err);
+            }
+        }
+
+        // API interaction: Fetch and display buyer feed products
+        async function loadBuyerProducts(isGuest = false) {
+            const headers = {};
+            if (!isGuest && accessToken) {
+                headers['Authorization'] = `Bearer ${accessToken}`;
+            }
+
+            try {
+                const response = await fetch(`${CONFIG.API_BASE_URL}/listings/upload/`, { headers });
+
+                if (response.ok) {
+                    const products = await response.json();
+                    const container = document.getElementById('buyer-product-list');
+                    const emptyState = document.getElementById('buyer-empty-state');
+
+                    if (products.length > 0) {
+                        emptyState.style.display = 'none';
+                        document.querySelectorAll('#buyer-product-list .product-card').forEach(card => card.remove());
+
+                        products.forEach(p => {
+                            const card = document.createElement('div');
+                            card.className = 'product-card';
+                            
+                            const displayImage = p.refined_image_url || p.raw_image_url;
+
+                            card.innerHTML = `
+                                <div class="product-card-image-box">
+                                    <img class="product-card-image" src="${displayImage}" alt="${p.title_en}">
+                                    <span class="product-card-badge">${p.refined_image_url ? 'AI Refined' : 'Original'}</span>
+                                </div>
+                                <div class="product-card-info">
+                                    <h4 class="product-card-title">${p.title_en}</h4>
+                                    <div class="product-card-price">₹${parseFloat(p.price).toFixed(2)}</div>
+                                </div>
+                            `;
+                            container.appendChild(card);
+                        });
+                    } else {
+                        emptyState.style.display = 'block';
+                        document.querySelectorAll('#buyer-product-list .product-card').forEach(card => card.remove());
+                    }
+                }
+            } catch (err) {
+                console.error("Failed to load buyer marketplace:", err);
+            }
+        }
+
+        // Kick off auth check on page load
+        checkAuthState();
+    </script>
+</body>
+</html>
