@@ -7,7 +7,7 @@
     <!-- Premium Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;600;700;800&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;600;700;800&family=Inter:wght@400;500;600;700&family=Playfair+Display:ital,wght@0,400..900;1,400..900&family=Poppins:ital,wght@0,100..900;1,100..900&display=swap" rel="stylesheet">
     <!-- Main Style -->
     <link rel="stylesheet" href="style.css">
 </head>
@@ -23,9 +23,47 @@
                 </svg>
                 <span>Anantah</span>
             </div>
-            <div class="navbar-actions">
-                <div class="user-badge" id="navbar-user-badge">
-                    <span id="user-display-name">Username</span>
+            <div class="navbar-actions" style="display: flex; align-items: center; gap: 12px;">
+                <div class="user-badge-container" style="position: relative;">
+                    <div class="user-badge" id="navbar-user-badge" style="cursor: pointer; display: flex; align-items: center; gap: 6px; user-select: none;">
+                        <span id="user-display-name">Username</span>
+                        <!-- Dropdown Arrow -->
+                        <svg width="12" height="12" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path d="m19.5 8.25-7.5 7.5-7.5-7.5"/></svg>
+                    </div>
+                    
+                    <!-- Artisan Dropdown Menu (only works when role is artisan) -->
+                    <div class="user-dropdown-menu" id="artisan-user-dropdown" style="display: none; position: absolute; right: 0; top: calc(100% + 8px); background: #FFFFFF; border: 1px solid var(--border-color); border-radius: 12px; box-shadow: 0 10px 25px rgba(0,0,0,0.08); width: 220px; z-index: 1000; overflow: hidden;">
+                        <div class="dropdown-header" style="padding: 12px 16px; font-size: 11px; font-weight: 700; text-transform: uppercase; color: var(--text-light); border-bottom: 1px solid var(--border-color); letter-spacing: 0.5px; background: #FAF9FC;">Artisan Actions</div>
+                        <a href="#" class="dropdown-item" id="menu-see-listings" style="display: flex; align-items: center; gap: 10px; padding: 12px 16px; font-size: 13px; font-weight: 600; color: var(--text-secondary); text-decoration: none; transition: var(--transition-smooth); font-family: var(--font-inter);">
+                            <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><rect width="7" height="9" x="3" y="3" rx="1"/><rect width="7" height="5" x="14" y="3" rx="1"/><rect width="7" height="9" x="14" y="12" rx="1"/><rect width="7" height="5" x="3" y="16" rx="1"/></svg>
+                            See My Listings
+                        </a>
+                        <a href="#" class="dropdown-item" id="menu-new-listing" style="display: flex; align-items: center; gap: 10px; padding: 12px 16px; font-size: 13px; font-weight: 600; color: var(--text-secondary); text-decoration: none; transition: var(--transition-smooth); font-family: var(--font-inter);">
+                            <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M12 4.5v15m7.5-7.5h-15"/></svg>
+                            Make New Listing
+                        </a>
+                        <a href="#" class="dropdown-item" id="menu-communities" style="display: flex; align-items: center; justify-content: space-between; padding: 12px 16px; font-size: 13px; font-weight: 600; color: var(--text-secondary); text-decoration: none; transition: var(--transition-smooth); font-family: var(--font-inter);">
+                            <div style="display: flex; align-items: center; gap: 10px;">
+                                <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M18 18.72a6 6 0 0 0-3.44-10.67M6 18.72a6 6 0 0 1 3.44-10.67M12 12a4 4 0 1 0 0-8 4 4 0 0 0 0 8z"/></svg>
+                                Communities
+                            </div>
+                            <span style="font-size: 8px; font-weight: 700; background: var(--primary-light); color: var(--primary-color); padding: 2px 6px; border-radius: 8px; text-transform: uppercase; letter-spacing: 0.5px;">Soon</span>
+                        </a>
+                        <a href="#" class="dropdown-item" id="menu-orders" style="display: flex; align-items: center; justify-content: space-between; padding: 12px 16px; font-size: 13px; font-weight: 600; color: var(--text-secondary); text-decoration: none; transition: var(--transition-smooth); font-family: var(--font-inter);">
+                            <div style="display: flex; align-items: center; gap: 10px;">
+                                <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M15.75 10.5V6a3.75 3.75 0 1 0-7.5 0v4.5m11.356-1.993 1.263 12c.07.665-.45 1.243-1.119 1.243H4.25a1.125 1.125 0 0 1-1.12-1.243l1.264-12A1.125 1.125 0 0 1 5.513 7.5h12.974c.576 0 1.059.435 1.119 1.007zM8.625 10.5a.375.375 0 1 1-.75 0 .375.375 0 0 1 .75 0zm7.5 0a.375.375 0 1 1-.75 0 .375.375 0 0 1 .75 0z"/></svg>
+                                Orders
+                            </div>
+                            <span style="font-size: 8px; font-weight: 700; background: var(--primary-light); color: var(--primary-color); padding: 2px 6px; border-radius: 8px; text-transform: uppercase; letter-spacing: 0.5px;">Soon</span>
+                        </a>
+                        <a href="#" class="dropdown-item" id="menu-analytics" style="display: flex; align-items: center; justify-content: space-between; padding: 12px 16px; font-size: 13px; font-weight: 600; color: var(--text-secondary); text-decoration: none; transition: var(--transition-smooth); font-family: var(--font-inter);">
+                            <div style="display: flex; align-items: center; gap: 10px;">
+                                <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M3 13.125C3 12.504 3.504 12 4.125 12h2.25c.621 0 1.125.504 1.125 1.125v5.25c0 .621-.504 1.125-1.125 1.125h-2.25A1.125 1.125 0 0 1 3 18.375v-5.25zM9.75 8.625c0-.621.504-1.125 1.125-1.125h2.25c.621 0 1.125.504 1.125 1.125v9.75c0 .621-.504 1.125-1.125 1.125h-2.25a1.125 1.125 0 0 1-1.125-1.125v-9.75zM16.5 4.125c0-.621.504-1.125 1.125-1.125h2.25C20.496 3 21 3.504 21 4.125v14.25c0 .621-.504 1.125-1.125 1.125h-2.25a1.125 1.125 0 0 1-1.125-1.125V4.125z"/></svg>
+                                Analytics
+                            </div>
+                            <span style="font-size: 8px; font-weight: 700; background: var(--primary-light); color: var(--primary-color); padding: 2px 6px; border-radius: 8px; text-transform: uppercase; letter-spacing: 0.5px;">Soon</span>
+                        </a>
+                    </div>
                 </div>
                 <button class="btn-nav" id="logout-button">Logout</button>
             </div>
@@ -130,35 +168,122 @@
             </div>
         </section>
 
-        <!-- 4. ARTISAN SIGNUP SCREEN -->
-        <section id="screen-artisan-signup" class="screen">
-            <div class="form-container">
+        <!-- 4. REGISTRATION WORKFLOW SCREEN (Phone -> OTP -> Signup Form) -->
+        <section id="screen-register" class="screen">
+            <!-- Sub-card A: Phone Number Entry -->
+            <div class="onboarding-card phone-card" id="card-phone-entry">
+                <div class="logo-section">
+                    <!-- Infinity loop logo mark -->
+                    <div style="margin-bottom: 20px;">
+                        <svg class="infinity-draw" width="72" height="72" viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <path class="infinity-path" d="M12 12c-2-2.67-4-4-6-4a4 4 0 1 0 0 8c2 0 4-1.33 6-4Zm0 0c2 2.67 4 4 6 4a4 4 0 1 0 0-8c-2 0-4 1.33-6 4Z"/>
+                        </svg>
+                    </div>
+                    <h1 class="logo-title">Anantah</h1>
+                    <div class="logo-subtitle">— Register —</div>
+                    <p class="logo-tagline">Enter your phone number to get verified first</p>
+                </div>
+                
+                <form id="form-phone-entry" style="margin-top: 20px;">
+                    <div class="form-group" id="group-verification-phone" style="margin-bottom: 16px;">
+                        <label class="form-label" for="verification-phone">Phone Number</label>
+                        <input class="form-input" type="tel" id="verification-phone" placeholder="e.g. 9876543210" required>
+                        <div class="error-message"></div>
+                    </div>
+                    <button class="btn btn-primary" type="submit" id="btn-phone-submit">Send Verification Code</button>
+                </form>
+                <div style="margin-top: 15px; font-size: 13px; color: var(--text-secondary);">
+                    Already have an account? <a href="#" class="link-goto-login">Login here</a>
+                </div>
+            </div>
+
+            <!-- Sub-card B: Animated OTP Card -->
+            <div class="onboarding-card otp-card card-entry-animate" id="card-otp-verify" style="display: none;">
+                <div class="otp-card-header">
+                    <h2 class="verify-header">Verify Your Number</h2>
+                    <p class="verify-subtext">We've sent a 4-digit code to your phone. It'll auto-verify once entered.</p>
+                </div>
+
+                <!-- Gooey parent container for digit boxes -->
+                <div class="gooey-wrapper">
+                    <div class="digits-container" id="otp-digits-container">
+                        <div class="digit-box" data-index="0"><span class="digit-value"></span></div>
+                        <div class="digit-box" data-index="1"><span class="digit-value"></span></div>
+                        <div class="digit-box" data-index="2"><span class="digit-value"></span></div>
+                        <div class="digit-box" data-index="3"><span class="digit-value"></span></div>
+                        <span class="blinking-cursor" id="otp-cursor"></span>
+                    </div>
+                </div>
+
+                <!-- Hidden inputs or key listener catcher -->
+                <input type="text" id="otp-hidden-input" maxlength="4" pattern="\d*" inputmode="numeric" style="opacity: 0; position: absolute; pointer-events: none; z-index: -1;">
+
+                <!-- Success Badge (hidden initially) -->
+                <div class="success-badge-wrapper" id="otp-success-badge" style="display: none;">
+                    <div class="success-badge">
+                        <svg class="checkmark-svg" viewBox="0 0 52 52">
+                            <circle class="checkmark-circle" cx="26" cy="26" r="25" fill="none"/>
+                            <path class="checkmark-check" fill="none" d="M14.1 27.2l7.1 7.2 16.7-16.8"/>
+                        </svg>
+                    </div>
+                </div>
+
+                <!-- Confetti particles container -->
+                <div class="confetti-container" id="otp-confetti-container"></div>
+
+                <!-- Status messages -->
+                <div class="verification-status" id="otp-status-container" style="display: none; margin-top: 24px; text-align: center;">
+                    <h3 class="status-title">Verified Successfully</h3>
+                    <p class="status-subtitle">Opening registration form...</p>
+                    <div class="secure-badge">
+                        <svg class="lock-icon" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                            <rect x="3" y="11" width="18" height="11" rx="2" ry="2"/>
+                            <path d="M7 11V7a5 5 0 0 1 10 0v4"/>
+                        </svg>
+                        <span>Verified and Secure</span>
+                    </div>
+                </div>
+
+                <div class="otp-footer" id="otp-timer-container" style="margin-top: 24px; text-align: center; font-size: 13px; color: var(--text-secondary);">
+                    Didn't receive code? <button type="button" class="btn-resend" id="btn-otp-resend">Resend OTP</button> <span id="otp-resend-timer" style="font-weight: 600;"></span>
+                </div>
+                <div id="otp-general-error" class="error-message" style="text-align: center; margin-top: 12px;"></div>
+            </div>
+
+            <!-- Sub-card C (Option 1): Artisan Signup Form -->
+            <div class="form-container" id="card-artisan-signup" style="display: none;">
                 <div class="form-header">
                     <h2>Artisan Registration</h2>
                     <p>Create your shop profile and reach millions of buyers</p>
                 </div>
                 <form id="form-artisan-signup">
-                    <div class="form-group" id="group-artisan-username">
+                    <div class="form-group" id="group-artisan-username" style="margin-bottom: 12px;">
                         <label class="form-label" for="artisan-username">Username</label>
                         <input class="form-input" type="text" id="artisan-username" placeholder="e.g. rajesh_weaver" required>
                         <div class="error-message"></div>
                     </div>
-                    <div class="form-group" id="group-artisan-phone">
+                    <div class="form-group" id="group-artisan-phone" style="margin-bottom: 12px;">
                         <label class="form-label" for="artisan-phone">Phone Number</label>
-                        <input class="form-input" type="tel" id="artisan-phone" placeholder="e.g. 9876543210" required>
+                        <div style="position: relative; display: flex; align-items: center;">
+                            <input class="form-input" type="tel" id="artisan-phone" placeholder="e.g. 9876543210" style="padding-right: 36px; background-color: rgba(0,0,0,0.03);" readonly required>
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--text-light)" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="position: absolute; right: 12px; pointer-events: none;">
+                                <rect x="3" y="11" width="18" height="11" rx="2" ry="2"/>
+                                <path d="M7 11V7a5 5 0 0 1 10 0v4"/>
+                            </svg>
+                        </div>
                         <div class="error-message"></div>
                     </div>
-                    <div class="form-group" id="group-artisan-craft">
+                    <div class="form-group" id="group-artisan-craft" style="margin-bottom: 12px;">
                         <label class="form-label" for="artisan-craft">Craft Type</label>
                         <input class="form-input" type="text" id="artisan-craft" placeholder="e.g. Madhubani Painting, Blue Pottery" required>
                         <div class="error-message"></div>
                     </div>
-                    <div class="form-group" id="group-artisan-email">
+                    <div class="form-group" id="group-artisan-email" style="margin-bottom: 12px;">
                         <label class="form-label" for="artisan-email">Email (Optional)</label>
                         <input class="form-input" type="email" id="artisan-email" placeholder="e.g. email@example.com">
                         <div class="error-message"></div>
                     </div>
-                    <div class="form-group" id="group-artisan-password">
+                    <div class="form-group" id="group-artisan-password" style="margin-bottom: 16px;">
                         <label class="form-label" for="artisan-password">Password</label>
                         <input class="form-input" type="password" id="artisan-password" placeholder="Min. 4 characters" required>
                         <div class="error-message"></div>
@@ -170,38 +295,43 @@
                     Already have an account? <a href="#" class="link-goto-login">Login here</a>
                 </div>
             </div>
-        </section>
 
-        <!-- 5. BUYER SIGNUP SCREEN -->
-        <section id="screen-buyer-signup" class="screen">
-            <div class="form-container">
+            <!-- Sub-card C (Option 2): Buyer Signup Form -->
+            <div class="form-container" id="card-buyer-signup" style="display: none;">
                 <div class="form-header">
                     <h2>Buyer Registration</h2>
                     <p>Discover and support authentic handmade Indian crafts</p>
                 </div>
                 <form id="form-buyer-signup">
-                    <div class="form-group" id="group-buyer-username">
+                    <div class="form-group" id="group-buyer-username" style="margin-bottom: 12px;">
                         <label class="form-label" for="buyer-username">Username</label>
                         <input class="form-input" type="text" id="buyer-username" placeholder="e.g. anita_delhi" required>
                         <div class="error-message"></div>
                     </div>
-                    <div class="form-group" id="group-buyer-phone">
+                    <div class="form-group" id="group-buyer-phone" style="margin-bottom: 12px;">
                         <label class="form-label" for="buyer-phone">Phone Number</label>
-                        <input class="form-input" type="tel" id="buyer-phone" placeholder="e.g. 9988776655" required>
+                        <div style="position: relative; display: flex; align-items: center;">
+                            <input class="form-input" type="tel" id="buyer-phone" placeholder="e.g. 9988776655" style="padding-right: 36px; background-color: rgba(0,0,0,0.03);" readonly required>
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--text-light)" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="position: absolute; right: 12px; pointer-events: none;">
+                                <rect x="3" y="11" width="18" height="11" rx="2" ry="2"/>
+                                <path d="M7 11V7a5 5 0 0 1 10 0v4"/>
+                            </svg>
+                        </div>
                         <div class="error-message"></div>
                     </div>
-                    <div class="form-group" id="group-buyer-email">
+                    <div class="form-group" id="group-buyer-email" style="margin-bottom: 12px;">
                         <label class="form-label" for="buyer-email">Email (Optional)</label>
                         <input class="form-input" type="email" id="buyer-email" placeholder="e.g. email@example.com">
                         <div class="error-message"></div>
                     </div>
-                    <div class="form-group" id="group-buyer-password">
+                    <div class="form-group" id="group-buyer-password" style="margin-bottom: 16px;">
                         <label class="form-label" for="buyer-password">Password</label>
                         <input class="form-input" type="password" id="buyer-password" placeholder="Min. 4 characters" required>
                         <div class="error-message"></div>
                     </div>
 
                     <button class="btn btn-primary" type="submit" id="btn-buyer-signup-submit">Register as Buyer</button>
+                    <div id="buyer-general-error" style="display:none; margin-top:10px; padding:10px 14px; background:rgba(239,68,68,0.12); border:1px solid rgba(239,68,68,0.4); border-radius:8px; color:#ef4444; font-size:13px;"></div>
                 </form>
                 <div class="form-footer-text">
                     Already have an account? <a href="#" class="link-goto-login">Login here</a>
@@ -211,17 +341,35 @@
 
         <!-- 6. ARTISAN DASHBOARD SCREEN -->
         <section id="screen-artisan-dashboard" class="screen">
-            <div class="dashboard-header">
+            <div class="dashboard-header" style="margin-bottom: 16px;">
                 <div class="dashboard-title">
                     <h2>Artisan Studio</h2>
-                    <p>Add products and enhance photos using AI</p>
+                    <p>Manage your listings and enhance new products using AI</p>
                 </div>
             </div>
 
-            <div class="dashboard-layout">
-                <!-- Left: Upload & AI Refiner Panel -->
-                <div class="refiner-card">
-                    <h3 class="refiner-card-title">3. AI Photo Refiner</h3>
+            <!-- Artisan Dashboard Sub-Navigation Tabs -->
+            <div class="artisan-tab-bar" style="display: flex; gap: 16px; border-bottom: 1px solid var(--border-color); margin-bottom: 24px; padding-bottom: 8px;">
+                <button type="button" class="artisan-nav-btn active" id="tab-btn-listings" style="background: none; border: none; font-size: 15px; font-weight: 600; font-family: var(--font-outfit); color: var(--primary-color); cursor: pointer; transition: var(--transition-smooth); outline: none;">My Listings</button>
+                <button type="button" class="artisan-nav-btn" id="tab-btn-create" style="background: none; border: none; font-size: 15px; font-weight: 600; font-family: var(--font-outfit); color: var(--text-secondary); cursor: pointer; transition: var(--transition-smooth); outline: none;">Make New Listing</button>
+                <button type="button" class="artisan-nav-btn" id="tab-btn-coming" style="background: none; border: none; font-size: 15px; font-weight: 600; font-family: var(--font-outfit); color: var(--text-secondary); cursor: pointer; transition: var(--transition-smooth); outline: none;">More Features</button>
+            </div>
+
+            <!-- Tab 1: My Listings View -->
+            <div id="artisan-view-listings" class="artisan-tab-view">
+                <h3 class="brand-font" style="font-size: 20px; color: var(--primary-color); margin-bottom: 20px;">My Shop Listings</h3>
+                <div id="artisan-product-list" class="product-grid">
+                    <!-- Filled dynamically -->
+                    <div style="grid-column: 1/-1; text-align: center; color: var(--text-secondary); padding: 40px;" id="artisan-empty-state">
+                        You haven't listed any products yet.
+                    </div>
+                </div>
+            </div>
+
+            <!-- Tab 2: Make New Listing View -->
+            <div id="artisan-view-create" class="artisan-tab-view" style="display: none;">
+                <div class="refiner-card" style="max-width: 680px; margin: 0 auto; box-shadow: var(--shadow-button);">
+                    <h3 class="refiner-card-title">Create New Listing</h3>
                     
                     <!-- Side-by-side Before/After Viewer -->
                     <div class="preview-container">
@@ -290,10 +438,30 @@
                     <form id="form-product-upload">
                         <div class="form-group" id="group-upload-image" style="margin-bottom: 15px;">
                             <label class="form-label">Upload Product Photo</label>
-                            <div class="file-upload-wrapper">
-                                <svg class="file-upload-icon" width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4M17 8l-5-5-5 5M12 3v12"/></svg>
-                                <div class="file-upload-text" id="file-label-text"><span>Tap to select</span> or drag image here</div>
-                                <input class="file-upload-input" type="file" id="upload-image" accept="image/*" required>
+                            <div class="custom-pill-upload-container" id="pill-upload-container">
+                                <div class="upload-left-side" id="pill-upload-left">
+                                    <!-- Paperclip Icon -->
+                                    <svg class="paperclip-icon" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                                        <path d="m21.44 11.05-9.19 9.19a6 6 0 0 1-8.49-8.49l9.19-9.19a4 4 0 0 1 5.66 5.66l-9.2 9.19a2 2 0 0 1-2.83-2.83l8.49-8.48"/>
+                                    </svg>
+                                    <span class="upload-filename-text" id="pill-upload-filename">Choose product photo...</span>
+                                </div>
+                                <div class="pill-upload-btn-wrapper">
+                                    <button type="button" class="pill-upload-btn" id="pill-upload-btn">
+                                        <span class="btn-text-state state-normal active">Upload</span>
+                                        <span class="btn-text-state state-uploading">Uploading...</span>
+                                        <span class="btn-text-state state-completed">
+                                            <svg class="checkmark-icon" width="14" height="14" fill="none" stroke="currentColor" stroke-width="3" viewBox="0 0 24 24">
+                                                <polyline points="20 6 9 17 4 12"/>
+                                            </svg>
+                                            Completed
+                                        </span>
+                                        <!-- Thin progress bar inside button -->
+                                        <div class="upload-progress-bar" id="pill-upload-progress"></div>
+                                    </button>
+                                </div>
+                                <!-- Hidden actual file input -->
+                                <input type="file" id="upload-image" accept="image/*" style="display: none;" required>
                             </div>
                             <div class="error-message">Please select a photo.</div>
                         </div>
@@ -314,16 +482,188 @@
 
                         <button class="btn btn-primary" type="submit" id="btn-upload-submit">Apply & Save</button>
                     </form>
-                </div>
 
-                <!-- Right: My Shop Products list -->
-                <div>
-                    <h3 class="brand-font" style="font-size: 22px; color: var(--primary-color); margin-bottom: 20px;">My Shop Listings</h3>
-                    <div id="artisan-product-list" class="product-grid">
-                        <!-- Filled dynamically -->
-                        <div style="grid-column: 1/-1; text-align: center; color: var(--text-secondary); padding: 40px;" id="artisan-empty-state">
-                            You haven't listed any products yet.
+                    <!-- ============================================================
+                         Voice Cataloger — Step 4: Multilingual Auto-Cataloger
+                         Shown after a product image is uploaded and saved.
+                         Uses Groq Whisper (primary) + HF fallback for ASR+translation,
+                         then Groq LLaMA for bilingual SEO description generation.
+                         ============================================================ -->
+                    <div class="voice-cataloger-section" id="voice-cataloger-section" style="display: none;">
+                        <h3 class="voice-step-title">4. Multilingual Auto-Cataloger</h3>
+                        <p class="form-label" style="margin-bottom: 8px;">Describe your product in your regional language (Hindi, Marathi, Gujarati, Tamil…):</p>
+
+                        <!-- Language Selector -->
+                        <div class="lang-selector-row" id="voice-lang-selector" style="margin-bottom: 16px; display: flex; gap: 8px; flex-wrap: wrap;">
+                            <button type="button" class="lang-pill selected" data-voice-lang="hi">Hindi (हिंदी)</button>
+                            <button type="button" class="lang-pill" data-voice-lang="mr">Marathi (मराठी)</button>
+                            <button type="button" class="lang-pill" data-voice-lang="gu">Gujarati (ગુજરાતી)</button>
+                            <button type="button" class="lang-pill" data-voice-lang="ta">Tamil (தமிழ்)</button>
                         </div>
+
+                        <!-- Recorder / Upload Box -->
+                        <div class="recorder-area" id="voice-recorder-area">
+                            <div id="voice-recording-status" style="margin-bottom: 10px; font-weight: 500; font-size: 14px; color: var(--text-secondary);">
+                                Ready to record your voice note.
+                            </div>
+
+                            <!-- Pulsing red dot shown while recording -->
+                            <div class="recording-indicator" id="voice-recording-indicator" style="display: none; margin-bottom: 10px;">
+                                <div class="recording-dot"></div>
+                                <span>Recording… speak clearly</span>
+                            </div>
+
+                            <!-- Playback preview after recording or file upload -->
+                            <audio id="voice-audio-preview" style="display: none; width: 100%; margin: 15px 0 10px 0;" controls></audio>
+
+                            <!-- File name badge -->
+                            <div class="audio-file-badge" id="voice-audio-badge" style="display: none;">
+                                <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M9 18V5l12-2v13"/><circle cx="6" cy="18" r="3"/><circle cx="18" cy="16" r="3"/></svg>
+                                <span id="voice-audio-filename">audio.webm</span>
+                            </div>
+
+                            <!-- Record / Stop buttons -->
+                            <div class="recorder-controls">
+                                <button type="button" class="btn-record" id="btn-voice-record-start">
+                                    <svg width="16" height="16" fill="currentColor" viewBox="0 0 24 24"><path d="M12 14c1.66 0 3-1.34 3-3V5c0-1.66-1.34-3-3-3S9 3.34 9 5v6c0 1.66 1.34 3 3 3zm5.3-3c0 3-2.54 5.1-5.3 5.1S6.7 14 6.7 11H5c0 3.41 2.72 6.23 6 6.72V21h2v-3.28c3.28-.48 6-3.3 6-6.72h-1.7z"/></svg>
+                                    Record Note
+                                </button>
+                                <button type="button" class="btn-stop-record" id="btn-voice-record-stop" style="display: none;">
+                                    <svg width="16" height="16" fill="currentColor" viewBox="0 0 24 24"><rect x="4" y="4" width="16" height="16" rx="2"/></svg>
+                                    Stop
+                                </button>
+                            </div>
+
+                            <div class="voice-or-divider">or upload audio file</div>
+
+                            <!-- Hidden file input — triggered by button below -->
+                            <input type="file" id="voice-audio-file-input" accept="audio/*,.webm,.wav,.mp3,.m4a,.ogg,.flac" style="display: none;">
+                            <button type="button" class="btn-record" id="btn-voice-upload-trigger" style="background-color: var(--text-secondary); box-shadow: none;">
+                                <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4M17 8l-5-5-5 5M12 3v12"/></svg>
+                                Choose File
+                            </button>
+                        </div>
+
+                        <!-- Generate button (disabled until audio is ready) -->
+                        <button type="button" class="btn btn-primary" id="btn-catalog-process" disabled
+                                style="width: 100%; margin-top: 10px; background-color: var(--primary-color);">
+                            Generate Listing Details
+                        </button>
+
+                        <!-- Pipeline Progress Steps: Transcribing → Generating -->
+                        <div class="pipeline-steps" id="voice-pipeline-steps" style="display: none;">
+                            <div class="pipeline-step" id="step-pipeline-asr">
+                                <div class="pipeline-step-icon">1</div>
+                                <span class="pipeline-step-label">Transcribing</span>
+                            </div>
+                            <div class="pipeline-step" id="step-pipeline-llm">
+                                <div class="pipeline-step-icon">2</div>
+                                <span class="pipeline-step-label">Generating</span>
+                            </div>
+                        </div>
+
+                        <!-- Error message shown on pipeline failure (audio was still saved) -->
+                        <div id="voice-pipeline-error" style="display: none; margin-top: 12px; background: #FFF5F5; border: 1px solid #FFCDD2; border-radius: 12px; padding: 14px 16px;">
+                            <p style="color: #C62828; font-size: 14px; font-weight: 600; margin: 0 0 6px 0;" id="voice-pipeline-error-msg">
+                                Voice processing failed.
+                            </p>
+                            <button type="button" class="btn-record" id="btn-voice-retry" style="font-size: 13px; padding: 8px 16px; background-color: var(--primary-color);">
+                                Try Again
+                            </button>
+                        </div>
+
+                        <!-- Results panel — editable fields shown after successful pipeline run -->
+                        <div class="catalog-results-panel" id="catalog-results-panel" style="display: none;">
+                            <h4 class="catalog-results-title">AI-Generated Catalog Details</h4>
+
+                            <!-- English transcript preview (informational) -->
+                            <div class="transcript-preview" id="voice-transcript-preview" style="display: none;">
+                                <div class="transcript-preview-label">Transcript (English)</div>
+                                <div id="results-transcript-en" style="font-style: italic;">…</div>
+                            </div>
+
+                            <form id="form-confirm-catalog">
+                                <!-- Bilingual Title Fields -->
+                                <div class="bilingual-field-row">
+                                    <div>
+                                        <label class="bilingual-field-label">
+                                            <span>Product Title</span>
+                                            <span class="lang-badge">English</span>
+                                        </label>
+                                        <input type="text" id="results-title-en" class="form-input" required>
+                                    </div>
+                                                                    <div>
+                                        <label class="bilingual-field-label">
+                                            <span>Product Title</span>
+                                            <span class="lang-badge" id="results-title-lang-badge">Hindi</span>
+                                        </label>
+                                        <input type="text" id="results-title-hi" class="form-input devanagari" required>
+                                    </div>
+                                </div>
+
+                                <!-- Bilingual Description Fields -->
+                                <div class="bilingual-field-row">
+                                    <div>
+                                        <label class="bilingual-field-label">
+                                            <span>AI Description</span>
+                                            <span class="lang-badge">English</span>
+                                        </label>
+                                        <textarea id="results-desc-en" class="form-textarea" required></textarea>
+                                    </div>
+                                    <div>
+                                        <label class="bilingual-field-label">
+                                            <span>AI Description</span>
+                                            <span class="lang-badge" id="results-desc-lang-badge">Hindi</span>
+                                        </label>
+                                        <textarea id="results-desc-hi" class="form-textarea devanagari" required></textarea>
+                                    </div>
+                                </div>
+
+                                <div id="catalog-confirm-error" style="color: var(--danger-color); font-size: 14px; text-align: center; margin-bottom: 15px; display: none;"></div>
+
+                                <button type="submit" class="btn btn-primary" id="btn-catalog-confirm" style="width: 100%; background-color: #2E7D32;">
+                                    ✓ Publish Listing
+                                </button>
+                            </form>
+                        </div>
+                    </div><!-- /voice-cataloger-section -->
+
+                </div>
+            </div>
+
+            <!-- Tab 3: Coming Soon/More Features View -->
+
+
+            <div id="artisan-view-coming" class="artisan-tab-view" style="display: none;">
+                <div class="coming-soon-grid" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 20px;">
+                    <!-- Community card -->
+                    <div class="coming-soon-card" id="card-feature-communities" style="background: #FFFFFF; border: 1px solid var(--border-color); border-radius: 16px; padding: 24px; transition: var(--transition-smooth); box-shadow: var(--shadow-button);">
+                        <div style="display: inline-flex; align-items: center; justify-content: center; width: 44px; height: 44px; border-radius: 12px; background: var(--primary-light); color: var(--primary-color); margin-bottom: 16px;">
+                            <svg width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M18 18.72a6 6 0 0 0-3.44-10.67M6 18.72a6 6 0 0 1 3.44-10.67M12 12a4 4 0 1 0 0-8 4 4 0 0 0 0 8z"/></svg>
+                        </div>
+                        <h4 style="font-size: 16px; font-weight: 700; color: var(--text-primary); margin: 0 0 8px 0;">Artisan Communities</h4>
+                        <p style="font-size: 13px; color: var(--text-secondary); line-height: 1.6; margin: 0 0 12px 0;">Connect with other local weavers, potters, and painters. Share techniques, bulk-buy materials, and grow together.</p>
+                        <span style="font-size: 10px; font-weight: 700; background: var(--accent-gold); color: #22162B; padding: 4px 10px; border-radius: 12px; text-transform: uppercase;">Coming Soon</span>
+                    </div>
+
+                    <!-- Orders card -->
+                    <div class="coming-soon-card" id="card-feature-orders" style="background: #FFFFFF; border: 1px solid var(--border-color); border-radius: 16px; padding: 24px; transition: var(--transition-smooth); box-shadow: var(--shadow-button);">
+                        <div style="display: inline-flex; align-items: center; justify-content: center; width: 44px; height: 44px; border-radius: 12px; background: #E5F6DF; color: #2E7D32; margin-bottom: 16px;">
+                            <svg width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M15.75 10.5V6a3.75 3.75 0 1 0-7.5 0v4.5m11.356-1.993 1.263 12c.07.665-.45 1.243-1.119 1.243H4.25a1.125 1.125 0 0 1-1.12-1.243l1.264-12A1.125 1.125 0 0 1 5.513 7.5h12.974c.576 0 1.059.435 1.119 1.007zM8.625 10.5a.375.375 0 1 1-.75 0 .375.375 0 0 1 .75 0zm7.5 0a.375.375 0 1 1-.75 0 .375.375 0 0 1 .75 0z"/></svg>
+                        </div>
+                        <h4 style="font-size: 16px; font-weight: 700; color: var(--text-primary); margin: 0 0 8px 0;">Order Tracker</h4>
+                        <p style="font-size: 13px; color: var(--text-secondary); line-height: 1.6; margin: 0 0 12px 0;">Track orders, generate packaging slips, arrange courier pickups, and manage customer queries seamlessly.</p>
+                        <span style="font-size: 10px; font-weight: 700; background: var(--accent-gold); color: #22162B; padding: 4px 10px; border-radius: 12px; text-transform: uppercase;">Coming Soon</span>
+                    </div>
+
+                    <!-- Sales Analytics card -->
+                    <div class="coming-soon-card" id="card-feature-analytics" style="background: #FFFFFF; border: 1px solid var(--border-color); border-radius: 16px; padding: 24px; transition: var(--transition-smooth); box-shadow: var(--shadow-button);">
+                        <div style="display: inline-flex; align-items: center; justify-content: center; width: 44px; height: 44px; border-radius: 12px; background: #FFF3CD; color: #856404; margin-bottom: 16px;">
+                            <svg width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M3 13.125C3 12.504 3.504 12 4.125 12h2.25c.621 0 1.125.504 1.125 1.125v5.25c0 .621-.504 1.125-1.125 1.125h-2.25A1.125 1.125 0 0 1 3 18.375v-5.25zM9.75 8.625c0-.621.504-1.125 1.125-1.125h2.25c.621 0 1.125.504 1.125 1.125v9.75c0 .621-.504 1.125-1.125 1.125h-2.25a1.125 1.125 0 0 1-1.125-1.125v-9.75zM16.5 4.125c0-.621.504-1.125 1.125-1.125h2.25C20.496 3 21 3.504 21 4.125v14.25c0 .621-.504 1.125-1.125 1.125h-2.25a1.125 1.125 0 0 1-1.125-1.125V4.125z"/></svg>
+                        </div>
+                        <h4 style="font-size: 16px; font-weight: 700; color: var(--text-primary); margin: 0 0 8px 0;">Sales & Analytics</h4>
+                        <p style="font-size: 13px; color: var(--text-secondary); line-height: 1.6; margin: 0 0 12px 0;">Understand your buyers. View daily sales charts, popular products, seasonal craft trends, and revenue graphs.</p>
+                        <span style="font-size: 10px; font-weight: 700; background: var(--accent-gold); color: #22162B; padding: 4px 10px; border-radius: 12px; text-transform: uppercase;">Coming Soon</span>
                     </div>
                 </div>
             </div>
@@ -331,22 +671,123 @@
 
         <!-- 7. BUYER DASHBOARD SCREEN -->
         <section id="screen-buyer-dashboard" class="screen">
-            <div class="dashboard-header">
-                <div class="dashboard-title">
-                    <h2>Artisan Marketplace</h2>
-                    <p>Directly support marginalized Indian craftspeople</p>
+            <!-- Buyer Tab Bar -->
+            <div id="buyer-tab-bar" style="display:flex; align-items:center; border-bottom: 2px solid var(--border-color); margin-bottom: 20px; gap: 0;">
+                <button id="buyer-tab-shop" class="buyer-tab-btn active" onclick="switchBuyerTab('shop')" style="flex:1; background:none; border:none; padding: 14px 0; font-size:14px; font-weight:700; color:var(--primary-color); border-bottom: 3px solid var(--primary-color); cursor:pointer; transition:var(--transition-smooth); font-family:var(--font-inter);">🏪 Shop</button>
+                <button id="buyer-tab-cart" class="buyer-tab-btn" onclick="switchBuyerTab('cart')" style="flex:1; background:none; border:none; padding: 14px 0; font-size:14px; font-weight:700; color:var(--text-secondary); border-bottom: 3px solid transparent; cursor:pointer; transition:var(--transition-smooth); font-family:var(--font-inter); position:relative;">🛒 Cart <span id="cart-badge" style="display:none; position:absolute; top:8px; right:calc(50% - 36px); background:#D96A3D; color:#fff; font-size:10px; font-weight:800; border-radius:50%; width:17px; height:17px; line-height:17px; text-align:center;">0</span></button>
+                <button id="buyer-tab-orders" class="buyer-tab-btn" onclick="switchBuyerTab('orders')" style="flex:1; background:none; border:none; padding: 14px 0; font-size:14px; font-weight:700; color:var(--text-secondary); border-bottom: 3px solid transparent; cursor:pointer; transition:var(--transition-smooth); font-family:var(--font-inter);">📦 My Orders</button>
+            </div>
+
+            <!-- TAB: Shop -->
+            <div id="buyer-view-shop">
+                <h3 class="brand-font" style="font-size: 22px; color: var(--primary-color); margin-bottom: 20px;">Authentic Handmade Listings</h3>
+                <div id="buyer-product-list" class="product-grid">
+                    <div style="grid-column: 1/-1; text-align: center; color: var(--text-secondary); padding: 40px;" id="buyer-empty-state">
+                        No products listed in the marketplace yet.
+                    </div>
                 </div>
             </div>
 
-            <h3 class="brand-font" style="font-size: 22px; color: var(--primary-color); margin-bottom: 20px;">Authentic Handmade Listings</h3>
-            
-            <div id="buyer-product-list" class="product-grid">
-                <!-- Filled dynamically -->
-                <div style="grid-column: 1/-1; text-align: center; color: var(--text-secondary); padding: 40px;" id="buyer-empty-state">
-                    No products listed in the marketplace yet.
+            <!-- TAB: Cart -->
+            <div id="buyer-view-cart" style="display:none;">
+                <div style="display:flex; align-items:center; justify-content:space-between; margin-bottom:24px;">
+                    <h3 class="brand-font" style="font-size:22px; color:var(--primary-color); margin:0;">Your Cart</h3>
+                    <button id="btn-goto-checkout" onclick="openCheckout()" style="background: linear-gradient(135deg,#D96A3D,#482E83); color:#fff; border:none; border-radius:12px; padding:10px 22px; font-size:14px; font-weight:700; cursor:pointer; font-family:var(--font-inter); display:none;">Checkout →</button>
+                </div>
+                <div id="cart-item-list" style="display:flex; flex-direction:column; gap:14px;"></div>
+                <div id="cart-empty-msg" style="text-align:center; color:var(--text-secondary); padding:60px 20px;">
+                    <div style="font-size:48px; margin-bottom:16px;">🛒</div>
+                    <p style="font-size:16px; font-weight:600;">Your cart is empty</p>
+                    <p style="font-size:14px;">Browse the shop and add handcrafted items!</p>
+                </div>
+                <div id="cart-total-bar" style="display:none; margin-top:20px; background: linear-gradient(135deg,#482E83,#D96A3D); border-radius:16px; padding:18px 22px; display:none; align-items:center; justify-content:space-between; color:#fff;">
+                    <div>
+                        <div style="font-size:12px; opacity:0.8; margin-bottom:2px;">Cart Total</div>
+                        <div id="cart-total-amount" style="font-size:22px; font-weight:800;">₹0</div>
+                    </div>
+                    <button onclick="openCheckout()" style="background:#fff; color:#482E83; border:none; border-radius:10px; padding:10px 20px; font-size:14px; font-weight:800; cursor:pointer; font-family:var(--font-inter);">Checkout →</button>
+                </div>
+            </div>
+
+            <!-- TAB: Orders -->
+            <div id="buyer-view-orders" style="display:none;">
+                <h3 class="brand-font" style="font-size:22px; color:var(--primary-color); margin-bottom:24px;">My Orders</h3>
+                <div id="orders-list" style="display:flex; flex-direction:column; gap:16px;"></div>
+                <div id="orders-empty-msg" style="text-align:center; color:var(--text-secondary); padding:60px 20px;">
+                    <div style="font-size:48px; margin-bottom:16px;">📦</div>
+                    <p style="font-size:16px; font-weight:600;">No orders yet</p>
+                    <p style="font-size:14px;">Place your first order from the shop!</p>
                 </div>
             </div>
         </section>
+
+        <!-- CHECKOUT SCREEN (slides in as overlay) -->
+        <div id="checkout-overlay" style="display:none; position:fixed; inset:0; z-index:1000; background:#f7f4ef; overflow-y:auto; padding: 0 0 60px 0;">
+            <!-- Header -->
+            <div style="background:#fff; padding:16px 20px; border-bottom:1px solid var(--border-color); display:flex; align-items:center; gap:14px; position:sticky; top:0; z-index:10;">
+                <button onclick="closeCheckout()" style="background:none; border:1px solid var(--border-color); border-radius:10px; width:36px; height:36px; cursor:pointer; display:flex; align-items:center; justify-content:center; font-size:18px;">←</button>
+                <div>
+                    <div style="font-size:18px; font-weight:800; color:var(--text-primary);">Checkout</div>
+                    <div style="font-size:12px; color:var(--text-secondary);">Review your order</div>
+                </div>
+            </div>
+
+            <div style="max-width:560px; margin:0 auto; padding:20px 16px;">
+
+                <!-- Order Items Preview -->
+                <div style="background:#fff; border-radius:16px; padding:20px; margin-bottom:16px; box-shadow:0 2px 8px rgba(0,0,0,0.06);">
+                    <h4 style="font-size:14px; font-weight:700; color:var(--text-primary); margin:0 0 14px 0;">Items in Your Order</h4>
+                    <div id="checkout-items-preview"></div>
+                </div>
+
+                <!-- Delivery Address -->
+                <div style="background:#fff; border-radius:16px; padding:20px; margin-bottom:16px; box-shadow:0 2px 8px rgba(0,0,0,0.06);">
+                    <h4 style="font-size:14px; font-weight:700; color:var(--text-primary); margin:0 0 14px 0;">Delivery Address</h4>
+                    <div id="saved-addresses-list" style="display:flex; flex-direction:column; gap:10px; margin-bottom:14px;"></div>
+                    <!-- New address form (collapsed by default) -->
+                    <button id="btn-add-address-toggle" onclick="toggleAddressForm()" style="width:100%; background:var(--primary-light); border:1.5px dashed var(--primary-color); border-radius:12px; padding:12px; font-size:13px; font-weight:700; color:var(--primary-color); cursor:pointer; font-family:var(--font-inter);">+ Add New Address</button>
+                    <div id="new-address-form" style="display:none; margin-top:14px;">
+                        <div style="display:grid; grid-template-columns:1fr 1fr; gap:10px;">
+                            <input id="addr-label"       placeholder="Label (Home / Work)" class="form-input" style="grid-column:1/-1;">
+                            <input id="addr-full-name"   placeholder="Full Name"           class="form-input" style="grid-column:1/-1;">
+                            <input id="addr-phone"       placeholder="Phone"               class="form-input" type="tel">
+                            <input id="addr-line1"       placeholder="Address Line 1"      class="form-input" style="grid-column:1/-1;">
+                            <input id="addr-line2"       placeholder="Line 2 (optional)"   class="form-input" style="grid-column:1/-1;">
+                            <input id="addr-city"        placeholder="City"                class="form-input">
+                            <input id="addr-state"       placeholder="State"               class="form-input">
+                            <input id="addr-postal"      placeholder="Pincode"             class="form-input" type="number">
+                        </div>
+                        <button onclick="saveNewAddress()" style="width:100%; margin-top:12px; background:var(--primary-color); color:#fff; border:none; border-radius:12px; padding:12px; font-size:14px; font-weight:700; cursor:pointer; font-family:var(--font-inter);">Save Address</button>
+                    </div>
+                </div>
+
+                <!-- Cost Breakdown -->
+                <div style="background:#fff; border-radius:16px; padding:20px; margin-bottom:16px; box-shadow:0 2px 8px rgba(0,0,0,0.06);">
+                    <h4 style="font-size:14px; font-weight:700; color:var(--text-primary); margin:0 0 14px 0;">Price Breakdown</h4>
+                    <div style="display:flex; flex-direction:column; gap:10px;">
+                        <div style="display:flex; justify-content:space-between; font-size:14px;"><span style="color:var(--text-secondary);">Product Total</span><span id="breakdown-product-total" style="font-weight:600;">₹0</span></div>
+                        <div style="display:flex; justify-content:space-between; font-size:14px;"><span style="color:var(--text-secondary);">Shipping (Flat)</span><span id="breakdown-shipping" style="font-weight:600;">₹0</span></div>
+                        <div style="display:flex; justify-content:space-between; font-size:14px;"><span style="color:var(--text-secondary);">Platform Fee (5%)</span><span id="breakdown-commission" style="font-weight:600;">₹0</span></div>
+                        <div style="border-top:1.5px solid var(--border-color); padding-top:10px; display:flex; justify-content:space-between; font-size:18px; font-weight:800;"><span>Total Payable</span><span id="breakdown-total" style="color:var(--primary-color);">₹0</span></div>
+                    </div>
+                </div>
+
+                <!-- Place Order CTA -->
+                <button id="btn-place-order" onclick="placeOrder()" style="width:100%; background: linear-gradient(135deg,#D96A3D,#482E83); color:#fff; border:none; border-radius:16px; padding:18px; font-size:16px; font-weight:800; cursor:pointer; font-family:var(--font-inter); box-shadow: 0 6px 20px rgba(72,46,131,0.3); transition:var(--transition-smooth); letter-spacing:0.3px;">Place Order</button>
+                <div id="checkout-error" style="display:none; color:#C62828; font-size:13px; text-align:center; margin-top:10px;"></div>
+            </div>
+        </div>
+
+        <!-- PAYMENT COMING SOON MODAL -->
+        <div id="payment-coming-soon-modal" style="display:none; position:fixed; inset:0; z-index:2000; background:rgba(0,0,0,0.55); backdrop-filter:blur(6px); align-items:center; justify-content:center;">
+            <div style="background:#fff; border-radius:24px; padding:40px 32px; max-width:380px; width:90%; text-align:center; box-shadow:0 24px 80px rgba(0,0,0,0.2); animation: slideUp 0.4s cubic-bezier(0.34,1.56,0.64,1);">
+                <div style="font-size:56px; margin-bottom:12px;">🔒</div>
+                <h3 style="font-size:22px; font-weight:800; color:var(--text-primary); margin:0 0 10px 0;">Payment Coming Soon</h3>
+                <p style="font-size:14px; color:var(--text-secondary); line-height:1.7; margin:0 0 24px 0;">We're integrating a secure payment gateway.<br>Your order has been <strong style="color:#2E7D32;">placed & recorded</strong>. We'll notify you once payment goes live!</p>
+                <div id="payment-modal-order-count" style="background:var(--primary-light); border-radius:12px; padding:12px 16px; font-size:13px; color:var(--primary-color); font-weight:700; margin-bottom:24px;"></div>
+                <button onclick="closePaymentModal()" style="width:100%; background: linear-gradient(135deg,#482E83,#D96A3D); color:#fff; border:none; border-radius:14px; padding:14px; font-size:15px; font-weight:800; cursor:pointer; font-family:var(--font-inter);">View My Orders</button>
+            </div>
+        </div>
 
     </div>
 
@@ -355,17 +796,19 @@
     <script>
         // Core State variables
         let selectedLanguage = 'en';
+        let selectedRole = 'artisan'; // 'artisan' or 'buyer'
         let currentUser = null;
         let accessToken = localStorage.getItem('access_token');
         let refreshToken = localStorage.getItem('refresh_token');
+        let verifiedPhoneNumber = null; // Verified phone number from Step 1
+
 
         // References to DOM elements
         const screens = {
             language: document.getElementById('screen-language'),
             onboarding: document.getElementById('screen-onboarding'),
             login: document.getElementById('screen-login'),
-            artisanSignup: document.getElementById('screen-artisan-signup'),
-            buyerSignup: document.getElementById('screen-buyer-signup'),
+            register: document.getElementById('screen-register'),
             artisanDashboard: document.getElementById('screen-artisan-dashboard'),
             buyerDashboard: document.getElementById('screen-buyer-dashboard')
         };
@@ -389,12 +832,31 @@
                 navbar.style.display = 'none';
             }
 
+            if (screenKey === 'register') {
+                document.getElementById('card-phone-entry').style.display = 'block';
+                document.getElementById('card-otp-verify').style.display = 'none';
+                document.getElementById('card-artisan-signup').style.display = 'none';
+                document.getElementById('card-buyer-signup').style.display = 'none';
+                
+                // Clear form status
+                document.getElementById('verification-phone').value = '';
+                const otpErr = document.getElementById('otp-general-error');
+                if (otpErr) otpErr.textContent = '';
+                
+                const groupVerifyPhone = document.getElementById('group-verification-phone');
+                if (groupVerifyPhone) {
+                    const phoneErr = groupVerifyPhone.querySelector('.error-message');
+                    if (phoneErr) phoneErr.textContent = '';
+                    groupVerifyPhone.classList.remove('has-error');
+                }
+            }
+
             // Hide all screens, show target
             Object.keys(screens).forEach(key => {
                 if (key === screenKey) {
-                    screens[key].classList.add('active');
+                    if (screens[key]) screens[key].classList.add('active');
                 } else {
-                    screens[key].classList.remove('active');
+                    if (screens[key]) screens[key].classList.remove('active');
                 }
             });
             window.scrollTo(0, 0);
@@ -403,7 +865,7 @@
         // Core Helper: Check JWT token health and load user
         async function checkAuthState() {
             if (!accessToken) {
-                // If token does not exist, go to language onboarding
+                // If token does not exist, go to language onboarding first
                 navigateTo('language');
                 return;
             }
@@ -423,6 +885,7 @@
                     } else if (currentUser.role === 'buyer') {
                         navigateTo('buyerDashboard');
                         loadBuyerProducts();
+                        setTimeout(updateCartBadge, 500); // show badge count after cart loads
                     } else {
                         // Admin or fallback
                         navigateTo('buyerDashboard');
@@ -480,10 +943,12 @@
 
         // Onboarding role buttons
         document.getElementById('btn-select-artisan').addEventListener('click', () => {
+            selectedRole = 'artisan';
             navigateTo('login');
         });
 
         document.getElementById('btn-select-buyer').addEventListener('click', () => {
+            selectedRole = 'buyer';
             navigateTo('login');
         });
 
@@ -496,12 +961,14 @@
         // Login Page events
         document.getElementById('link-goto-artisan-signup').addEventListener('click', (e) => {
             e.preventDefault();
-            navigateTo('artisanSignup');
+            selectedRole = 'artisan';
+            navigateTo('register');
         });
 
         document.getElementById('link-goto-buyer-signup').addEventListener('click', (e) => {
             e.preventDefault();
-            navigateTo('buyerSignup');
+            selectedRole = 'buyer';
+            navigateTo('register');
         });
 
         document.querySelectorAll('.link-goto-login').forEach(link => {
@@ -581,6 +1048,333 @@
             });
         }
 
+        // ─── Step 1: Phone Verification Logic ─────────────────────────────────
+        let currentOtpTimer = null;
+
+        function startPhoneVerificationTimer(seconds) {
+            const timerEl = document.getElementById('otp-resend-timer');
+            const resendBtn = document.getElementById('btn-otp-resend');
+            
+            resendBtn.disabled = true;
+            timerEl.textContent = `(${seconds}s)`;
+
+            if (currentOtpTimer) clearInterval(currentOtpTimer);
+
+            currentOtpTimer = setInterval(() => {
+                seconds--;
+                if (seconds <= 0) {
+                    clearInterval(currentOtpTimer);
+                    timerEl.textContent = '';
+                    resendBtn.disabled = false;
+                } else {
+                    timerEl.textContent = `(${seconds}s)`;
+                }
+            }, 1000);
+        }
+
+        const formPhoneEntry = document.getElementById('form-phone-entry');
+        const cardPhoneEntry = document.getElementById('card-phone-entry');
+        const cardOtpVerify = document.getElementById('card-otp-verify');
+        const phoneInput = document.getElementById('verification-phone');
+        const phoneError = document.getElementById('group-verification-phone').querySelector('.error-message');
+        const btnPhoneSubmit = document.getElementById('btn-phone-submit');
+
+        formPhoneEntry.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const phone = phoneInput.value.trim();
+            phoneError.textContent = '';
+            document.getElementById('group-verification-phone').classList.remove('has-error');
+
+            if (!/^\d{10,15}$/.test(phone)) {
+                document.getElementById('group-verification-phone').classList.add('has-error');
+                phoneError.textContent = 'Please enter a valid phone number (10–15 digits).';
+                return;
+            }
+
+            btnPhoneSubmit.disabled = true;
+            btnPhoneSubmit.textContent = 'Sending...';
+
+            try {
+                const response = await fetch(`${CONFIG.API_BASE_URL}/accounts/send-otp/`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ phone })
+                });
+
+                const data = await response.json();
+
+                if (response.ok) {
+                    // Save verified phone number candidate
+                    verifiedPhoneNumber = phone;
+                    
+                    // Transition card
+                    cardPhoneEntry.style.display = 'none';
+                    cardOtpVerify.style.display = 'block';
+                    cardOtpVerify.classList.add('card-entry-animate');
+                    
+                    // Start resend countdown
+                    startPhoneVerificationTimer(30);
+
+                    // Initialize OTP inputs
+                    setupOtpVerification(data.dev_otp);
+                } else {
+                    const msg = (data.phone || data.non_field_errors || ['Failed to send OTP.'])[0];
+                    document.getElementById('group-verification-phone').classList.add('has-error');
+                    phoneError.textContent = msg;
+                }
+            } catch (err) {
+                console.error("Phone verification start failed:", err);
+                phoneError.textContent = "Unable to connect to the server.";
+            } finally {
+                btnPhoneSubmit.disabled = false;
+                btnPhoneSubmit.textContent = 'Send Verification Code';
+            }
+        });
+
+        // Resend button
+        document.getElementById('btn-otp-resend').addEventListener('click', async () => {
+            const phone = verifiedPhoneNumber;
+            try {
+                const response = await fetch(`${CONFIG.API_BASE_URL}/accounts/send-otp/`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ phone })
+                });
+                const data = await response.json();
+                if (response.ok) {
+                    startPhoneVerificationTimer(30);
+                    setupOtpVerification(data.dev_otp);
+                } else {
+                    const errEl = document.getElementById('otp-general-error');
+                    errEl.textContent = (data.non_field_errors || ['Failed to resend.'])[0];
+                }
+            } catch (err) {
+                console.error(err);
+            }
+        });
+
+        // OTP inputs, blinking cursor and auto-fill logic
+        function setupOtpVerification(devOtp) {
+            const digitsContainer = document.getElementById('otp-digits-container');
+            const digitBoxes = digitsContainer.querySelectorAll('.digit-box');
+            const cursor = document.getElementById('otp-cursor');
+            const hiddenInput = document.getElementById('otp-hidden-input');
+            const statusContainer = document.getElementById('otp-status-container');
+            const successBadge = document.getElementById('otp-success-badge');
+            const timerContainer = document.getElementById('otp-timer-container');
+            const generalError = document.getElementById('otp-general-error');
+
+            // Reset UI states
+            digitsContainer.classList.remove('gooey-merge-active');
+            statusContainer.style.display = 'none';
+            successBadge.style.display = 'none';
+            timerContainer.style.display = 'block';
+            generalError.textContent = '';
+            
+            digitBoxes.forEach(box => {
+                box.classList.remove('digit-pop');
+                box.querySelector('.digit-value').textContent = '';
+            });
+
+            // Set up hidden input
+            hiddenInput.value = '';
+            
+            // Focus hidden input on click of boxes
+            const focusHandler = () => {
+                if (!digitsContainer.classList.contains('gooey-merge-active')) {
+                    hiddenInput.focus();
+                }
+            };
+            digitsContainer.removeEventListener('click', focusHandler);
+            digitsContainer.addEventListener('click', focusHandler);
+
+            // Focus initially
+            hiddenInput.focus();
+
+            function updateCursorPosition(index) {
+                if (index < 4) {
+                    const activeBox = digitBoxes[index];
+                    cursor.style.display = 'block';
+                    cursor.style.left = `${activeBox.offsetLeft + activeBox.offsetWidth / 2 - 1.25}px`;
+                    cursor.style.top = `${activeBox.offsetTop + activeBox.offsetHeight / 2 - 11}px`;
+                } else {
+                    cursor.style.display = 'none';
+                }
+            }
+
+            updateCursorPosition(0);
+
+            // Hidden input change handler for manual typing
+            let autoFilling = false;
+            
+            async function handleOtpSubmit(otpCode) {
+                try {
+                    const response = await fetch(`${CONFIG.API_BASE_URL}/accounts/verify-otp/`, {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ phone: verifiedPhoneNumber, otp: otpCode })
+                    });
+                    const data = await response.json();
+
+                    if (response.ok) {
+                        // 2.5–3.3s — Gooey merge:
+                        digitsContainer.classList.add('gooey-merge-active');
+                        
+                        setTimeout(() => {
+                            // 3.3–4.0s — Success burst:
+                            successBadge.style.display = 'flex';
+                            spawnConfettiBurst();
+
+                            // 4.0–4.6s — Confirmation:
+                            setTimeout(() => {
+                                statusContainer.style.display = 'block';
+                                timerContainer.style.display = 'none';
+
+                                // 4.6–5.5s — Reveal & cross-fade to registration form
+                                setTimeout(() => {
+                                    // Hide OTP card
+                                    document.getElementById('card-otp-verify').style.display = 'none';
+
+                                    // Pre-populate verified phone number
+                                    if (verifiedPhoneNumber) {
+                                        const artisanPhone = document.getElementById('artisan-phone');
+                                        if (artisanPhone) artisanPhone.value = verifiedPhoneNumber;
+                                        const buyerPhone = document.getElementById('buyer-phone');
+                                        if (buyerPhone) buyerPhone.value = verifiedPhoneNumber;
+                                    }
+
+                                    // Show correct form card
+                                    if (selectedRole === 'artisan') {
+                                        document.getElementById('card-artisan-signup').style.display = 'block';
+                                    } else {
+                                        document.getElementById('card-buyer-signup').style.display = 'block';
+                                    }
+                                }, 1500);
+                            }, 800);
+                        }, 850);
+                    } else {
+                        generalError.textContent = (data.otp || data.non_field_errors || ['Invalid OTP.'])[0];
+                        // Reset input for retry
+                        hiddenInput.value = '';
+                        digitBoxes.forEach(box => {
+                            box.classList.remove('digit-pop');
+                            box.querySelector('.digit-value').textContent = '';
+                        });
+                        updateCursorPosition(0);
+                    }
+                } catch (err) {
+                    console.error("OTP verification request failed:", err);
+                    generalError.textContent = "Unable to connect to verification server.";
+                }
+            }
+
+            const inputHandler = (e) => {
+                if (autoFilling) return;
+                const val = e.target.value.replace(/\D/g, '');
+                e.target.value = val;
+
+                // Fill boxes
+                for (let i = 0; i < 4; i++) {
+                    const span = digitBoxes[i].querySelector('.digit-value');
+                    const oldChar = span.textContent;
+                    const newChar = val[i] || '';
+                    span.textContent = newChar;
+
+                    if (newChar && !oldChar) {
+                        digitBoxes[i].classList.add('digit-pop');
+                    } else if (!newChar) {
+                        digitBoxes[i].classList.remove('digit-pop');
+                    }
+                }
+
+                updateCursorPosition(val.length);
+
+                // Auto submit on 4th digit
+                if (val.length === 4) {
+                    hiddenInput.blur();
+                    handleOtpSubmit(val);
+                }
+            };
+            hiddenInput.removeEventListener('input', inputHandler);
+            hiddenInput.addEventListener('input', inputHandler);
+
+            // If in Dev Mode, run auto-fill typing animation (0.5s - 2.5s)
+            if (devOtp) {
+                autoFilling = true;
+                hiddenInput.blur();
+                let digitIdx = 0;
+                
+                const fillInterval = setInterval(() => {
+                    if (digitIdx < 4) {
+                        const digit = devOtp[digitIdx];
+                        const box = digitBoxes[digitIdx];
+                        box.querySelector('.digit-value').textContent = digit;
+                        box.classList.add('digit-pop');
+                        
+                        digitIdx++;
+                        updateCursorPosition(digitIdx);
+                    } else {
+                        clearInterval(fillInterval);
+                        autoFilling = false;
+                        handleOtpSubmit(devOtp);
+                    }
+                }, 400);
+            }
+        }
+
+        // Particle confetti generator
+        function spawnConfettiBurst() {
+            const container = document.getElementById('otp-confetti-container');
+            container.innerHTML = '';
+            
+            const colors = ['#482E83', '#D96A3D', '#2E7058', '#4B286D', '#E5A85A'];
+            const numParticles = 40;
+
+            for (let i = 0; i < numParticles; i++) {
+                const particle = document.createElement('div');
+                particle.classList.add('confetti-particle');
+                
+                // Randomize background color from palette
+                particle.style.backgroundColor = colors[Math.floor(Math.random() * colors.length)];
+                
+                // Initial center positioning (centered at success badge)
+                particle.style.left = '50%';
+                particle.style.top = '50%';
+                particle.style.transform = 'translate(-50%, -50%)';
+
+                container.appendChild(particle);
+
+                // Velocity & angle
+                const angle = Math.random() * Math.PI * 2;
+                const velocity = 3 + Math.random() * 8; // initial speed
+                let vx = Math.cos(angle) * velocity;
+                let vy = Math.sin(angle) * velocity - 2; // slight upward bias
+                let px = 0;
+                let py = 0;
+                let opacity = 1;
+                const gravity = 0.25;
+
+                // Simple gravity loop
+                const updateParticle = () => {
+                    vy += gravity; // pull down
+                    px += vx;
+                    py += vy;
+                    opacity -= 0.02; // fade out
+
+                    particle.style.transform = `translate(calc(-50% + ${px}px), calc(-50% + ${py}px)) scale(${1.2 * opacity})`;
+                    particle.style.opacity = opacity;
+
+                    if (opacity > 0) {
+                        requestAnimationFrame(updateParticle);
+                    } else {
+                        particle.remove();
+                    }
+                };
+
+                requestAnimationFrame(updateParticle);
+            }
+        }
+
         // API interaction: Artisan signup submission
         const formArtisanSignup = document.getElementById('form-artisan-signup');
         formArtisanSignup.addEventListener('submit', async (e) => {
@@ -639,6 +1433,8 @@
             
             // Clear prior errors
             document.querySelectorAll('#form-buyer-signup .form-group').forEach(group => group.classList.remove('has-error'));
+            const buyerGenErr = document.getElementById('buyer-general-error');
+            if (buyerGenErr) { buyerGenErr.style.display = 'none'; buyerGenErr.textContent = ''; }
             
             submitBtn.disabled = true;
             submitBtn.textContent = 'Creating account...';
@@ -671,23 +1467,121 @@
                     handleFormErrors(formBuyerSignup, data);
                 }
             } catch (err) {
-                console.error("Signup failed:", err);
+                console.error('Signup failed:', err);
+                const genErr = document.getElementById('buyer-general-error');
+                if (genErr) {
+                    genErr.textContent = 'Could not connect to the server. Please make sure the app is running and try again.';
+                    genErr.style.display = 'block';
+                }
             } finally {
                 submitBtn.disabled = false;
                 submitBtn.textContent = 'Register as Buyer';
             }
         });
 
+        // Artisan dashboard: Tool button toggling (each can be toggled independently)
+        document.querySelectorAll('.tool-btn').forEach(btn => {
+            btn.addEventListener('click', () => {
+                btn.classList.toggle('active');
+                // Update submit button label to reflect whether enhancements are selected
+                const anyActive = document.querySelectorAll('.tool-btn.active').length > 0;
+                const submitBtn = document.getElementById('btn-upload-submit');
+                if (submitBtn) {
+                    submitBtn.textContent = anyActive ? 'Apply & Save' : 'Save Listing';
+                }
+            });
+        });
+
         // Artisan dashboard: Image file input selection logic
         const fileInput = document.getElementById('upload-image');
-        const fileLabelText = document.getElementById('file-label-text');
+        const pillUploadContainer = document.getElementById('pill-upload-container');
+        const pillUploadFilename = document.getElementById('pill-upload-filename');
+        const pillUploadBtn = document.getElementById('pill-upload-btn');
+        const uploadProgressBar = document.getElementById('pill-upload-progress');
         const imgBefore = document.getElementById('img-before');
         const previewBeforePlaceholder = document.getElementById('preview-before-placeholder');
+
+        // Helper to set active text state inside button
+        function setUploadButtonState(state) {
+            pillUploadBtn.querySelectorAll('.btn-text-state').forEach(el => el.classList.remove('active'));
+            if (state === 'normal') {
+                pillUploadBtn.querySelector('.btn-text-state.state-normal').classList.add('active');
+            } else if (state === 'uploading') {
+                pillUploadBtn.querySelector('.btn-text-state.state-uploading').classList.add('active');
+            } else if (state === 'completed') {
+                pillUploadBtn.querySelector('.btn-text-state.state-completed').classList.add('active');
+            }
+        }
+
+        function resetUploadWidget() {
+            pillUploadContainer.classList.remove('is-uploading', 'is-completed');
+            uploadProgressBar.style.width = '0%';
+            setUploadButtonState('normal');
+            pillUploadFilename.textContent = 'Choose product photo...';
+            fileInput.value = ''; // clear input
+            
+            // Clear image previews
+            imgBefore.src = '';
+            imgBefore.style.display = 'none';
+            previewBeforePlaceholder.style.display = 'flex';
+        }
+
+        function startUploadAnimation(callback) {
+            if (pillUploadContainer.classList.contains('is-uploading') || pillUploadContainer.classList.contains('is-completed')) {
+                if (callback) callback();
+                return;
+            }
+            
+            pillUploadContainer.classList.add('is-uploading');
+            setUploadButtonState('uploading');
+            
+            // Trigger progress bar transition width
+            setTimeout(() => {
+                // The linear transition in CSS will smoothly transition width from 0% to 100% over 2s
+            }, 50);
+
+            // After 2 seconds, transition to completed
+            setTimeout(() => {
+                pillUploadContainer.classList.remove('is-uploading');
+                pillUploadContainer.classList.add('is-completed');
+                setUploadButtonState('completed');
+                if (callback) callback();
+            }, 2000);
+        }
+
+        // Click on left side (or the container except the button) triggers file selection
+        document.getElementById('pill-upload-left').addEventListener('click', () => {
+            if (pillUploadContainer.classList.contains('is-uploading')) return;
+            
+            if (pillUploadContainer.classList.contains('is-completed')) {
+                resetUploadWidget();
+            }
+            fileInput.click();
+        });
+
+        // Click on the action button itself
+        pillUploadBtn.addEventListener('click', (e) => {
+            e.stopPropagation(); // prevent triggering outer container click
+            
+            if (pillUploadContainer.classList.contains('is-uploading')) return;
+            
+            if (pillUploadContainer.classList.contains('is-completed')) {
+                resetUploadWidget();
+                fileInput.click();
+                return;
+            }
+
+            if (!fileInput.files || fileInput.files.length === 0) {
+                fileInput.click();
+            } else {
+                startUploadAnimation();
+            }
+        });
 
         fileInput.addEventListener('change', (e) => {
             const file = fileInput.files[0];
             if (file) {
-                fileLabelText.innerHTML = `Selected: <strong>${file.name}</strong>`;
+                pillUploadFilename.textContent = file.name;
                 
                 // Show raw image preview
                 const reader = new FileReader();
@@ -698,17 +1592,20 @@
                 };
                 reader.readAsDataURL(file);
                 
-                // Clear any outputs
+                // Clear any previous outputs
                 const imgAfter = document.getElementById('img-after');
                 const previewAfterPlaceholder = document.getElementById('preview-after-placeholder');
                 imgAfter.src = '';
                 imgAfter.style.display = 'none';
                 previewAfterPlaceholder.style.display = 'flex';
                 
-                // Unhighlight enhancement tools
-                document.querySelectorAll('.tool-btn').forEach(btn => btn.classList.remove('active'));
+                // If they re-select, make sure we reset progress/completed states to normal (but keep file)
+                pillUploadContainer.classList.remove('is-uploading', 'is-completed');
+                uploadProgressBar.style.width = '0%';
+                setUploadButtonState('normal');
             }
         });
+
 
         // API interaction: Artisan product upload and image refining
         const formProductUpload = document.getElementById('form-product-upload');
@@ -734,14 +1631,46 @@
                 return;
             }
 
+            // Auto-trigger custom upload animation if not completed yet
+            if (!pillUploadContainer.classList.contains('is-completed')) {
+                startUploadAnimation(() => {
+                    // Re-trigger form submit once animation completes
+                    formProductUpload.dispatchEvent(new Event('submit'));
+                });
+                return;
+            }
+
             submitBtn.disabled = true;
-            submitBtn.textContent = 'Uploading & Refining...';
+            submitBtn.textContent = 'Uploading...';
             loadingOverlay.style.display = 'flex';
+
+            // Collect which enhancement tools are toggled on
+            const selectedTools = [];
+            document.querySelectorAll('.tool-btn.active').forEach(btn => {
+                const toolId = btn.id; // e.g. 'tool-auto-enhance', 'tool-bg-removal', etc.
+                const toolMap = {
+                    'tool-auto-enhance': 'auto_enhance',
+                    'tool-bg-removal':   'bg_removal',
+                    'tool-lighting-fix': 'lighting_fix',
+                    'tool-sharpness':    'sharpness',
+                    'tool-color':        'color_bal'
+                };
+                if (toolMap[toolId]) selectedTools.push(toolMap[toolId]);
+            });
 
             const formData = new FormData();
             formData.append('title_en', document.getElementById('upload-title').value);
             formData.append('price', document.getElementById('upload-price').value);
             formData.append('raw_image', fileInput.files[0]);
+            if (selectedTools.length > 0) {
+                formData.append('enhancements', selectedTools.join(','));
+            }
+
+            // Update loading text based on selection
+            const loadingTextEl = document.querySelector('#refiner-loading-overlay .loading-text');
+            if (loadingTextEl) {
+                loadingTextEl.textContent = selectedTools.length > 0 ? 'Enhancing Craft...' : 'Saving Listing...';
+            }
 
             try {
                 const response = await fetch(`${CONFIG.API_BASE_URL}/listings/upload/`, {
@@ -763,19 +1692,27 @@
                     imgAfter.style.display = 'block';
                     previewAfterPlaceholder.style.display = 'none';
 
-                    // Toggle enhancement tools to "Active" check state
-                    document.getElementById('tool-auto-enhance').classList.add('active');
-                    document.getElementById('tool-bg-removal').classList.add('active');
-                    document.getElementById('tool-lighting-fix').classList.add('active');
-                    document.getElementById('tool-sharpness').classList.add('active');
-                    document.getElementById('tool-color').classList.add('active');
+                    // Only mark tool buttons as applied if enhancements were used
+                    const appliedTools = selectedTools;
+                    document.getElementById('tool-auto-enhance').classList.toggle('active', appliedTools.includes('auto_enhance') || (appliedTools.includes('bg_removal') && appliedTools.includes('lighting_fix') && appliedTools.includes('sharpness') && appliedTools.includes('color_bal')));
+                    document.getElementById('tool-bg-removal').classList.toggle('active',   appliedTools.includes('bg_removal')   || appliedTools.includes('auto_enhance'));
+                    document.getElementById('tool-lighting-fix').classList.toggle('active', appliedTools.includes('lighting_fix') || appliedTools.includes('auto_enhance'));
+                    document.getElementById('tool-sharpness').classList.toggle('active',    appliedTools.includes('sharpness')    || appliedTools.includes('auto_enhance'));
+                    document.getElementById('tool-color').classList.toggle('active',        appliedTools.includes('color_bal')    || appliedTools.includes('auto_enhance'));
 
-                    // Reset form fields but keep file label
+                    // Reset form fields and upload widget
                     document.getElementById('upload-title').value = '';
                     document.getElementById('upload-price').value = '';
+                    resetUploadWidget();
                     
                     // Reload products list
                     loadArtisanProducts();
+
+                    // --- Activate Voice Cataloger for the newly created product ---
+                    currentProductId = data.id;
+                    resetVoiceCatalogerUI();
+                    document.getElementById('voice-cataloger-section').style.display = 'block';
+                    document.getElementById('voice-cataloger-section').scrollIntoView({ behavior: 'smooth' });
                 } else {
                     if (data.title_en) titleGroup.classList.add('has-error');
                     if (data.price) priceGroup.classList.add('has-error');
@@ -790,9 +1727,10 @@
                 uploadGeneralError.textContent = "Failed to upload and refine image due to server error.";
                 uploadGeneralError.style.display = 'block';
             } finally {
-                submitBtn.disabled = false;
-                submitBtn.textContent = 'Apply & Save';
-                loadingOverlay.style.display = 'none';
+                    submitBtn.disabled = false;
+                    submitBtn.textContent = 'Apply & Save';
+                    loadingOverlay.style.display = 'none';
+
             }
         });
 
@@ -822,6 +1760,17 @@
                             // Display the refined image if available, fallback to raw
                             const displayImage = p.refined_image_url || p.raw_image_url;
                             
+                            // Generate beautiful bilingual caption details
+                            let captionHtml = '';
+                            if (p.description_en || p.description_hi) {
+                                captionHtml = `
+                                    <div class="product-card-caption" style="border-top: 1px solid rgba(0,0,0,0.05); margin-top: 8px; padding-top: 8px;">
+                                        ${p.description_en ? `<p class="caption-desc-en" style="font-size: 12px; color: var(--text-secondary); line-height: 1.5; margin: 0 0 4px 0; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden;">${p.description_en}</p>` : ''}
+                                        ${p.description_hi ? `<p class="caption-desc-hi" style="font-size: 12px; color: var(--text-primary); line-height: 1.5; margin: 0; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; font-style: italic;">${p.description_hi}</p>` : ''}
+                                    </div>
+                                `;
+                            }
+
                             card.innerHTML = `
                                 <div class="product-card-image-box">
                                     <img class="product-card-image" src="${displayImage}" alt="${p.title_en}">
@@ -830,9 +1779,40 @@
                                 <div class="product-card-info">
                                     <h4 class="product-card-title">${p.title_en}</h4>
                                     <div class="product-card-price">₹${parseFloat(p.price).toFixed(2)}</div>
+                                    ${captionHtml}
+                                    <button class="btn-delete-listing" data-product-id="${p.id}" style="margin-top: 10px; display: flex; align-items: center; gap: 6px; background: none; border: 1px solid #FFCDD2; border-radius: 8px; padding: 6px 12px; font-size: 12px; font-weight: 600; color: #C62828; cursor: pointer; transition: var(--transition-smooth); font-family: var(--font-inter); width: 100%; justify-content: center;">
+                                        <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M3 6h18M8 6V4h8v2M19 6l-1 14H6L5 6"/></svg>
+                                        Delete Listing
+                                    </button>
                                 </div>
                             `;
+
                             container.appendChild(card);
+
+                            // Wire up delete button
+                            const productId = p.id;
+                            const productTitle = p.title_en;
+                            card.querySelector('.btn-delete-listing').addEventListener('click', async () => {
+                                const confirmed = confirm(`Delete "${productTitle}"? This cannot be undone.`);
+                                if (!confirmed) return;
+                                try {
+                                    const delRes = await fetch(`${CONFIG.API_BASE_URL}/listings/${productId}/delete/`, {
+                                        method: 'DELETE',
+                                        headers: { 'Authorization': `Bearer ${accessToken}` }
+                                    });
+                                    if (delRes.ok) {
+                                        card.style.transition = 'opacity 0.3s ease, transform 0.3s ease';
+                                        card.style.opacity = '0';
+                                        card.style.transform = 'scale(0.95)';
+                                        setTimeout(() => { card.remove(); loadArtisanProducts(); }, 320);
+                                    } else {
+                                        const errData = await delRes.json();
+                                        alert('Could not delete: ' + (errData.detail || 'Unknown error'));
+                                    }
+                                } catch (err) {
+                                    alert('Network error while deleting listing.');
+                                }
+                            });
                         });
                     } else {
                         emptyState.style.display = 'block';
@@ -869,6 +1849,22 @@
                             
                             const displayImage = p.refined_image_url || p.raw_image_url;
 
+                            // Bilingual caption
+                            let captionHtml = '';
+                            if (p.description_en || p.description_hi) {
+                                captionHtml = `
+                                    <div class="product-card-caption" style="border-top: 1px solid rgba(0,0,0,0.05); margin-top: 8px; padding-top: 8px;">
+                                        ${p.description_en ? `<p style="font-size: 12px; color: var(--text-secondary); line-height: 1.5; margin: 0 0 4px 0; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden;">${p.description_en}</p>` : ''}
+                                        ${p.description_hi ? `<p style="font-size: 12px; color: var(--text-primary); line-height: 1.5; margin: 0; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; font-style: italic;">${p.description_hi}</p>` : ''}
+                                    </div>
+                                `;
+                            }
+
+                            // Add-to-Cart button — guests see a disabled hint
+                            const addCartBtn = isGuest
+                                ? `<button disabled style="width:100%; margin-top:10px; background:#f0f0f0; border:none; border-radius:10px; padding:9px; font-size:13px; color:#aaa; cursor:not-allowed; font-family:var(--font-inter); font-weight:600;">Login to Add to Cart</button>`
+                                : `<button class="btn-add-to-cart" data-product-id="${p.id}" data-product-title="${p.title_en}" style="width:100%; margin-top:10px; background: linear-gradient(135deg,#D96A3D,#482E83); border:none; border-radius:10px; padding:9px; font-size:13px; font-weight:700; color:#fff; cursor:pointer; font-family:var(--font-inter); transition:var(--transition-smooth);">🛒 Add to Cart</button>`;
+
                             card.innerHTML = `
                                 <div class="product-card-image-box">
                                     <img class="product-card-image" src="${displayImage}" alt="${p.title_en}">
@@ -877,13 +1873,33 @@
                                 <div class="product-card-info">
                                     <h4 class="product-card-title">${p.title_en}</h4>
                                     <div class="product-card-price">₹${parseFloat(p.price).toFixed(2)}</div>
+                                    ${captionHtml}
+                                    ${addCartBtn}
                                 </div>
                             `;
                             container.appendChild(card);
+
+                            // Wire up Add to Cart
+                            if (!isGuest) {
+                                card.querySelector('.btn-add-to-cart').addEventListener('click', async (e) => {
+                                    const btn = e.currentTarget;
+                                    const pid = btn.getAttribute('data-product-id');
+                                    const title = btn.getAttribute('data-product-title');
+                                    btn.disabled = true;
+                                    btn.textContent = 'Adding…';
+                                    await addToCart(pid, 1);
+                                    btn.textContent = '✓ Added!';
+                                    btn.style.background = '#2E7D32';
+                                    setTimeout(() => {
+                                        btn.disabled = false;
+                                        btn.textContent = '🛒 Add to Cart';
+                                        btn.style.background = 'linear-gradient(135deg,#D96A3D,#482E83)';
+                                    }, 2000);
+                                });
+                            }
                         });
                     } else {
                         emptyState.style.display = 'block';
-                        document.querySelectorAll('#buyer-product-list .product-card').forEach(card => card.remove());
                     }
                 }
             } catch (err) {
@@ -891,8 +1907,824 @@
             }
         }
 
+
+        // =====================================================================
+        // Voice Cataloger — Phase 2: Groq Whisper + HF fallback + Groq LLaMA
+        // =====================================================================
+        let currentProductId = null;
+        let recordedAudioBlob = null;
+        let uploadedAudioFile = null;
+        let mediaRecorder = null;
+        let audioChunks = [];
+        let isRecording = false;
+
+        // Language code map to label name
+        let selectedVoiceLanguage = 'hi';
+        const voiceLangMap = {
+            'hi': 'Hindi',
+            'mr': 'Marathi',
+            'gu': 'Gujarati',
+            'ta': 'Tamil'
+        };
+
+        // Wire up voice language selector pills
+        document.querySelectorAll('#voice-lang-selector .lang-pill').forEach(pill => {
+            pill.addEventListener('click', () => {
+                document.querySelectorAll('#voice-lang-selector .lang-pill').forEach(p => p.classList.remove('selected'));
+                pill.classList.add('selected');
+                selectedVoiceLanguage = pill.getAttribute('data-voice-lang');
+
+                // Dynamically update regional field labels in the staged preview
+                const langLabel = voiceLangMap[selectedVoiceLanguage] || 'Hindi';
+                const titleBadge = document.getElementById('results-title-lang-badge');
+                const descBadge  = document.getElementById('results-desc-lang-badge');
+                if (titleBadge) titleBadge.textContent = langLabel;
+                if (descBadge)  descBadge.textContent  = langLabel;
+            });
+        });
+
+        // DOM refs (resolved once; safe since these elements exist in the HTML)
+        const voiceAudioPreview     = document.getElementById('voice-audio-preview');
+        const voiceAudioBadge       = document.getElementById('voice-audio-badge');
+        const voiceAudioFilename    = document.getElementById('voice-audio-filename');
+        const voiceRecordingStatus  = document.getElementById('voice-recording-status');
+        const voiceAudioFileInput   = document.getElementById('voice-audio-file-input');
+        const btnCatalogProcess     = document.getElementById('btn-catalog-process');
+        const btnVoiceRecordStart   = document.getElementById('btn-voice-record-start');
+        const btnVoiceRecordStop    = document.getElementById('btn-voice-record-stop');
+        const voiceRecordingIndicator = document.getElementById('voice-recording-indicator');
+
+        // --- File upload trigger ---
+        const btnVoiceUploadTrigger = document.getElementById('btn-voice-upload-trigger');
+        if (btnVoiceUploadTrigger && voiceAudioFileInput) {
+            btnVoiceUploadTrigger.addEventListener('click', () => voiceAudioFileInput.click());
+
+            voiceAudioFileInput.addEventListener('change', () => {
+                const file = voiceAudioFileInput.files[0];
+                if (!file) return;
+                uploadedAudioFile = file;
+                recordedAudioBlob = null;
+                voiceAudioFilename.textContent = file.name;
+                voiceAudioBadge.style.display  = 'inline-flex';
+                voiceRecordingStatus.textContent = `Selected: ${file.name}`;
+                voiceAudioPreview.src = URL.createObjectURL(file);
+                voiceAudioPreview.style.display = 'block';
+                btnCatalogProcess.disabled = false;
+                document.getElementById('voice-pipeline-error').style.display = 'none';
+            });
+        }
+
+        // --- MediaRecorder (in-browser recording) ---
+        if (btnVoiceRecordStart && btnVoiceRecordStop) {
+            btnVoiceRecordStart.addEventListener('click', async () => {
+                try {
+                    const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+
+                    // Choose the best supported MIME type for broad server compatibility
+                    const preferredTypes = ['audio/webm;codecs=opus', 'audio/webm', 'audio/ogg;codecs=opus', 'audio/ogg'];
+                    const mimeType = preferredTypes.find(t => MediaRecorder.isTypeSupported(t)) || '';
+
+                    mediaRecorder = new MediaRecorder(stream, mimeType ? { mimeType } : {});
+                    audioChunks   = [];
+                    isRecording   = true;
+
+                    mediaRecorder.ondataavailable = (evt) => { if (evt.data.size > 0) audioChunks.push(evt.data); };
+
+                    mediaRecorder.onstop = () => {
+                        const type = mediaRecorder.mimeType || 'audio/webm';
+                        recordedAudioBlob = new Blob(audioChunks, { type });
+                        uploadedAudioFile = null;
+                        voiceAudioPreview.src = URL.createObjectURL(recordedAudioBlob);
+                        voiceAudioPreview.style.display = 'block';
+                        voiceAudioFilename.textContent = 'recorded_note.webm';
+                        voiceAudioBadge.style.display   = 'inline-flex';
+                        voiceRecordingStatus.textContent = 'Voice note recorded!';
+                        btnCatalogProcess.disabled = false;
+                        document.getElementById('voice-pipeline-error').style.display = 'none';
+                    };
+
+                    mediaRecorder.start();
+                    btnVoiceRecordStart.style.display  = 'none';
+                    btnVoiceRecordStop.style.display   = 'inline-flex';
+                    voiceRecordingIndicator.style.display = 'inline-flex';
+                    voiceRecordingStatus.textContent   = 'Recording… speak clearly about your product.';
+                    voiceAudioPreview.style.display    = 'none';
+                    voiceAudioBadge.style.display      = 'none';
+                    btnCatalogProcess.disabled         = true;
+
+                } catch (err) {
+                    console.error('Microphone access failed:', err);
+                    alert('Could not access microphone. Please grant microphone permission or upload an audio file instead.');
+                }
+            });
+
+            btnVoiceRecordStop.addEventListener('click', () => {
+                if (mediaRecorder && isRecording) {
+                    mediaRecorder.stop();
+                    mediaRecorder.stream.getTracks().forEach(t => t.stop());
+                    isRecording = false;
+                    btnVoiceRecordStart.style.display    = 'inline-flex';
+                    btnVoiceRecordStop.style.display     = 'none';
+                    voiceRecordingIndicator.style.display = 'none';
+                }
+            });
+        }
+
+        // --- Retry button: reset UI so artisan can try again without losing product ---
+        const btnVoiceRetry = document.getElementById('btn-voice-retry');
+        if (btnVoiceRetry) {
+            btnVoiceRetry.addEventListener('click', () => {
+                document.getElementById('voice-pipeline-error').style.display    = 'none';
+                document.getElementById('voice-pipeline-steps').style.display    = 'none';
+                btnCatalogProcess.disabled = (recordedAudioBlob === null && uploadedAudioFile === null);
+            });
+        }
+
+        // --- Pipeline: Generate Listing Details button ---
+        if (btnCatalogProcess) {
+            btnCatalogProcess.addEventListener('click', async () => {
+                const stepsDiv    = document.getElementById('voice-pipeline-steps');
+                const resultsPanel = document.getElementById('catalog-results-panel');
+                const errorDiv    = document.getElementById('voice-pipeline-error');
+                const stepAsr     = document.getElementById('step-pipeline-asr');
+                const stepLlm     = document.getElementById('step-pipeline-llm');
+
+                // Reset state
+                resultsPanel.style.display = 'none';
+                errorDiv.style.display     = 'none';
+                stepsDiv.style.display     = 'flex';
+                [stepAsr, stepLlm].forEach(el => el.className = 'pipeline-step');
+
+                // Step 1 active: Transcribing your voice note…
+                stepAsr.classList.add('active');
+                btnCatalogProcess.disabled = true;
+
+                // Prepare audio payload
+                let fileToSend = null;
+                if (recordedAudioBlob) {
+                    const ext = (mediaRecorder && mediaRecorder.mimeType && mediaRecorder.mimeType.includes('ogg')) ? 'ogg' : 'webm';
+                    fileToSend = new File([recordedAudioBlob], `recording.${ext}`, { type: recordedAudioBlob.type });
+                } else if (uploadedAudioFile) {
+                    fileToSend = uploadedAudioFile;
+                }
+
+                if (!fileToSend || !currentProductId) {
+                    alert('No audio file or active product found. Please upload your product photo first.');
+                    btnCatalogProcess.disabled = false;
+                    return;
+                }
+
+                const formData = new FormData();
+                formData.append('audio_file', fileToSend);
+                formData.append('source_language', selectedVoiceLanguage);
+
+                // Timed UX: advance step indicator during the synchronous backend call
+                // Step 2 (Generating) activates after ~5 s (Groq Whisper is typically 2-8 s)
+                const stageTimer = setTimeout(() => {
+                    stepAsr.classList.remove('active');
+                    stepAsr.classList.add('done');
+                    stepLlm.classList.add('active');
+                }, 5000);
+
+                try {
+                    const response = await fetch(
+                        `${CONFIG.API_BASE_URL}/listings/${currentProductId}/voice-catalog/`,
+                        {
+                            method:  'POST',
+                            headers: { 'Authorization': `Bearer ${accessToken}` },
+                            body:    formData,
+                        }
+                    );
+
+                    clearTimeout(stageTimer);
+                    const data = await response.json();
+
+                    if (response.ok) {
+                        // Mark both steps done
+                        [stepAsr, stepLlm].forEach(el => el.className = 'pipeline-step done');
+
+                        // Show transcript preview if returned
+                        const transcriptDiv = document.getElementById('voice-transcript-preview');
+                        const transcriptText = document.getElementById('results-transcript-en');
+                        if (data.transcript_en) {
+                            transcriptText.textContent = data.transcript_en;
+                            transcriptDiv.style.display = 'block';
+                        } else {
+                            transcriptDiv.style.display = 'none';
+                        }
+
+                        // Populate editable fields
+                        document.getElementById('results-title-en').value = data.title_en       || '';
+                        document.getElementById('results-title-hi').value = data.title_hi       || '';
+                        document.getElementById('results-desc-en').value  = data.description_en || '';
+                        document.getElementById('results-desc-hi').value  = data.description_hi || '';
+
+                        // Reveal results panel with smooth scroll
+                        setTimeout(() => {
+                            resultsPanel.style.display = 'block';
+                            resultsPanel.scrollIntoView({ behavior: 'smooth' });
+                        }, 400);
+
+                    } else {
+                        // Pipeline stage error — audio was already saved; artisan can retry
+                        clearTimeout(stageTimer);
+                        const stage    = data.stage || 'processing';
+                        const errorMsg = data.detail || 'Voice processing is temporarily unavailable, please try again in a moment.';
+
+                        // Mark the failing step
+                        if (stage === 'transcription') {
+                            stepAsr.classList.remove('active');
+                        } else {
+                            stepAsr.className = 'pipeline-step done';
+                            stepLlm.classList.remove('active');
+                        }
+
+                        document.getElementById('voice-pipeline-error-msg').textContent = errorMsg;
+                        errorDiv.style.display = 'block';
+                        errorDiv.scrollIntoView({ behavior: 'smooth' });
+                    }
+
+                } catch (err) {
+                    clearTimeout(stageTimer);
+                    console.error('Voice catalog API error:', err);
+                    document.getElementById('voice-pipeline-error-msg').textContent =
+                        'Could not reach the server. Please check your connection and try again.';
+                    errorDiv.style.display = 'block';
+                } finally {
+                    btnCatalogProcess.disabled = false;
+                }
+            });
+        }
+
+        // --- Confirm Catalog form submission ---
+        const formConfirmCatalog = document.getElementById('form-confirm-catalog');
+        const catalogConfirmError = document.getElementById('catalog-confirm-error');
+
+        if (formConfirmCatalog) {
+            formConfirmCatalog.addEventListener('submit', async (e) => {
+                e.preventDefault();
+                const btnConfirm = document.getElementById('btn-catalog-confirm');
+                btnConfirm.disabled  = true;
+                btnConfirm.textContent = 'Publishing…';
+                catalogConfirmError.style.display = 'none';
+
+                const payload = {
+                    title_en:       document.getElementById('results-title-en').value,
+                    title_hi:       document.getElementById('results-title-hi').value,
+                    description_en: document.getElementById('results-desc-en').value,
+                    description_hi: document.getElementById('results-desc-hi').value,
+                };
+
+                try {
+                    const response = await fetch(
+                        `${CONFIG.API_BASE_URL}/listings/${currentProductId}/confirm-catalog/`,
+                        {
+                            method:  'PATCH',
+                            headers: {
+                                'Content-Type':  'application/json',
+                                'Authorization': `Bearer ${accessToken}`,
+                            },
+                            body: JSON.stringify(payload),
+                        }
+                    );
+
+                    if (response.ok) {
+                        loadArtisanProducts();
+                        document.getElementById('voice-cataloger-section').style.display = 'none';
+                        resetVoiceCatalogerUI();
+                        setTimeout(() => {
+                            alert('🎉 Listing published successfully!\n\nNavigating to "My Listings".');
+                            switchArtisanTab('listings');
+                        }, 200);
+                    } else {
+                        const errData = await response.json();
+                        catalogConfirmError.textContent = errData.detail || 'Unable to publish listing.';
+                        catalogConfirmError.style.display = 'block';
+                    }
+                } catch (err) {
+                    console.error('Confirm catalog error:', err);
+                    catalogConfirmError.textContent = 'Server communication failure. Please try again.';
+                    catalogConfirmError.style.display = 'block';
+                } finally {
+                    btnConfirm.disabled    = false;
+                    btnConfirm.textContent = '✓ Publish Listing';
+                }
+            });
+        }
+
+        // --- Reset Voice Cataloger UI between product uploads ---
+        function resetVoiceCatalogerUI() {
+            recordedAudioBlob = null;
+            uploadedAudioFile = null;
+            if (voiceAudioPreview)  { voiceAudioPreview.src = ''; voiceAudioPreview.style.display = 'none'; }
+            if (voiceAudioBadge)    { voiceAudioBadge.style.display = 'none'; }
+            if (voiceRecordingStatus) { voiceRecordingStatus.textContent = 'Ready to record your voice note.'; }
+            if (voiceAudioFileInput)  { voiceAudioFileInput.value = ''; }
+            if (btnCatalogProcess)    { btnCatalogProcess.disabled = true; }
+            const stepsDiv    = document.getElementById('voice-pipeline-steps');
+            const resultsPanel = document.getElementById('catalog-results-panel');
+            const errorDiv    = document.getElementById('voice-pipeline-error');
+            if (stepsDiv)     stepsDiv.style.display     = 'none';
+            if (resultsPanel) resultsPanel.style.display = 'none';
+            if (errorDiv)     errorDiv.style.display     = 'none';
+
+            // Reset language selector to Hindi
+            document.querySelectorAll('#voice-lang-selector .lang-pill').forEach(p => p.classList.remove('selected'));
+            const hiPill = document.querySelector('#voice-lang-selector .lang-pill[data-voice-lang="hi"]');
+            if (hiPill) hiPill.classList.add('selected');
+            selectedVoiceLanguage = 'hi';
+            const titleBadge = document.getElementById('results-title-lang-badge');
+            const descBadge  = document.getElementById('results-desc-lang-badge');
+            if (titleBadge) titleBadge.textContent = 'Hindi';
+            if (descBadge)  descBadge.textContent  = 'Hindi';
+        }
+
+        // =====================================================================
+        // Artisan Dashboard Tab Switcher
+        // =====================================================================
+        function switchArtisanTab(tabKey) {
+            const tabs = {
+                listings: { view: 'artisan-view-listings', btn: 'tab-btn-listings' },
+                create:   { view: 'artisan-view-create',   btn: 'tab-btn-create'   },
+                coming:   { view: 'artisan-view-coming',   btn: 'tab-btn-coming'   }
+            };
+
+            Object.keys(tabs).forEach(key => {
+                const view = document.getElementById(tabs[key].view);
+                const btn  = document.getElementById(tabs[key].btn);
+                if (key === tabKey) {
+                    if (view) view.style.display = 'block';
+                    if (btn) {
+                        btn.classList.add('active');
+                        btn.style.color = 'var(--primary-color)';
+                        btn.style.borderBottomColor = 'var(--primary-color)';
+                    }
+                } else {
+                    if (view) view.style.display = 'none';
+                    if (btn) {
+                        btn.classList.remove('active');
+                        btn.style.color = 'var(--text-secondary)';
+                        btn.style.borderBottomColor = 'transparent';
+                    }
+                }
+            });
+
+            // Close the dropdown whenever a tab is switched
+            closeArtisanDropdown();
+        }
+
+        // Tab button click handlers
+        document.getElementById('tab-btn-listings').addEventListener('click', () => switchArtisanTab('listings'));
+        document.getElementById('tab-btn-create').addEventListener('click',   () => switchArtisanTab('create'));
+        document.getElementById('tab-btn-coming').addEventListener('click',   () => switchArtisanTab('coming'));
+
+        // =====================================================================
+        // Artisan Navbar Dropdown Toggle
+        // =====================================================================
+        const artisanDropdown = document.getElementById('artisan-user-dropdown');
+
+        function openArtisanDropdown() {
+            if (artisanDropdown) artisanDropdown.style.display = 'block';
+        }
+        function closeArtisanDropdown() {
+            if (artisanDropdown) artisanDropdown.style.display = 'none';
+        }
+        function toggleArtisanDropdown() {
+            // Only show for artisans
+            if (!currentUser || currentUser.role !== 'artisan') return;
+            if (artisanDropdown && artisanDropdown.style.display === 'block') {
+                closeArtisanDropdown();
+            } else {
+                openArtisanDropdown();
+            }
+        }
+
+        navbarBadge.addEventListener('click', (e) => {
+            e.stopPropagation();
+            toggleArtisanDropdown();
+        });
+
+        // Close dropdown on outside click
+        document.addEventListener('click', (e) => {
+            if (artisanDropdown && !artisanDropdown.contains(e.target) && !navbarBadge.contains(e.target)) {
+                closeArtisanDropdown();
+            }
+        });
+
+        // Dropdown menu item handlers
+        document.getElementById('menu-see-listings').addEventListener('click', (e) => {
+            e.preventDefault();
+            navigateTo('artisanDashboard');
+            switchArtisanTab('listings');
+        });
+        document.getElementById('menu-new-listing').addEventListener('click', (e) => {
+            e.preventDefault();
+            navigateTo('artisanDashboard');
+            switchArtisanTab('create');
+        });
+        document.getElementById('menu-communities').addEventListener('click', (e) => {
+            e.preventDefault();
+            navigateTo('artisanDashboard');
+            switchArtisanTab('coming');
+        });
+        document.getElementById('menu-orders').addEventListener('click', (e) => {
+            e.preventDefault();
+            navigateTo('artisanDashboard');
+            switchArtisanTab('coming');
+        });
+        document.getElementById('menu-analytics').addEventListener('click', (e) => {
+            e.preventDefault();
+            navigateTo('artisanDashboard');
+            switchArtisanTab('coming');
+        });
+
         // Kick off auth check on page load
         checkAuthState();
+
+
+        // =====================================================================
+        // BUYER CART + CHECKOUT MODULE
+        // =====================================================================
+
+        // ─── Tab switcher ─────────────────────────────────────────────────────
+        function switchBuyerTab(tab) {
+            const views = { shop: 'buyer-view-shop', cart: 'buyer-view-cart', orders: 'buyer-view-orders' };
+            const btns  = { shop: 'buyer-tab-shop',  cart: 'buyer-tab-cart',  orders: 'buyer-tab-orders'  };
+
+            Object.keys(views).forEach(key => {
+                const view = document.getElementById(views[key]);
+                const btn  = document.getElementById(btns[key]);
+                if (key === tab) {
+                    if (view) view.style.display = 'block';
+                    if (btn) {
+                        btn.style.color = 'var(--primary-color)';
+                        btn.style.borderBottomColor = 'var(--primary-color)';
+                    }
+                } else {
+                    if (view) view.style.display = 'none';
+                    if (btn) {
+                        btn.style.color = 'var(--text-secondary)';
+                        btn.style.borderBottomColor = 'transparent';
+                    }
+                }
+            });
+
+            if (tab === 'cart')   loadCartUI();
+            if (tab === 'orders') loadOrdersUI();
+        }
+
+        // ─── Cart badge update ────────────────────────────────────────────────
+        async function updateCartBadge() {
+            if (!currentUser || currentUser.role !== 'buyer' || !accessToken) return;
+            try {
+                const r = await fetch(`${CONFIG.API_BASE_URL}/cart/`, { headers: { 'Authorization': `Bearer ${accessToken}` } });
+                if (r.ok) {
+                    const data = await r.json();
+                    const badge = document.getElementById('cart-badge');
+                    if (badge) {
+                        if (data.item_count > 0) {
+                            badge.textContent = data.item_count;
+                            badge.style.display = 'inline-block';
+                        } else {
+                            badge.style.display = 'none';
+                        }
+                    }
+                }
+            } catch(e) { /* silent */ }
+        }
+
+        // ─── Add to Cart API call ──────────────────────────────────────────────
+        async function addToCart(productId, quantity = 1) {
+            try {
+                const r = await fetch(`${CONFIG.API_BASE_URL}/cart/add/`, {
+                    method: 'POST',
+                    headers: {
+                        'Authorization': `Bearer ${accessToken}`,
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ product_id: productId, quantity })
+                });
+                if (r.ok) {
+                    await updateCartBadge();
+                } else {
+                    const d = await r.json();
+                    alert(d.detail || 'Could not add to cart.');
+                }
+            } catch(e) {
+                console.error('addToCart error:', e);
+            }
+        }
+
+        // ─── Render Cart tab UI ───────────────────────────────────────────────
+        async function loadCartUI() {
+            if (!currentUser || currentUser.role !== 'buyer') return;
+            const list    = document.getElementById('cart-item-list');
+            const emptyMsg = document.getElementById('cart-empty-msg');
+            const totalBar = document.getElementById('cart-total-bar');
+            const totalAmt = document.getElementById('cart-total-amount');
+            const checkoutBtn = document.getElementById('btn-goto-checkout');
+
+            list.innerHTML = '<p style="color:var(--text-secondary); font-size:13px;">Loading cart…</p>';
+
+            try {
+                const r = await fetch(`${CONFIG.API_BASE_URL}/cart/`, { headers: { 'Authorization': `Bearer ${accessToken}` } });
+                if (!r.ok) throw new Error('Cart fetch failed');
+                const data = await r.json();
+
+                list.innerHTML = '';
+
+                if (!data.items || data.items.length === 0) {
+                    emptyMsg.style.display = 'block';
+                    totalBar.style.display = 'none';
+                    checkoutBtn.style.display = 'none';
+                    return;
+                }
+
+                emptyMsg.style.display = 'none';
+                totalBar.style.display = 'flex';
+                checkoutBtn.style.display = 'inline-block';
+                totalAmt.textContent = `₹${data.cart_total.toFixed(2)}`;
+
+                data.items.forEach(item => {
+                    const card = document.createElement('div');
+                    card.id = `cart-item-${item.id}`;
+                    card.style.cssText = 'background:#fff; border-radius:14px; padding:14px 16px; display:flex; align-items:center; gap:14px; box-shadow:0 2px 8px rgba(0,0,0,0.06); transition:var(--transition-smooth);';
+                    const img = item.product.refined_image || '';
+                    card.innerHTML = `
+                        ${img ? `<img src="${img}" alt="${item.product.title_en}" style="width:68px; height:68px; border-radius:10px; object-fit:cover; flex-shrink:0;">` : `<div style="width:68px; height:68px; background:var(--primary-light); border-radius:10px; flex-shrink:0; display:flex; align-items:center; justify-content:center; font-size:24px;">🎨</div>`}
+                        <div style="flex:1; min-width:0;">
+                            <div style="font-size:14px; font-weight:700; color:var(--text-primary); white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">${item.product.title_en}</div>
+                            <div style="font-size:13px; color:var(--primary-color); font-weight:800; margin:3px 0;">₹${parseFloat(item.product.price).toFixed(2)}</div>
+                            <div style="display:flex; align-items:center; gap:8px; margin-top:6px;">
+                                <button onclick="changeQty(${item.id}, ${item.quantity - 1})" style="width:26px; height:26px; border-radius:6px; border:1.5px solid var(--border-color); background:#fff; cursor:pointer; font-size:16px; font-weight:700; line-height:1;">−</button>
+                                <span id="qty-${item.id}" style="font-size:13px; font-weight:700; min-width:20px; text-align:center;">${item.quantity}</span>
+                                <button onclick="changeQty(${item.id}, ${item.quantity + 1})" style="width:26px; height:26px; border-radius:6px; border:1.5px solid var(--border-color); background:#fff; cursor:pointer; font-size:16px; font-weight:700; line-height:1;">+</button>
+                                <span style="font-size:12px; color:var(--text-secondary);">Subtotal: <strong>₹${item.subtotal.toFixed(2)}</strong></span>
+                            </div>
+                        </div>
+                        <button onclick="removeCartItem(${item.id})" style="background:none; border:none; cursor:pointer; color:#C62828; font-size:20px; flex-shrink:0;" title="Remove">🗑️</button>
+                    `;
+                    list.appendChild(card);
+                });
+
+                await updateCartBadge();
+            } catch(e) {
+                console.error('loadCartUI error:', e);
+                list.innerHTML = '<p style="color:#C62828;">Failed to load cart. Please try again.</p>';
+            }
+        }
+
+        async function changeQty(itemId, newQty) {
+            if (newQty < 1) { await removeCartItem(itemId); return; }
+            try {
+                await fetch(`${CONFIG.API_BASE_URL}/cart/${itemId}/`, {
+                    method: 'PATCH',
+                    headers: { 'Authorization': `Bearer ${accessToken}`, 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ quantity: newQty })
+                });
+                await loadCartUI();
+            } catch(e) { console.error('changeQty error:', e); }
+        }
+
+        async function removeCartItem(itemId) {
+            try {
+                await fetch(`${CONFIG.API_BASE_URL}/cart/${itemId}/`, {
+                    method: 'DELETE',
+                    headers: { 'Authorization': `Bearer ${accessToken}` }
+                });
+                const el = document.getElementById(`cart-item-${itemId}`);
+                if (el) { el.style.opacity='0'; el.style.transform='scale(0.95)'; setTimeout(() => el.remove(), 250); }
+                await loadCartUI();
+            } catch(e) { console.error('removeCartItem error:', e); }
+        }
+
+        // ─── Checkout overlay ─────────────────────────────────────────────────
+        let selectedAddressId = null;
+
+        async function openCheckout() {
+            const overlay = document.getElementById('checkout-overlay');
+            overlay.style.display = 'block';
+            document.body.style.overflow = 'hidden';
+
+            // Load checkout summary
+            try {
+                const r = await fetch(`${CONFIG.API_BASE_URL}/orders/checkout-summary/`, {
+                    method: 'POST',
+                    headers: { 'Authorization': `Bearer ${accessToken}`, 'Content-Type': 'application/json' }
+                });
+                if (!r.ok) { const d = await r.json(); alert(d.detail || 'Could not load checkout.'); closeCheckout(); return; }
+                const data = await r.json();
+
+                // Items preview
+                const preview = document.getElementById('checkout-items-preview');
+                preview.innerHTML = '';
+                (data.items || []).forEach(item => {
+                    const row = document.createElement('div');
+                    row.style.cssText = 'display:flex; justify-content:space-between; align-items:center; padding:8px 0; border-bottom:1px solid var(--border-color); font-size:14px;';
+                    row.innerHTML = `<span style="color:var(--text-secondary); flex:1;">${item.product.title_en} × ${item.quantity}</span><span style="font-weight:700;">₹${item.subtotal.toFixed(2)}</span>`;
+                    preview.appendChild(row);
+                });
+
+                // Breakdown
+                document.getElementById('breakdown-product-total').textContent = `₹${(data.product_total||0).toFixed(2)}`;
+                document.getElementById('breakdown-shipping').textContent       = `₹${(data.shipping_cost||0).toFixed(2)}`;
+                document.getElementById('breakdown-commission').textContent     = `₹${(data.platform_commission||0).toFixed(2)}`;
+                document.getElementById('breakdown-total').textContent          = `₹${(data.total_payable||0).toFixed(2)}`;
+
+            } catch(e) { console.error('openCheckout error:', e); }
+
+            // Load saved addresses
+            await loadSavedAddresses();
+        }
+
+        function closeCheckout() {
+            document.getElementById('checkout-overlay').style.display = 'none';
+            document.body.style.overflow = '';
+        }
+
+        async function loadSavedAddresses() {
+            const container = document.getElementById('saved-addresses-list');
+            container.innerHTML = '';
+            selectedAddressId = null;
+            try {
+                const r = await fetch(`${CONFIG.API_BASE_URL}/cart/addresses/`, { headers: { 'Authorization': `Bearer ${accessToken}` } });
+                if (!r.ok) return;
+                const addresses = await r.json();
+                if (addresses.length === 0) {
+                    container.innerHTML = '<p style="font-size:13px; color:var(--text-secondary);">No saved addresses. Add one below.</p>';
+                    return;
+                }
+                addresses.forEach((addr, idx) => {
+                    const card = document.createElement('div');
+                    card.setAttribute('data-addr-id', addr.id);
+                    card.style.cssText = 'border:2px solid var(--border-color); border-radius:12px; padding:12px 14px; cursor:pointer; transition:var(--transition-smooth); display:flex; align-items:flex-start; gap:10px;';
+                    card.innerHTML = `
+                        <div id="addr-radio-${addr.id}" style="width:18px; height:18px; border-radius:50%; border:2px solid var(--border-color); flex-shrink:0; margin-top:2px;"></div>
+                        <div>
+                            <div style="font-size:13px; font-weight:700; color:var(--text-primary);">${addr.label || 'Address'} — ${addr.full_name}</div>
+                            <div style="font-size:12px; color:var(--text-secondary); margin-top:2px;">${addr.line1}${addr.line2 ? ', ' + addr.line2 : ''}, ${addr.city}, ${addr.state} — ${addr.postal_code}</div>
+                            <div style="font-size:12px; color:var(--text-secondary);">📱 ${addr.phone}</div>
+                        </div>
+                    `;
+                    card.addEventListener('click', () => {
+                        selectedAddressId = addr.id;
+                        container.querySelectorAll('[data-addr-id]').forEach(c => {
+                            c.style.borderColor = 'var(--border-color)';
+                            c.querySelector('[id^="addr-radio-"]').style.background = '';
+                            c.querySelector('[id^="addr-radio-"]').style.borderColor = 'var(--border-color)';
+                        });
+                        card.style.borderColor = 'var(--primary-color)';
+                        card.querySelector(`#addr-radio-${addr.id}`).style.background = 'var(--primary-color)';
+                        card.querySelector(`#addr-radio-${addr.id}`).style.borderColor = 'var(--primary-color)';
+                    });
+                    container.appendChild(card);
+                    // Auto-select first
+                    if (idx === 0) card.click();
+                });
+            } catch(e) { console.error('loadSavedAddresses error:', e); }
+        }
+
+        function toggleAddressForm() {
+            const form = document.getElementById('new-address-form');
+            form.style.display = form.style.display === 'none' ? 'block' : 'none';
+        }
+
+        async function saveNewAddress() {
+            const payload = {
+                label:       document.getElementById('addr-label').value.trim()     || 'Home',
+                full_name:   document.getElementById('addr-full-name').value.trim(),
+                phone:       document.getElementById('addr-phone').value.trim(),
+                line1:       document.getElementById('addr-line1').value.trim(),
+                line2:       document.getElementById('addr-line2').value.trim(),
+                city:        document.getElementById('addr-city').value.trim(),
+                state:       document.getElementById('addr-state').value.trim(),
+                postal_code: document.getElementById('addr-postal').value.trim(),
+                country:     'IN'
+            };
+            if (!payload.full_name || !payload.phone || !payload.line1 || !payload.city || !payload.state || !payload.postal_code) {
+                alert('Please fill in all required address fields.'); return;
+            }
+            try {
+                const r = await fetch(`${CONFIG.API_BASE_URL}/cart/addresses/`, {
+                    method: 'POST',
+                    headers: { 'Authorization': `Bearer ${accessToken}`, 'Content-Type': 'application/json' },
+                    body: JSON.stringify(payload)
+                });
+                if (r.ok) {
+                    document.getElementById('new-address-form').style.display = 'none';
+                    ['addr-label','addr-full-name','addr-phone','addr-line1','addr-line2','addr-city','addr-state','addr-postal'].forEach(id => { document.getElementById(id).value = ''; });
+                    await loadSavedAddresses();
+                } else {
+                    const d = await r.json();
+                    alert('Could not save address: ' + JSON.stringify(d));
+                }
+            } catch(e) { alert('Network error saving address.'); }
+        }
+
+        async function placeOrder() {
+            if (!selectedAddressId) { alert('Please select a delivery address.'); return; }
+            const btn = document.getElementById('btn-place-order');
+            const errEl = document.getElementById('checkout-error');
+            btn.disabled = true;
+            btn.textContent = 'Placing Order…';
+            errEl.style.display = 'none';
+            try {
+                const r = await fetch(`${CONFIG.API_BASE_URL}/orders/create/`, {
+                    method: 'POST',
+                    headers: { 'Authorization': `Bearer ${accessToken}`, 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ address_id: selectedAddressId })
+                });
+                const data = await r.json();
+                if (r.ok) {
+                    closeCheckout();
+                    // Show coming-soon payment modal
+                    const modal = document.getElementById('payment-coming-soon-modal');
+                    const countEl = document.getElementById('payment-modal-order-count');
+                    countEl.textContent = `${data.orders.length} order${data.orders.length > 1 ? 's' : ''} placed successfully!`;
+                    modal.style.display = 'flex';
+                    updateCartBadge();
+                } else {
+                    errEl.textContent = data.detail || 'Could not place order. Please try again.';
+                    errEl.style.display = 'block';
+                }
+            } catch(e) {
+                errEl.textContent = 'Network error. Please try again.';
+                errEl.style.display = 'block';
+            } finally {
+                btn.disabled = false;
+                btn.textContent = 'Place Order';
+            }
+        }
+
+        function closePaymentModal() {
+            document.getElementById('payment-coming-soon-modal').style.display = 'none';
+            switchBuyerTab('orders');
+        }
+
+        // ─── Orders list ──────────────────────────────────────────────────────
+        async function loadOrdersUI() {
+            if (!currentUser || currentUser.role !== 'buyer') return;
+            const list    = document.getElementById('orders-list');
+            const emptyMsg = document.getElementById('orders-empty-msg');
+            list.innerHTML = '<p style="color:var(--text-secondary); font-size:13px;">Loading orders…</p>';
+            try {
+                const r = await fetch(`${CONFIG.API_BASE_URL}/orders/`, { headers: { 'Authorization': `Bearer ${accessToken}` } });
+                if (!r.ok) throw new Error('orders fetch failed');
+                const orders = await r.json();
+                list.innerHTML = '';
+                if (orders.length === 0) { emptyMsg.style.display='block'; return; }
+                emptyMsg.style.display = 'none';
+                orders.forEach(order => {
+                    const statusColors = {
+                        created: '#1565C0',
+                        payment_received: '#2E7D32',
+                        processing: '#E65100',
+                        shipped: '#6A1B9A',
+                        delivered: '#1B5E20',
+                        cancelled: '#B71C1C'
+                    };
+                    const statusColor = statusColors[order.status] || '#555';
+                    const card = document.createElement('div');
+                    card.style.cssText = 'background:#fff; border-radius:16px; padding:18px; box-shadow:0 2px 8px rgba(0,0,0,0.07);';
+                    const img = order.product && order.product.refined_image ? order.product.refined_image : '';
+                    const dateStr = order.created_at ? new Date(order.created_at).toLocaleDateString('en-IN', { day:'numeric', month:'short', year:'numeric' }) : '';
+                    card.innerHTML = `
+                        <div style="display:flex; gap:14px; align-items:flex-start;">
+                            ${img ? `<img src="${img}" style="width:62px; height:62px; border-radius:10px; object-fit:cover; flex-shrink:0;">` : `<div style="width:62px; height:62px; background:var(--primary-light); border-radius:10px; display:flex; align-items:center; justify-content:center; font-size:22px; flex-shrink:0;">🎨</div>`}
+                            <div style="flex:1; min-width:0;">
+                                <div style="font-size:14px; font-weight:700; color:var(--text-primary); white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">${order.product ? order.product.title_en : 'Product'}</div>
+                                <div style="font-size:12px; color:var(--text-secondary); margin-top:2px;">Qty: ${order.quantity} &nbsp;·&nbsp; ${dateStr}</div>
+                                <div style="margin-top:8px; display:flex; align-items:center; justify-content:space-between;">
+                                    <span style="background:${statusColor}18; color:${statusColor}; font-size:11px; font-weight:700; padding:3px 10px; border-radius:20px; text-transform:capitalize;">${order.status.replace('_',' ')}</span>
+                                    <span style="font-size:15px; font-weight:800; color:var(--primary-color);">₹${parseFloat(order.total_payable||order.total_amount).toFixed(2)}</span>
+                                </div>
+                            </div>
+                        </div>
+                    `;
+                    list.appendChild(card);
+                });
+            } catch(e) {
+                console.error('loadOrdersUI error:', e);
+                list.innerHTML = '<p style="color:#C62828;">Failed to load orders.</p>';
+            }
+        }
+
     </script>
+    <!-- Gooey Filter SVG and Brand Gradients -->
+    <svg style="visibility: hidden; position: absolute;" width="0" height="0">
+      <defs>
+        <filter id="gooey">
+          <feGaussianBlur in="SourceGraphic" stdDeviation="8" result="blur" />
+          <feColorMatrix in="blur" mode="matrix" values="1 0 0 0 0  0 1 0 0 0  0 0 1 0 0  0 0 0 19 -9" result="goo" />
+          <feComposite in="SourceGraphic" in2="goo" operator="atop" />
+        </filter>
+        <linearGradient id="brandGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+          <stop offset="0%" stop-color="#D96A3D" />
+          <stop offset="100%" stop-color="#482E83" />
+        </linearGradient>
+      </defs>
+    </svg>
+
 </body>
 </html>
+

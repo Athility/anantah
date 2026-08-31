@@ -44,10 +44,12 @@ class BuyerProfile(models.Model):
         related_name='buyer_profile',
         db_column='user_id'
     )
-    shipping_address = models.TextField(null=True, blank=True)
+    # The DB table uses a default_shipping_address_id FK to the addresses table.
+    # Address management is handled separately; no text field here.
 
     class Meta:
         db_table = 'buyer_profiles'
+        managed = False  # Don't let Django try to create/alter this table
 
     def __str__(self):
         return f"Buyer: {self.user.username}"

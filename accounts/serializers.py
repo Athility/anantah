@@ -13,7 +13,7 @@ class ArtisanProfileSerializer(serializers.ModelSerializer):
 class BuyerProfileSerializer(serializers.ModelSerializer):
     class Meta:
         model = BuyerProfile
-        fields = ['id', 'shipping_address']
+        fields = ['id']
 
 class UserSerializer(serializers.ModelSerializer):
     profile = serializers.SerializerMethodField()
@@ -59,9 +59,23 @@ class SignupSerializer(serializers.ModelSerializer):
             raise serializers.ValidationError("Role must be either 'artisan' or 'buyer'.")
         return value
 
+    def validate(self, attrs):
+        from django.core.cache import cache
+        phone = attrs.get('phone')
+        if not phone:
+            raise serializers.ValidationError({"phone": ["Phone number is required."]})
+        
+        # Verify the phone was validated by OTP beforehand
+        is_verified = cache.get(f"phone_verified:{phone}")
+        if not is_verified:
+            raise serializers.ValidationError({"phone": ["Phone number verification required. Please verify via OTP first."]})
+        return attrs
+
     def create(self, validated_data):
+        from django.core.cache import cache
         craft_type = validated_data.pop('craft_type', '')
         password = validated_data.pop('password')
+        phone = validated_data.get('phone')
         
         with transaction.atomic():
             user = User(**validated_data)
@@ -73,4 +87,8 @@ class SignupSerializer(serializers.ModelSerializer):
             elif user.role == 'buyer':
                 BuyerProfile.objects.create(user=user)
                 
+            # Clear verification state on success
+            cache.delete(f"phone_verified:{phone}")
+                
         return user
+

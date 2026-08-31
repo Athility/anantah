@@ -32,6 +32,7 @@ INSTALLED_APPS = [
     'accounts',
     'listings',
     'ai_services',
+    'cart',
 ]
 
 MIDDLEWARE = [
@@ -145,5 +146,13 @@ SIMPLE_JWT = {
 
 # CORS Configuration
 CORS_ALLOW_ALL_ORIGINS = True  # Allowed for local PWA frontend development
+
+# Django Caching Framework (for temporary OTP verification status)
+CACHES = {
+    'default': {
+        'BACKEND': 'django.core.cache.backends.locmem.LocMemCache',
+        'LOCATION': 'anantah-otp-cache',
+    }
+}
 
 DEFAULT_AUTO_FIELD = 'django.db.models.AutoField'

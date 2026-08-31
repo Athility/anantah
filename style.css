@@ -640,47 +640,182 @@ h1, h2, h3, h4, h5, h6, .brand-font {
     color: var(--primary-color);
 }
 
-/* Custom File Upload */
-.file-upload-wrapper {
-    position: relative;
-    border: 2px dashed var(--border-color);
-    border-radius: 16px;
-    padding: 25px;
-    text-align: center;
-    cursor: pointer;
-    transition: var(--transition-smooth);
+/* Custom Pill File Upload */
+.custom-pill-upload-container {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
     background-color: #FFFFFF;
-}
-
-.file-upload-wrapper:hover {
-    border-color: var(--primary-color);
-}
-
-.file-upload-input {
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    opacity: 0;
+    border: 1px solid var(--border-color);
+    border-radius: 999px;
+    padding: 6px;
+    padding-left: 20px;
+    box-shadow: 0 4px 12px rgba(75, 40, 109, 0.04), 0 1px 3px rgba(0, 0, 0, 0.02);
+    position: relative;
+    height: 56px;
     cursor: pointer;
+    transition: border-color 0.2s ease, box-shadow 0.2s ease;
+    overflow: hidden;
+    user-select: none;
 }
 
-.file-upload-icon {
-    font-size: 30px;
+.custom-pill-upload-container:hover {
+    border-color: var(--primary-color);
+    box-shadow: 0 6px 18px rgba(75, 40, 109, 0.08);
+}
+
+.upload-left-side {
+    display: flex;
+    align-items: center;
+    gap: 10px;
     color: var(--text-secondary);
-    margin-bottom: 10px;
-}
-
-.file-upload-text {
     font-size: 14px;
     font-weight: 500;
-    color: var(--text-secondary);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    padding-right: 130px; /* Leave space for button */
+    transition: opacity 0.3s ease;
+    width: 100%;
 }
 
-.file-upload-text span {
-    color: var(--primary-color);
+.paperclip-icon {
+    flex-shrink: 0;
+    color: var(--text-light);
+}
+
+.upload-filename-text {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+/* Button Wrapper & Morphing Pill Button */
+.pill-upload-btn-wrapper {
+    position: absolute;
+    right: 6px;
+    top: 6px;
+    bottom: 6px;
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    width: calc(100% - 12px);
+    pointer-events: none;
+}
+
+.pill-upload-btn {
+    pointer-events: auto;
+    border: none;
+    background-color: var(--primary-color);
+    color: #FFFFFF;
+    font-family: var(--font-outfit);
     font-weight: 700;
+    font-size: 14px;
+    padding: 0 24px;
+    height: 100%;
+    border-radius: 999px;
+    cursor: pointer;
+    position: relative;
+    overflow: hidden;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    transition: width 0.4s cubic-bezier(0.4, 0, 0.2, 1), 
+                background-color 0.3s ease, 
+                box-shadow 0.2s ease, 
+                transform 0.2s ease;
+    width: 110px; /* Initial width */
+    z-index: 10;
+}
+
+/* Hover: scales button to 1.03 with a soft shadow lift */
+.pill-upload-btn:hover {
+    transform: scale(1.03);
+    box-shadow: 0 4px 12px rgba(75, 40, 109, 0.2);
+}
+
+/* State 2: Uploading (triggered when class is-uploading is added) */
+.custom-pill-upload-container.is-uploading .upload-left-side {
+    opacity: 0;
+}
+
+.custom-pill-upload-container.is-uploading .pill-upload-btn {
+    width: 100%;
+    transform: none;
+    cursor: default;
+    pointer-events: none;
+}
+
+/* Thin Progress Bar inside the button */
+.upload-progress-bar {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    height: 4px;
+    width: 0%;
+    background-color: rgba(255, 255, 255, 0.3);
+    transition: width 2s linear;
+}
+
+.custom-pill-upload-container.is-uploading .upload-progress-bar {
+    width: 100%;
+}
+
+/* State 3: Completed (triggered when class is-completed is added) */
+.custom-pill-upload-container.is-completed .upload-left-side {
+    opacity: 0;
+}
+
+.custom-pill-upload-container.is-completed .pill-upload-btn {
+    width: 100%;
+    background-color: var(--secondary-color);
+    cursor: pointer;
+    transform: none;
+}
+
+/* Button Text State Management */
+.btn-text-state {
+    display: none;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+}
+
+.btn-text-state.active {
+    display: inline-flex;
+}
+
+/* Satisfying pop-in bounce animation for Completed state */
+@keyframes popInBounce {
+    0% {
+        opacity: 0;
+        transform: scale(0.85);
+    }
+    60% {
+        transform: scale(1.06);
+    }
+    100% {
+        opacity: 1;
+        transform: scale(1);
+    }
+}
+
+.custom-pill-upload-container.is-completed .state-completed {
+    display: inline-flex;
+    animation: popInBounce 0.35s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
+}
+
+/* Checkmark animation */
+.checkmark-icon {
+    stroke-dasharray: 20;
+    stroke-dashoffset: 20;
+    animation: drawCheckmark 0.4s ease-out 0.2s forwards;
+}
+
+@keyframes drawCheckmark {
+    to {
+        stroke-dashoffset: 0;
+    }
 }
 
 /* Top Navigation Bar */
@@ -727,4 +862,753 @@ h1, h2, h3, h4, h5, h6, .brand-font {
 
 .btn-nav:hover {
     color: var(--primary-color);
+}
+
+/* ==========================================================================
+   Voice Cataloger — Step 4 (Multilingual Auto-Cataloger)
+   All classes use existing design tokens — no new colors or fonts introduced.
+   ========================================================================== */
+
+/* Step section wrapper (sits inside .refiner-card below the upload form) */
+.voice-cataloger-section {
+    border-top: 1px solid var(--border-color);
+    margin-top: 24px;
+    padding-top: 24px;
+    animation: fadeIn 0.4s ease-out;
+}
+
+/* Step number badge — matches the "3. AI Photo Refiner" heading style */
+.voice-step-title {
+    font-size: 20px;
+    color: var(--primary-color);
+    margin-bottom: 16px;
+    border-bottom: 1px solid var(--border-color);
+    padding-bottom: 10px;
+    font-family: var(--font-outfit);
+    font-weight: 600;
+}
+
+/* Language selector pill row */
+.lang-selector-row {
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+    margin-bottom: 16px;
+}
+
+.lang-pill {
+    padding: 6px 14px;
+    border-radius: 20px;
+    border: 1px solid var(--border-color);
+    font-size: 13px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: var(--transition-smooth);
+    background: #FFFFFF;
+    color: var(--text-secondary);
+    font-family: var(--font-inter);
+}
+
+.lang-pill:hover {
+    border-color: var(--primary-color);
+    color: var(--primary-color);
+}
+
+.lang-pill.selected {
+    background-color: var(--primary-color);
+    border-color: var(--primary-color);
+    color: #FFFFFF;
+}
+
+/* Recorder area — mirrors .file-upload-wrapper */
+.recorder-area {
+    border: 2px dashed var(--border-color);
+    border-radius: 16px;
+    padding: 20px;
+    text-align: center;
+    background: #FFFFFF;
+    margin-bottom: 14px;
+    transition: var(--transition-smooth);
+}
+
+.recorder-area.dragover {
+    border-color: var(--primary-color);
+    background-color: var(--primary-light);
+}
+
+/* Record / Stop buttons in the recorder area */
+.recorder-controls {
+    display: flex;
+    gap: 10px;
+    justify-content: center;
+    flex-wrap: wrap;
+    margin-top: 12px;
+}
+
+.btn-record {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 10px 20px;
+    font-size: 14px;
+    font-weight: 600;
+    font-family: var(--font-outfit);
+    border-radius: 12px;
+    border: none;
+    cursor: pointer;
+    transition: var(--transition-smooth);
+    background-color: var(--primary-color);
+    color: #FFFFFF;
+    box-shadow: var(--shadow-button);
+}
+
+.btn-record:hover:not(:disabled) {
+    background-color: var(--primary-hover);
+    transform: translateY(-1px);
+}
+
+.btn-record:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
+.btn-stop-record {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 10px 20px;
+    font-size: 14px;
+    font-weight: 600;
+    font-family: var(--font-outfit);
+    border-radius: 12px;
+    border: 1px solid var(--border-color);
+    cursor: pointer;
+    transition: var(--transition-smooth);
+    background-color: #FFFFFF;
+    color: var(--danger-color);
+}
+
+.btn-stop-record:hover {
+    background-color: #FFF0F0;
+    border-color: var(--danger-color);
+}
+
+/* Pulsing red dot shown while recording */
+.recording-indicator {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--danger-color);
+}
+
+.recording-dot {
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    background-color: var(--danger-color);
+    animation: pulse-record 1.2s ease-in-out infinite;
+}
+
+@keyframes pulse-record {
+    0%   { transform: scale(1);   opacity: 1; }
+    50%  { transform: scale(1.5); opacity: 0.5; }
+    100% { transform: scale(1);   opacity: 1; }
+}
+
+/* Audio file name badge shown after recording/uploading */
+.audio-file-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    background: var(--primary-light);
+    color: var(--primary-color);
+    border-radius: 10px;
+    padding: 6px 12px;
+    font-size: 13px;
+    font-weight: 600;
+    margin-top: 10px;
+}
+
+/* Divider between record and upload-file options */
+.voice-or-divider {
+    text-align: center;
+    font-size: 12px;
+    color: var(--text-light);
+    font-weight: 600;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    margin: 10px 0;
+}
+
+/* Pipeline progress steps row (Transcribing → Translating → Generating) */
+.pipeline-steps {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0;
+    margin: 20px 0;
+}
+
+.pipeline-step {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 6px;
+    flex: 1;
+    position: relative;
+}
+
+/* Connecting line between steps */
+.pipeline-step:not(:last-child)::after {
+    content: '';
+    position: absolute;
+    top: 16px;
+    left: 50%;
+    width: 100%;
+    height: 2px;
+    background-color: var(--border-color);
+    z-index: 0;
+    transition: background-color 0.4s ease;
+}
+
+.pipeline-step.done:not(:last-child)::after {
+    background-color: var(--primary-color);
+}
+
+.pipeline-step-icon {
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    border: 2px solid var(--border-color);
+    background: #FFFFFF;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+    z-index: 1;
+    transition: var(--transition-smooth);
+    font-size: 14px;
+}
+
+.pipeline-step.active .pipeline-step-icon {
+    border-color: var(--primary-color);
+    background-color: var(--primary-light);
+    animation: step-pulse 1.4s ease-in-out infinite;
+}
+
+.pipeline-step.done .pipeline-step-icon {
+    border-color: var(--primary-color);
+    background-color: var(--primary-color);
+    color: #FFFFFF;
+}
+
+@keyframes step-pulse {
+    0%   { box-shadow: 0 0 0 0 rgba(75, 40, 109, 0.3); }
+    70%  { box-shadow: 0 0 0 8px rgba(75, 40, 109, 0); }
+    100% { box-shadow: 0 0 0 0 rgba(75, 40, 109, 0); }
+}
+
+.pipeline-step-label {
+    font-size: 10px;
+    font-weight: 600;
+    color: var(--text-light);
+    text-align: center;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    transition: color 0.3s ease;
+}
+
+.pipeline-step.active .pipeline-step-label,
+.pipeline-step.done .pipeline-step-label {
+    color: var(--primary-color);
+}
+
+/* Results panel — shown after pipeline completes */
+.catalog-results-panel {
+    background-color: #FDFBF8;
+    border: 1px solid var(--border-color);
+    border-radius: 16px;
+    padding: 20px;
+    margin-top: 16px;
+    animation: fadeIn 0.4s ease-out;
+}
+
+.catalog-results-title {
+    font-size: 14px;
+    font-weight: 700;
+    color: var(--text-secondary);
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    margin-bottom: 16px;
+}
+
+/* EN / HI field pairs side by side on wider screens */
+.bilingual-field-row {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 12px;
+    margin-bottom: 14px;
+}
+
+@media (min-width: 600px) {
+    .bilingual-field-row {
+        grid-template-columns: 1fr 1fr;
+    }
+}
+
+.bilingual-field-label {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--text-primary);
+    margin-bottom: 6px;
+}
+
+.lang-badge {
+    background: var(--primary-light);
+    color: var(--primary-color);
+    font-size: 10px;
+    font-weight: 700;
+    padding: 2px 7px;
+    border-radius: 8px;
+    letter-spacing: 0.5px;
+}
+
+/* Devanagari-friendly textarea/input — slightly larger line height */
+.form-input.devanagari,
+.form-textarea.devanagari {
+    font-size: 15px;
+    line-height: 1.8;
+    letter-spacing: 0.02em;
+}
+
+.form-textarea {
+    width: 100%;
+    padding: 12px 16px;
+    font-size: 14px;
+    border: 1px solid var(--border-color);
+    border-radius: 12px;
+    background-color: #FFFFFF;
+    font-family: var(--font-inter);
+    outline: none;
+    transition: var(--transition-smooth);
+    resize: vertical;
+    min-height: 100px;
+    line-height: 1.6;
+}
+
+.form-textarea:focus {
+    border-color: var(--border-focus);
+    box-shadow: 0 0 0 3px rgba(75, 40, 109, 0.08);
+}
+
+/* Transcript preview (collapsible, small) */
+.transcript-preview {
+    background: #F4F0FA;
+    border-radius: 10px;
+    padding: 10px 14px;
+    font-size: 13px;
+    color: var(--text-secondary);
+    margin-bottom: 14px;
+    border-left: 3px solid var(--primary-color);
+    line-height: 1.6;
+}
+
+.transcript-preview-label {
+    font-size: 11px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    color: var(--primary-color);
+    margin-bottom: 4px;
+}
+
+/* User Dropdown Menu Items */
+.dropdown-item {
+    cursor: pointer;
+}
+.dropdown-item:hover {
+    background-color: var(--primary-light);
+    color: var(--primary-color) !important;
+}
+.dropdown-item:hover svg {
+    color: var(--primary-color) !important;
+}
+
+/* Artisan Dashboard Sub-navigation Tabs */
+.artisan-nav-btn {
+    position: relative;
+    padding-bottom: 6px;
+    border-bottom: 2px solid transparent;
+}
+.artisan-nav-btn.active {
+    color: var(--primary-color) !important;
+    border-bottom-color: var(--primary-color) !important;
+}
+.artisan-nav-btn:hover:not(.active) {
+    color: var(--primary-hover) !important;
+}
+
+
+/* ==========================================================================
+   2-Step Onboarding & Animated OTP Verification Card Styles
+   ========================================================================== */
+
+/* Typography overrides for OTP */
+.verify-header {
+    font-family: 'Playfair Display', serif;
+    font-size: 24px;
+    font-weight: 700;
+    color: #482E83;
+    margin-bottom: 8px;
+    text-align: center;
+}
+
+.verify-subtext {
+    font-family: 'Poppins', sans-serif;
+    font-size: 13px;
+    font-weight: 400;
+    color: var(--text-secondary);
+    line-height: 1.5;
+    text-align: center;
+    margin-bottom: 24px;
+}
+
+.status-title {
+    font-family: 'Playfair Display', serif;
+    font-size: 20px;
+    font-weight: 700;
+    color: #2E7058;
+    margin-bottom: 4px;
+}
+
+.status-subtitle {
+    font-family: 'Poppins', sans-serif;
+    font-size: 13px;
+    font-weight: 400;
+    color: var(--text-secondary);
+    margin-bottom: 12px;
+}
+
+/* Card Transitions */
+.phone-card, .otp-card {
+    transition: var(--transition-smooth);
+    position: relative;
+    max-width: 420px;
+    width: 100%;
+}
+
+/* Entry Animation */
+.card-entry-animate {
+    animation: cardEntry 0.5s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
+}
+
+@keyframes cardEntry {
+    0% {
+        opacity: 0;
+        transform: scale(0.96) translateY(10px);
+    }
+    100% {
+        opacity: 1;
+        transform: scale(1) translateY(0);
+    }
+}
+
+/* Gooey Wrapper & Digits Container */
+.gooey-wrapper {
+    position: relative;
+    width: 100%;
+    height: 80px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin: 20px 0;
+    background: transparent;
+}
+
+.digits-container {
+    position: relative;
+    display: flex;
+    gap: 16px;
+    filter: url(#gooey);
+    padding: 10px;
+    background: transparent;
+    width: 280px;
+    justify-content: space-between;
+}
+
+.digit-box {
+    position: relative;
+    width: 50px;
+    height: 50px;
+    background: var(--bg-cream);
+    border: 2px solid rgba(72, 46, 131, 0.2);
+    border-radius: 12px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-family: 'Poppins', sans-serif;
+    font-size: 20px;
+    font-weight: 700;
+    color: #482E83;
+    transition: border-color 0.25s ease, background-color 0.2s ease, transform 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    z-index: 10;
+    user-select: none;
+    left: 0; /* for gooey animation */
+}
+
+/* Digit Pop-scale */
+.digit-pop {
+    animation: digitPop 0.25s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
+    border-color: rgba(72, 46, 131, 1) !important;
+}
+
+@keyframes digitPop {
+    0% {
+        transform: scale(1.15);
+    }
+    100% {
+        transform: scale(1);
+    }
+}
+
+/* Cursor style */
+.blinking-cursor {
+    position: absolute;
+    width: 2.5px;
+    height: 22px;
+    background: #482E83;
+    opacity: 0.8;
+    animation: cursorBlink 0.8s infinite alternate;
+    pointer-events: none;
+    z-index: 20;
+    transition: left 0.2s cubic-bezier(0.4, 0, 0.2, 1), top 0.2s ease;
+}
+
+@keyframes cursorBlink {
+    0%, 30% { opacity: 0; }
+    70%, 100% { opacity: 1; }
+}
+
+/* Gooey Merge Animation offsets */
+.gooey-merge-active .digit-box {
+    animation: gooeyMerge 0.85s cubic-bezier(0.6, -0.28, 0.735, 0.045) forwards;
+}
+
+.gooey-merge-active .blinking-cursor {
+    display: none;
+}
+
+/* Offset coordinates for merge center alignment */
+.gooey-merge-active .digit-box[data-index="0"] { --offset: 96px; }
+.gooey-merge-active .digit-box[data-index="1"] { --offset: 32px; }
+.gooey-merge-active .digit-box[data-index="2"] { --offset: -32px; }
+.gooey-merge-active .digit-box[data-index="3"] { --offset: -96px; }
+
+@keyframes gooeyMerge {
+    0% {
+        border-color: rgba(72, 46, 131, 1);
+        background: var(--bg-cream);
+        border-radius: 12px;
+    }
+    40% {
+        background: #482E83;
+        border-color: #482E83;
+        border-radius: 50%;
+        transform: scale(0.9);
+    }
+    80% {
+        border-radius: 50%;
+        background: #482E83;
+        border-color: #482E83;
+    }
+    100% {
+        transform: translate(var(--offset), 0) scale(0);
+        background: #482E83;
+        border-color: #482E83;
+        border-radius: 50%;
+        opacity: 0;
+    }
+}
+
+/* Success Badge Circle styles */
+.success-badge-wrapper {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin: 20px 0;
+    height: 80px;
+}
+
+.success-badge {
+    width: 64px;
+    height: 64px;
+    border-radius: 50%;
+    background: #FFFFFF;
+    border: 3px solid #D96A3D; /* Terracotta border */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    box-shadow: 0 4px 15px rgba(217, 106, 61, 0.15);
+    animation: successPop 0.5s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
+}
+
+@keyframes successPop {
+    0% {
+        transform: scale(0);
+    }
+    100% {
+        transform: scale(1);
+    }
+}
+
+.checkmark-svg {
+    width: 40px;
+    height: 40px;
+    display: block;
+}
+
+.checkmark-circle {
+    stroke: none;
+}
+
+.checkmark-check {
+    stroke: #2E7058; /* Green checkmark */
+    stroke-width: 4;
+    stroke-linecap: round;
+    stroke-dasharray: 48;
+    stroke-dashoffset: 48;
+    animation: strokeCheck 0.35s cubic-bezier(0.65, 0, 0.45, 1) 0.3s forwards;
+}
+
+@keyframes strokeCheck {
+    100% {
+        stroke-dashoffset: 0;
+    }
+}
+
+/* Particle Confetti styles */
+.confetti-container {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    top: 0;
+    left: 0;
+    pointer-events: none;
+    overflow: hidden;
+    z-index: 15;
+}
+
+.confetti-particle {
+    position: absolute;
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    opacity: 1;
+}
+
+/* Minimalist Secure Badge styles */
+.secure-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 6px 12px;
+    background: rgba(46, 112, 88, 0.06);
+    border: 1px solid rgba(46, 112, 88, 0.15);
+    border-radius: 20px;
+    color: #2E7058;
+    font-size: 11px;
+    font-weight: 600;
+    font-family: 'Poppins', sans-serif;
+    margin-top: 8px;
+    animation: secureFadeIn 0.5s ease forwards;
+}
+
+@keyframes secureFadeIn {
+    0% {
+        opacity: 0;
+        transform: translateY(4px);
+    }
+    100% {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* Resend timer button */
+.btn-resend {
+    border: none;
+    background: none;
+    font-weight: 700;
+    color: var(--primary-color);
+    cursor: pointer;
+    font-size: 13px;
+    font-family: 'Poppins', sans-serif;
+    padding: 0;
+}
+.btn-resend:disabled {
+    opacity: 0.4;
+    cursor: not-allowed;
+}
+
+/* Infinity Logo SVG Path Drawing Animation */
+.infinity-draw {
+    stroke: url(#brandGrad);
+    filter: drop-shadow(0 4px 8px rgba(75, 40, 109, 0.12));
+}
+
+.infinity-path {
+    stroke-dasharray: 100;
+    stroke-dashoffset: 100;
+    animation: drawPath 1.5s cubic-bezier(0.445, 0.05, 0.55, 0.95) forwards;
+}
+
+@keyframes drawPath {
+    100% {
+        stroke-dashoffset: 0;
+    }
+}
+
+/* Screen transition classes */
+.screen {
+    opacity: 0;
+    pointer-events: none;
+    transform: translateY(5px);
+    transition: opacity 0.4s ease, transform 0.4s ease;
+}
+.screen.active {
+    opacity: 1;
+    pointer-events: auto;
+    transform: translateY(0);
+}
+
+/* ─── Cart + Checkout Animations ─────────────────────────────────────────── */
+@keyframes slideUp {
+    from {
+        opacity: 0;
+        transform: translateY(40px) scale(0.96);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+    }
+}
+
+@keyframes fadeInUp {
+    from { opacity: 0; transform: translateY(12px); }
+    to   { opacity: 1; transform: translateY(0); }
+}
+
+/* Cart item entry animation */
+#cart-item-list > div {
+    animation: fadeInUp 0.25s ease both;
+}
+
+/* Checkout overlay fade in */
+#checkout-overlay {
+    animation: fadeInUp 0.2s ease both;
 }

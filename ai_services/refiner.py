@@ -21,88 +21,113 @@ try:
 except Exception:
     SESSION = None
 
-def refine_image(raw_image_file):
+def refine_image(raw_image_file, enhancements=None):
     """
     Takes an uploaded file (raw_image_file is a file-like object, e.g. InMemoryUploadedFile)
-    and returns a BytesIO object representing the refined, white-background, CLAHE-enhanced JPEG.
+    and an optional list of enhancements to apply.
+
+    enhancements: list of strings from:
+        'bg_removal'    – remove background, place on white
+        'lighting_fix'  – CLAHE contrast/lighting correction
+        'sharpness'     – unsharp mask sharpening
+        'color_bal'     – saturation boost
+        'auto_enhance'  – shortcut for all of the above
+
+    If enhancements is None or empty, the raw image is returned as-is (just re-encoded as JPEG).
+    Returns a BytesIO object.
     """
-    # Reset stream pointer just in case
+    if enhancements is None:
+        enhancements = []
+    
+    # 'auto_enhance' expands to all other tools
+    if 'auto_enhance' in enhancements:
+        enhancements = ['bg_removal', 'lighting_fix', 'sharpness', 'color_bal']
+
+    do_bg      = 'bg_removal'   in enhancements
+    do_light   = 'lighting_fix' in enhancements
+    do_sharp   = 'sharpness'    in enhancements
+    do_color   = 'color_bal'    in enhancements
+    # Reset stream pointer
     raw_image_file.seek(0)
-    
-    # Load image from file object
-    input_image = Image.open(raw_image_file)
+    input_image = Image.open(raw_image_file).convert("RGB")
     original_size = input_image.size  # (width, height)
-    
-    # 3. Downscale large images for rembg processing to prevent OOM
-    MAX_REMBG_DIM = 800
-    if max(original_size) > MAX_REMBG_DIM:
-        ratio = MAX_REMBG_DIM / max(original_size)
-        downscaled_size = (int(original_size[0] * ratio), int(original_size[1] * ratio))
-        rembg_input = input_image.resize(downscaled_size, Image.Resampling.LANCZOS)
-    else:
-        rembg_input = input_image
-    
-    # Run rembg to remove background (returns transparent RGBA) on the optimized size
-    rgba_downscaled = remove(rembg_input, session=SESSION)
-    rgba_downscaled = rgba_downscaled.convert("RGBA")
-    
-    # Clean up downscaled input image if we created one
-    if rembg_input is not input_image:
-        rembg_input.close()
-    
-    # 4. Upscale the alpha mask back to original resolution and apply to the original image
-    if max(original_size) > MAX_REMBG_DIM:
-        alpha_mask = rgba_downscaled.split()[3]
-        alpha_mask_resized = alpha_mask.resize(original_size, Image.Resampling.BILINEAR)
-        rgba_img = input_image.convert("RGBA")
-        rgba_img.putalpha(alpha_mask_resized)
-        
-        # Clean up intermediate mask images
-        alpha_mask.close()
-        alpha_mask_resized.close()
-    else:
-        rgba_img = rgba_downscaled
-    
-    # Create white background
-    white_bg = Image.new("RGBA", rgba_img.size, (255, 255, 255, 255))
-    white_bg.paste(rgba_img, (0, 0), rgba_img)
-    final_img = white_bg.convert("RGB")
-    
-    # Clean up intermediate rgba images
-    rgba_img.close()
-    rgba_downscaled.close()
-    
-    # Convert to OpenCV numpy array (BGR)
-    img_np = np.array(final_img)
-    img_bgr = cv2.cvtColor(img_np, cv2.COLOR_RGB2BGR)
-    
-    # Apply CLAHE on L channel of LAB space for lighting correction
-    lab = cv2.cvtColor(img_bgr, cv2.COLOR_BGR2LAB)
-    l_channel, a_channel, b_channel = cv2.split(lab)
-    
-    clahe = cv2.createCLAHE(clipLimit=2.0, tileGridSize=(8, 8))
-    cl = clahe.apply(l_channel)
-    
-    limg = cv2.merge((cl, a_channel, b_channel))
-    corrected_bgr = cv2.cvtColor(limg, cv2.COLOR_LAB2BGR)
-    
-    # Convert back to RGB for PIL saving
-    corrected_rgb = cv2.cvtColor(corrected_bgr, cv2.COLOR_BGR2RGB)
-    refined_pil = Image.fromarray(corrected_rgb)
-    
-    # Save to memory buffer
+
+    # --- If no enhancements selected, return raw image re-encoded as JPEG ---
+    if not (do_bg or do_light or do_sharp or do_color):
+        output_io = io.BytesIO()
+        input_image.save(output_io, format="JPEG", quality=92)
+        output_io.seek(0)
+        input_image.close()
+        gc.collect()
+        return output_io
+
+    # ---- Background Removal ----
+    if do_bg and SESSION is not None:
+        MAX_REMBG_DIM = 800
+        if max(original_size) > MAX_REMBG_DIM:
+            ratio = MAX_REMBG_DIM / max(original_size)
+            downscaled_size = (int(original_size[0] * ratio), int(original_size[1] * ratio))
+            rembg_input = input_image.resize(downscaled_size, Image.Resampling.LANCZOS)
+        else:
+            rembg_input = input_image
+
+        rgba_downscaled = remove(rembg_input, session=SESSION).convert("RGBA")
+        if rembg_input is not input_image:
+            rembg_input.close()
+
+        if max(original_size) > MAX_REMBG_DIM:
+            alpha_mask = rgba_downscaled.split()[3]
+            alpha_mask_resized = alpha_mask.resize(original_size, Image.Resampling.BILINEAR)
+            rgba_img = input_image.convert("RGBA")
+            rgba_img.putalpha(alpha_mask_resized)
+            alpha_mask.close()
+            alpha_mask_resized.close()
+        else:
+            rgba_img = rgba_downscaled
+
+        white_bg = Image.new("RGBA", rgba_img.size, (255, 255, 255, 255))
+        white_bg.paste(rgba_img, (0, 0), rgba_img)
+        working = white_bg.convert("RGB")
+        rgba_img.close()
+        rgba_downscaled.close()
+        white_bg.close()
+        input_image.close()
+        input_image = working
+
+    # ---- OpenCV-based enhancements (lighting, sharpness, color) ----
+    if do_light or do_sharp or do_color:
+        img_np  = np.array(input_image)
+        img_bgr = cv2.cvtColor(img_np, cv2.COLOR_RGB2BGR)
+
+        if do_light:
+            # CLAHE on L channel of LAB for lighting correction
+            lab = cv2.cvtColor(img_bgr, cv2.COLOR_BGR2LAB)
+            l_ch, a_ch, b_ch = cv2.split(lab)
+            clahe = cv2.createCLAHE(clipLimit=2.0, tileGridSize=(8, 8))
+            img_bgr = cv2.cvtColor(cv2.merge((clahe.apply(l_ch), a_ch, b_ch)), cv2.COLOR_LAB2BGR)
+
+        if do_sharp:
+            # Unsharp mask sharpening
+            blur = cv2.GaussianBlur(img_bgr, (0, 0), 3)
+            img_bgr = cv2.addWeighted(img_bgr, 1.5, blur, -0.5, 0)
+
+        if do_color:
+            # Mild saturation boost via HSV
+            hsv = cv2.cvtColor(img_bgr, cv2.COLOR_BGR2HSV).astype(np.float32)
+            hsv[:, :, 1] = np.clip(hsv[:, :, 1] * 1.25, 0, 255)
+            img_bgr = cv2.cvtColor(hsv.astype(np.uint8), cv2.COLOR_HSV2BGR)
+
+        corrected_rgb = cv2.cvtColor(img_bgr, cv2.COLOR_BGR2RGB)
+        refined_pil = Image.fromarray(corrected_rgb)
+        input_image.close()
+        input_image = refined_pil
+
+    # ---- Save to BytesIO ----
     output_io = io.BytesIO()
-    refined_pil.save(output_io, format="JPEG", quality=90)
+    input_image.save(output_io, format="JPEG", quality=90)
     output_io.seek(0)
-    
-    # Clean up PIL image resources
-    refined_pil.close()
-    final_img.close()
-    white_bg.close()
     input_image.close()
-    
-    # 5. Explicitly invoke garbage collection to release memory back to the OS
+
     gc.collect()
-    
     return output_io
 
