@@ -36,6 +36,8 @@ class CartItem(models.Model):
 class Order(models.Model):
     STATUS_CHOICES = (
         ('created', 'Created'),
+        ('paid', 'Paid'),
+        ('payment_failed', 'Payment Failed'),
         ('payment_received', 'Payment Received'),
         ('awaiting_artisan_shipment', 'Awaiting Artisan Shipment'),
         ('in_transit_to_hub', 'In Transit to Hub'),
@@ -63,6 +65,10 @@ class Order(models.Model):
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(null=True, blank=True)
 
+    # Razorpay Payment Integration Fields
+    razorpay_order_id = models.CharField(max_length=100, null=True, blank=True)
+    razorpay_payment_id = models.CharField(max_length=100, null=True, blank=True)
+
     # ── Cost-breakdown fields (added for checkout summary) ─────────────────────
     # PLACEHOLDER: shipping_cost is a flat ₹80 per order until real courier rates are integrated
     # PLACEHOLDER: platform_commission is 5% of product_total until the real rate is configured
@@ -74,5 +80,10 @@ class Order(models.Model):
     class Meta:
         db_table = 'orders'
 
+    def save(self, *args, **kwargs):
+        if not self.pk and self.status == 'payment_received':
+            self.status = 'created'
+        super().save(*args, **kwargs)
+
     def __str__(self):
-        return f"Order #{self.id} - {self.buyer.username} - {self.status}"
+        return f"Order #{self.id} - {self.buyer.user.username} - {self.status}"

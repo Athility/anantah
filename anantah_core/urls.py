@@ -10,6 +10,7 @@ urlpatterns = [
     path('api/listings/', include('listings.urls')),
     path('api/cart/', include(cart_urlpatterns)),
     path('api/orders/', include(order_urlpatterns)),
+    path('api/payments/', include('payments.urls')),
 ]
 
 # Serve media files in development

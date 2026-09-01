@@ -1,0 +1,216 @@
+import json
+import logging
+from django.conf import settings
+from django.db import transaction
+from django.utils.decorators import method_decorator
+from django.views.decorators.csrf import csrf_exempt
+
+from rest_framework import status
+from rest_framework.views import APIView
+from rest_framework.response import Response
+from rest_framework.permissions import IsAuthenticated, AllowAny
+from rest_framework.throttling import ScopedRateThrottle
+
+from cart.models import Order
+from .razorpay_service import (
+    create_razorpay_order,
+    verify_payment_signature,
+    verify_webhook_signature
+)
+
+logger = logging.getLogger(__name__)
+
+class IsBuyer(IsAuthenticated):
+    """
+    Permission class checking that the user is authenticated and is a Buyer.
+    """
+    def has_permission(self, request, view):
+        if not super().has_permission(request, view):
+            return False
+        return hasattr(request.user, 'buyer_profile') and request.user.buyer_profile is not None
+
+
+class CreateRazorpayOrderView(APIView):
+    permission_classes = [IsBuyer]
+    throttle_classes = [ScopedRateThrottle]
+    throttle_scope = 'payments_create'
+
+    def post(self, request):
+        try:
+            order_id = request.data.get('order_id')
+            if not order_id:
+                return Response({'detail': 'order_id is required.'}, status=status.HTTP_400_BAD_REQUEST)
+            
+            try:
+                buyer_profile = request.user.buyer_profile
+                # IDOR protection: only fetch if order belongs to the logged-in buyer
+                order = Order.objects.get(id=order_id, buyer=buyer_profile)
+            except (Order.DoesNotExist, ValueError, TypeError):
+                # Return 404 to avoid leaking existence of other users' orders
+                return Response({'detail': 'Order not found.'}, status=status.HTTP_404_NOT_FOUND)
+            
+            # Idempotency checks
+            if order.status == 'paid':
+                amount_paise = int(round(float(order.total_payable) * 100))
+                return Response({
+                    'detail': 'Order is already paid.',
+                    'status': 'paid',
+                    'our_order_id': order.id,
+                    'razorpay_order_id': order.razorpay_order_id,
+                    'amount': amount_paise,
+                    'currency': 'INR',
+                    'razorpay_key_id': settings.RAZORPAY_KEY_ID
+                }, status=status.HTTP_200_OK)
+            
+            # Reuse existing Razorpay order if available and status is still 'created'
+            if order.razorpay_order_id and order.status == 'created':
+                amount_paise = int(round(float(order.total_payable) * 100))
+                return Response({
+                    'our_order_id': order.id,
+                    'razorpay_order_id': order.razorpay_order_id,
+                    'amount': amount_paise,
+                    'currency': 'INR',
+                    'razorpay_key_id': settings.RAZORPAY_KEY_ID
+                }, status=status.HTTP_200_OK)
+            
+            # Call service to create new Razorpay order
+            # Note: order.total_payable is used to prevent client-supplied amount manipulation
+            rzp_order = create_razorpay_order(
+                amount_rupees=order.total_payable,
+                receipt_id=str(order.id)
+            )
+            
+            # Save the Razorpay order ID to our DB
+            order.razorpay_order_id = rzp_order['id']
+            order.save()
+            
+            return Response({
+                'our_order_id': order.id,
+                'razorpay_order_id': rzp_order['id'],
+                'amount': rzp_order['amount'],
+                'currency': 'INR',
+                'razorpay_key_id': settings.RAZORPAY_KEY_ID
+            }, status=status.HTTP_200_OK)
+            
+        except Exception as e:
+            logger.error(f"Error creating Razorpay order: {str(e)}")
+            return Response({'detail': f"Order creation failed: {str(e)}"}, status=status.HTTP_400_BAD_REQUEST)
+
+
+class VerifyPaymentView(APIView):
+    permission_classes = [IsBuyer]
+    throttle_classes = [ScopedRateThrottle]
+    throttle_scope = 'payments_verify'
+
+    def post(self, request):
+        try:
+            our_order_id = request.data.get('our_order_id')
+            razorpay_order_id = request.data.get('razorpay_order_id')
+            razorpay_payment_id = request.data.get('razorpay_payment_id')
+            razorpay_signature = request.data.get('razorpay_signature')
+            
+            if not all([our_order_id, razorpay_order_id, razorpay_payment_id, razorpay_signature]):
+                return Response({'detail': 'Missing payment verification fields.'}, status=status.HTTP_400_BAD_REQUEST)
+            
+            buyer_profile = request.user.buyer_profile
+            
+            # Lock the DB row to avoid race conditions
+            with transaction.atomic():
+                try:
+                    order = Order.objects.select_for_update().get(id=our_order_id, buyer=buyer_profile)
+                except (Order.DoesNotExist, ValueError, TypeError):
+                    return Response({'detail': 'Order not found.'}, status=status.HTTP_404_NOT_FOUND)
+                
+                # Check for order id mismatch
+                if order.razorpay_order_id != razorpay_order_id:
+                    return Response({'detail': 'Order ID mismatch.'}, status=status.HTTP_400_BAD_REQUEST)
+                
+                # If already paid, return early (idempotent success)
+                if order.status == 'paid':
+                    return Response({'status': 'paid', 'detail': 'Order is already marked as paid.'}, status=status.HTTP_200_OK)
+                
+                # Verify cryptographic signature
+                is_valid = verify_payment_signature(
+                    razorpay_order_id=razorpay_order_id,
+                    razorpay_payment_id=razorpay_payment_id,
+                    razorpay_signature=razorpay_signature
+                )
+                
+                if not is_valid:
+                    order.status = 'payment_failed'
+                    order.save()
+                    return Response({'detail': 'Payment signature verification failed.', 'status': 'payment_failed'}, status=status.HTTP_400_BAD_REQUEST)
+                
+                # Securely update order status to paid
+                order.status = 'paid'
+                order.razorpay_payment_id = razorpay_payment_id
+                order.save()
+                
+                return Response({'status': 'paid'}, status=status.HTTP_200_OK)
+                
+        except Exception as e:
+            logger.error(f"Error in payment verification: {str(e)}")
+            return Response({'detail': f"Verification failed: {str(e)}"}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
+
+@method_decorator(csrf_exempt, name='dispatch')
+class RazorpayWebhookView(APIView):
+    permission_classes = [AllowAny]
+
+    def post(self, request):
+        try:
+            received_sig = request.headers.get('x-razorpay-signature') or request.META.get('HTTP_X_RAZORPAY_SIGNATURE')
+            if not received_sig:
+                logger.warning("Webhook rejection: Missing signature header.")
+                return Response({'detail': 'Missing signature header.'}, status=status.HTTP_400_BAD_REQUEST)
+            
+            raw_body = request.body
+            # Cryptographic signature verification
+            is_valid = verify_webhook_signature(raw_body, received_sig)
+            if not is_valid:
+                logger.warning("Webhook rejection: Webhook signature verification failed.")
+                return Response({'detail': 'Invalid webhook signature.'}, status=status.HTTP_400_BAD_REQUEST)
+            
+            try:
+                payload = json.loads(raw_body.decode('utf-8'))
+            except Exception:
+                return Response({'detail': 'Invalid JSON.'}, status=status.HTTP_400_BAD_REQUEST)
+            
+            event_type = payload.get('event')
+            
+            # Secure logging: Log metadata but NEVER log card details, payment details, or secrets
+            logger.info(f"Verified Razorpay Webhook Event received: {event_type}")
+            
+            if event_type == "payment.captured":
+                payment_entity = payload.get('payload', {}).get('payment', {}).get('entity', {})
+                rzp_order_id = payment_entity.get('order_id')
+                rzp_payment_id = payment_entity.get('id')
+                
+                if not rzp_order_id or not rzp_payment_id:
+                    logger.warning("Webhook warning: Missing order_id or payment_id in payload.")
+                    return Response({'detail': 'Incomplete payload.'}, status=status.HTTP_200_OK)
+                
+                # Lock row to prevent race conditions (idempotency wrapper)
+                with transaction.atomic():
+                    try:
+                        order = Order.objects.select_for_update().get(razorpay_order_id=rzp_order_id)
+                    except Order.DoesNotExist:
+                        logger.error(f"Webhook error: Order with razorpay_order_id {rzp_order_id} not found.")
+                        return Response({'detail': 'Order not found.'}, status=status.HTTP_200_OK)
+                    
+                    if order.status == 'paid':
+                        logger.info(f"Webhook info: Order {order.id} is already paid.")
+                        return Response({'detail': 'Order already processed.'}, status=status.HTTP_200_OK)
+                    
+                    order.status = 'paid'
+                    order.razorpay_payment_id = rzp_payment_id
+                    order.save()
+                    
+                    logger.info(f"Webhook success: Order {order.id} marked as paid by Webhook.")
+            
+            return Response({'status': 'processed'}, status=status.HTTP_200_OK)
+            
+        except Exception as e:
+            logger.error(f"Webhook processing error: {str(e)}")
+            # Always return 200 to prevent Razorpay from retrying aggressively
+            return Response({'detail': f"Webhook handling error: {str(e)}"}, status=status.HTTP_200_OK)

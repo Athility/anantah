@@ -33,6 +33,7 @@ INSTALLED_APPS = [
     'listings',
     'ai_services',
     'cart',
+    'payments',
 ]
 
 MIDDLEWARE = [
@@ -68,6 +69,9 @@ WSGI_APPLICATION = 'anantah_core.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/6.1/ref/settings/#databases
 
+import sys
+import socket
+
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.mysql',
@@ -82,6 +86,25 @@ DATABASES = {
         }
     }
 }
+
+# Check if MySQL host is reachable
+mysql_reachable = False
+if 'test' not in sys.argv:
+    try:
+        host = config('DB_HOST')
+        port = config('DB_PORT', cast=int)
+        socket.gethostbyname(host)
+        # Try a quick socket connection (timeout 1s) to make sure database is online
+        with socket.create_connection((host, port), timeout=1.0):
+            mysql_reachable = True
+    except Exception:
+        mysql_reachable = False
+
+if 'test' in sys.argv or not mysql_reachable:
+    DATABASES['default'] = {
+        'ENGINE': 'django.db.backends.sqlite3',
+        'NAME': BASE_DIR / 'db.sqlite3',
+    }
 
 # Custom User Model
 AUTH_USER_MODEL = 'accounts.User'
@@ -129,6 +152,17 @@ REST_FRAMEWORK = {
     'DEFAULT_PERMISSION_CLASSES': (
         'rest_framework.permissions.IsAuthenticated',
     ),
+    'DEFAULT_THROTTLE_CLASSES': [
+        'rest_framework.throttling.AnonRateThrottle',
+        'rest_framework.throttling.UserRateThrottle',
+        'rest_framework.throttling.ScopedRateThrottle',
+    ],
+    'DEFAULT_THROTTLE_RATES': {
+        'anon': '100/day',
+        'user': '1000/day',
+        'payments_create': '10/minute',
+        'payments_verify': '10/minute',
+    }
 }
 
 # JWT SimpleJWT Configuration
@@ -156,3 +190,8 @@ CACHES = {
 }
 
 DEFAULT_AUTO_FIELD = 'django.db.models.AutoField'
+
+# Razorpay Configuration
+RAZORPAY_KEY_ID = config('RAZORPAY_KEY_ID', default='')
+RAZORPAY_KEY_SECRET = config('RAZORPAY_KEY_SECRET', default='')
+RAZORPAY_WEBHOOK_SECRET = config('RAZORPAY_WEBHOOK_SECRET', default='')

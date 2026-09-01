@@ -1612,3 +1612,148 @@ h1, h2, h3, h4, h5, h6, .brand-font {
 #checkout-overlay {
     animation: fadeInUp 0.2s ease both;
 }
+
+/* --- Add to Cart & Floating Pill Animation --- */
+.product-card {
+    transition: background-color 0.4s ease, border-color 0.3s ease, transform 0.3s ease;
+}
+
+.product-card.card-flash {
+    animation: flashPurple 0.4s ease-out;
+}
+
+@keyframes flashPurple {
+    0% {
+        background-color: rgba(72, 46, 131, 0.08);
+    }
+    100% {
+        background-color: #FFFFFF;
+    }
+}
+
+.btn-add-cart-pill {
+    width: 100%;
+    margin-top: 12px;
+    background: #FFFFFF;
+    border: 2px solid #482E83;
+    border-radius: 20px;
+    padding: 8px 16px;
+    font-size: 13px;
+    font-weight: 700;
+    color: #482E83;
+    cursor: pointer;
+    font-family: var(--font-inter);
+    transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+}
+
+.btn-add-cart-pill:hover {
+    background: rgba(72, 46, 131, 0.04);
+}
+
+.btn-add-cart-pill.added {
+    background: #482E83;
+    border-color: #482E83;
+    color: #FFFFFF;
+}
+
+.btn-add-cart-pill .add-icon {
+    font-size: 14px;
+    font-weight: 800;
+    transition: transform 0.3s ease;
+}
+
+.btn-add-cart-pill.added .add-icon {
+    transform: rotate(360deg);
+}
+
+.floating-cart-pill {
+    position: fixed;
+    bottom: 24px;
+    left: 50%;
+    transform: translateX(-50%) translateY(100px);
+    width: 160px;
+    height: 48px;
+    background: #D96A3D;
+    color: #FFFFFF;
+    border-radius: 30px;
+    box-shadow: 0 8px 30px rgba(217, 106, 61, 0.4);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    z-index: 1500;
+    transition: all 0.4s cubic-bezier(0.25, 0.8, 0.25, 1);
+    opacity: 0;
+    font-family: var(--font-inter);
+    font-weight: 700;
+    font-size: 14px;
+    padding: 0;
+    box-sizing: border-box;
+    overflow: hidden;
+}
+
+.floating-cart-pill.show {
+    transform: translateX(-50%) translateY(0);
+    opacity: 1;
+}
+
+.floating-cart-pill:hover:not(.expanded) {
+    transform: translateX(-50%) translateY(-2px) scale(1.04);
+    box-shadow: 0 12px 35px rgba(217, 106, 61, 0.5);
+}
+
+/* Expanded Cart Summary Drawer */
+.floating-cart-pill.expanded {
+    bottom: 0;
+    width: 90%;
+    max-width: 420px;
+    height: 520px;
+    background: #FFFFFF;
+    color: var(--text-primary);
+    border-radius: 24px 24px 0 0;
+    box-shadow: 0 -10px 40px rgba(0, 0, 0, 0.15);
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
+    align-items: stretch;
+    padding: 24px;
+    cursor: default;
+    /* 0.8s Unfold duration (1.4s to 2.2s) */
+    transition: all 0.8s cubic-bezier(0.25, 0.8, 0.25, 1);
+}
+
+.floating-cart-pill .pill-view {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    width: 100%;
+    height: 100%;
+    opacity: 1;
+    transition: opacity 0.2s ease;
+}
+
+.floating-cart-pill.expanded .pill-view {
+    display: none;
+    opacity: 0;
+}
+
+.floating-cart-pill .drawer-view {
+    display: none;
+    opacity: 0;
+    width: 100%;
+    height: 100%;
+    flex-direction: column;
+    box-sizing: border-box;
+    transition: opacity 0.3s ease;
+}
+
+.floating-cart-pill.expanded .drawer-view {
+    display: flex;
+    opacity: 1;
+}
+

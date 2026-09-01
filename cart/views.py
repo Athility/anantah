@@ -241,7 +241,7 @@ class OrderCreateView(APIView):
                 quantity=item.quantity,
                 total_amount=per_item_payable,
                 currency='INR',
-                status='payment_received',
+                status='created',
                 product_total=per_item_product_total,
                 shipping_cost=per_item_shipping,
                 platform_commission=per_item_commission,

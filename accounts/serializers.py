@@ -44,7 +44,7 @@ class SignupSerializer(serializers.ModelSerializer):
         model = User
         fields = ['username', 'password', 'phone', 'email', 'role', 'region', 'preferred_language', 'craft_type']
         extra_kwargs = {
-            'email': {'required': False, 'allow_blank': True},
+            'email': {'required': True, 'allow_blank': False},
             'region': {'required': False, 'allow_blank': True},
             'preferred_language': {'required': False},
         }
