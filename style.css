@@ -1757,3 +1757,667 @@ h1, h2, h3, h4, h5, h6, .brand-font {
     opacity: 1;
 }
 
+/* ==========================================================================
+   Role-Based Mobile & Desktop Navigation Bar System
+   ========================================================================== */
+
+/* ── Desktop Horizontal Nav Strip (>= 768px) ── */
+.desktop-nav-strip {
+    display: none;
+    width: 100%;
+    background: var(--bg-card);
+    border-bottom: 1px solid var(--border-color);
+    box-shadow: 0 4px 15px rgba(75, 40, 109, 0.03);
+    position: relative;
+    z-index: 99;
+}
+
+@media (min-width: 768px) {
+    .desktop-nav-strip.active {
+        display: block;
+    }
+}
+
+.desktop-nav-container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 20px;
+    height: 56px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    position: relative; /* Container for absolute 0.5s sliding indicator badge */
+}
+
+/* Sliding Purple Active Badge Indicator for PC Navbar */
+.desktop-nav-indicator {
+    position: absolute;
+    top: 50%;
+    left: 0;
+    height: 38px;
+    border-radius: 20px;
+    background: var(--primary-light);
+    border: 1px solid rgba(75, 40, 109, 0.12);
+    box-shadow: 0 4px 14px rgba(75, 40, 109, 0.12);
+    pointer-events: none;
+    z-index: 1;
+    opacity: 0;
+    transform: translateY(-50%);
+    transition: left 0.5s cubic-bezier(0.25, 1, 0.5, 1),
+                width 0.5s cubic-bezier(0.25, 1, 0.5, 1),
+                height 0.5s cubic-bezier(0.25, 1, 0.5, 1),
+                background 0.5s ease,
+                box-shadow 0.5s ease,
+                opacity 0.3s ease;
+    will-change: left, width, height, opacity;
+}
+
+.desktop-nav-list {
+    display: flex;
+    align-items: center;
+    justify-content: space-around;
+    width: 100%;
+    gap: 12px;
+    list-style: none;
+    position: relative;
+    z-index: 2; /* Sit cleanly above sliding indicator badge */
+}
+
+.desktop-nav-item {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    padding: 8px 18px;
+    border-radius: 20px;
+    font-family: var(--font-inter);
+    font-size: 14px;
+    font-weight: 500;
+    color: var(--text-secondary);
+    cursor: pointer;
+    text-decoration: none;
+    transition: color 0.2s ease;
+    position: relative;
+    user-select: none;
+    white-space: nowrap;
+    background: transparent;
+}
+
+.desktop-nav-item:hover {
+    color: var(--primary-color);
+}
+
+.desktop-nav-item.active {
+    color: var(--primary-color);
+    font-weight: 700;
+    background: transparent; /* Smooth sliding badge underneath provides active background */
+}
+
+
+
+/* Desktop Hover Dropdown Container */
+.desktop-account-menu-wrapper {
+    position: relative;
+}
+
+.desktop-account-dropdown {
+    position: absolute;
+    top: calc(100% + 8px);
+    right: 0;
+    width: 320px;
+    background: #FFFFFF;
+    border: 1px solid var(--border-color);
+    border-radius: 18px;
+    box-shadow: 0 16px 36px rgba(34, 22, 43, 0.12);
+    padding: 16px;
+    z-index: 1000;
+    opacity: 0;
+    visibility: hidden;
+    transform: translateY(10px);
+    transition: opacity 0.25s ease, transform 0.25s ease, visibility 0.25s;
+}
+
+.desktop-account-dropdown.show {
+    opacity: 1;
+    visibility: visible;
+    transform: translateY(0);
+}
+
+.dropdown-user-header {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding-bottom: 12px;
+    border-bottom: 1px solid var(--border-color);
+    margin-bottom: 12px;
+}
+
+.dropdown-user-avatar {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    background: var(--primary-light);
+    color: var(--primary-color);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 700;
+    font-size: 16px;
+}
+
+.dropdown-cart-preview {
+    margin-bottom: 12px;
+    border-bottom: 1px solid var(--border-color);
+    padding-bottom: 12px;
+}
+
+.dropdown-cart-title {
+    font-size: 12px;
+    font-weight: 700;
+    text-transform: uppercase;
+    color: var(--text-light);
+    letter-spacing: 0.5px;
+    margin-bottom: 8px;
+    display: flex;
+    justify-content: space-between;
+}
+
+.dropdown-cart-items {
+    max-height: 160px;
+    overflow-y: auto;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.dropdown-cart-item {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-size: 12px;
+}
+
+.dropdown-cart-thumb {
+    width: 36px;
+    height: 36px;
+    border-radius: 8px;
+    object-fit: cover;
+    background: var(--primary-light);
+    flex-shrink: 0;
+}
+
+.dropdown-cart-total-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-top: 10px;
+    font-size: 13px;
+    font-weight: 700;
+    color: var(--primary-color);
+}
+
+.dropdown-nav-links {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+
+.dropdown-nav-link {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 8px 12px;
+    border-radius: 10px;
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--text-secondary);
+    text-decoration: none;
+    transition: background 0.2s ease;
+    cursor: pointer;
+}
+
+.dropdown-nav-link:hover {
+    background: var(--bg-cream);
+    color: var(--primary-color);
+}
+
+.dropdown-nav-link.danger:hover {
+    background: #FFF5F5;
+    color: var(--danger-color);
+}
+
+
+/* ── Mobile Floating Pill Navigation (< 768px) ── */
+.mobile-bottom-nav {
+    display: none;
+    position: fixed;
+    bottom: 16px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: calc(100% - 32px);
+    max-width: 440px;
+    height: 64px;
+    background: rgba(255, 255, 255, 0.94);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    border: 1px solid var(--border-color);
+    border-radius: 36px;
+    box-shadow: 0 12px 36px rgba(75, 40, 109, 0.16), 0 2px 8px rgba(0, 0, 0, 0.04);
+    z-index: 999;
+    padding: 0 8px;
+}
+
+@media (max-width: 767px) {
+    .mobile-bottom-nav.active {
+        display: flex;
+        align-items: center;
+        justify-content: space-around;
+    }
+
+    /* Prevent any UI elements, action buttons, or forms from being obscured under the floating mobile nav */
+    body {
+        padding-bottom: 110px !important;
+    }
+
+    .app-wrapper {
+        padding-bottom: 110px !important;
+    }
+
+    .screen {
+        padding-bottom: 110px !important;
+    }
+
+    .artisan-tab-view {
+        padding-bottom: 110px !important;
+    }
+
+    #artisan-view-create,
+    #artisan-view-listings,
+    #artisan-view-communities,
+    #artisan-view-account,
+    #buyer-view-shop,
+    #buyer-view-cart,
+    #buyer-view-orders,
+    #buyer-view-reels,
+    #buyer-view-discover,
+    #buyer-view-account,
+    .voice-cataloger-section,
+    .catalog-results-panel {
+        padding-bottom: 110px !important;
+    }
+
+    #form-product-upload #btn-upload-submit,
+    #form-confirm-catalog #btn-catalog-confirm,
+    #btn-catalog-process {
+        margin-bottom: 24px !important;
+    }
+}
+
+.mobile-nav-item {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    flex: 1;
+    height: 100%;
+    color: var(--text-secondary);
+    text-decoration: none;
+    font-family: var(--font-inter);
+    font-size: 10px;
+    font-weight: 600;
+    cursor: pointer;
+    position: relative;
+    transition: color 0.18s ease;
+    user-select: none;
+    -webkit-tap-highlight-color: transparent;
+}
+
+.mobile-nav-item svg {
+    width: 22px;
+    height: 22px;
+    transition: transform 0.18s cubic-bezier(0.34, 1.56, 0.64, 1), stroke 0.18s ease;
+    margin-bottom: 2px;
+}
+
+.mobile-nav-item.active {
+    color: var(--primary-color);
+    font-weight: 700;
+}
+
+.mobile-nav-item.active svg {
+    stroke: var(--primary-color);
+    transform: scale(1.12);
+}
+
+.mobile-nav-item.tap-pop {
+    animation: navTapPop 0.2s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+@keyframes navTapPop {
+    0% { transform: scale(1); }
+    50% { transform: scale(0.88); }
+    100% { transform: scale(1); }
+}
+
+/* Active indicator dot under non-center items on mobile */
+.mobile-nav-item .active-dot {
+    position: absolute;
+    bottom: 5px;
+    width: 4px;
+    height: 4px;
+    border-radius: 50%;
+    background: var(--primary-color);
+    opacity: 0;
+    transform: scale(0);
+    transition: all 0.2s ease;
+}
+
+.mobile-nav-item.active .active-dot {
+    opacity: 1;
+    transform: scale(1);
+}
+
+/* Mobile Central Elevated Button Treatment */
+.mobile-nav-item.nav-center-item {
+    position: relative;
+    top: -16px;
+    flex: 0 0 58px;
+    width: 58px;
+    height: 58px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, var(--primary-color) 0%, #6C39A1 100%);
+    color: #FFFFFF !important;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 8px 22px rgba(75, 40, 109, 0.38), 0 0 0 5px var(--bg-cream);
+    transition: transform 0.2s cubic-bezier(0.34, 1.56, 0.64, 1), box-shadow 0.2s ease;
+}
+
+.mobile-nav-item.nav-center-item svg {
+    width: 26px;
+    height: 26px;
+    stroke: #FFFFFF !important;
+    margin-bottom: 0;
+}
+
+.mobile-nav-item.nav-center-item .mobile-nav-label {
+    display: none; /* Hide label on mobile elevated button for clean pill aesthetic */
+}
+
+.mobile-nav-item.nav-center-item:active {
+    transform: scale(0.92) translateY(2px);
+}
+
+.mobile-nav-item.nav-center-item.active {
+    box-shadow: 0 10px 26px rgba(75, 40, 109, 0.48), 0 0 0 5px var(--bg-cream);
+}
+
+
+/* ── Mobile Account Slide-Up Sheet ── */
+.account-sheet-backdrop {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(34, 22, 43, 0.45);
+    backdrop-filter: blur(5px);
+    -webkit-backdrop-filter: blur(5px);
+    z-index: 1050;
+    opacity: 0;
+    transition: opacity 0.3s ease;
+}
+
+.account-sheet-backdrop.show {
+    display: block;
+    opacity: 1;
+}
+
+.account-sheet-panel {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    max-height: 82vh;
+    background: var(--bg-card);
+    border-radius: 28px 28px 0 0;
+    box-shadow: 0 -10px 40px rgba(0, 0, 0, 0.2);
+    z-index: 1060;
+    padding: 24px 20px 32px 20px;
+    transform: translateY(100%);
+    transition: transform 0.35s cubic-bezier(0.16, 1, 0.3, 1);
+    overflow-y: auto;
+    box-sizing: border-box;
+}
+
+.account-sheet-panel.show {
+    transform: translateY(0);
+}
+
+.sheet-handle {
+    width: 42px;
+    height: 4.5px;
+    background: var(--border-color);
+    border-radius: 3px;
+    margin: 0 auto 18px auto;
+}
+
+.sheet-user-profile {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    padding-bottom: 16px;
+    border-bottom: 1px solid var(--border-color);
+    margin-bottom: 20px;
+}
+
+.sheet-user-avatar {
+    width: 48px;
+    height: 48px;
+    border-radius: 50%;
+    background: var(--primary-light);
+    color: var(--primary-color);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 20px;
+    font-weight: 700;
+    font-family: var(--font-outfit);
+}
+
+.sheet-user-name {
+    font-size: 17px;
+    font-weight: 700;
+    color: var(--text-primary);
+    font-family: var(--font-outfit);
+}
+
+.sheet-user-role {
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--text-secondary);
+    text-transform: capitalize;
+}
+
+.sheet-cart-section {
+    margin-bottom: 20px;
+    background: var(--bg-cream);
+    border: 1px solid var(--border-color);
+    border-radius: 16px;
+    padding: 16px;
+}
+
+.sheet-cart-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    font-size: 13px;
+    font-weight: 700;
+    color: var(--text-primary);
+    margin-bottom: 12px;
+}
+
+.sheet-cart-items-list {
+    max-height: 180px;
+    overflow-y: auto;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    margin-bottom: 14px;
+}
+
+.sheet-cart-row {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    background: #FFFFFF;
+    padding: 8px 12px;
+    border-radius: 12px;
+    border: 1px solid var(--border-color);
+}
+
+.sheet-cart-img {
+    width: 42px;
+    height: 42px;
+    border-radius: 8px;
+    object-fit: cover;
+    background: var(--primary-light);
+    flex-shrink: 0;
+}
+
+.sheet-cart-btns {
+    display: flex;
+    gap: 10px;
+}
+
+.sheet-action-list {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.sheet-action-item {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    padding: 14px 16px;
+    border-radius: 14px;
+    background: var(--bg-cream);
+    color: var(--text-primary);
+    font-size: 14px;
+    font-weight: 600;
+    text-decoration: none;
+    transition: background 0.2s ease;
+    cursor: pointer;
+}
+
+.sheet-action-item:active {
+    background: var(--primary-light);
+    color: var(--primary-color);
+}
+
+.sheet-action-item.danger {
+    color: var(--danger-color);
+    background: #FFF5F5;
+}
+
+/* Helper for smooth scaleIn keyframes */
+@keyframes scaleIn {
+    from { transform: scaleX(0); opacity: 0; }
+    to { transform: scaleX(1); opacity: 1; }
+}
+
+/* Global Toast Alert Banner */
+.toast-alert {
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    z-index: 1100;
+    min-width: 280px;
+    max-width: 400px;
+    padding: 14px 20px;
+    border-radius: 16px;
+    font-family: var(--font-inter);
+    font-size: 14px;
+    font-weight: 600;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+    transform: translateY(-20px);
+    opacity: 0;
+    pointer-events: none;
+}
+
+.toast-alert.show {
+    transform: translateY(0);
+    opacity: 1;
+    pointer-events: auto;
+}
+
+.toast-alert.error {
+    background: rgba(235, 87, 87, 0.94);
+    color: #FFFFFF;
+    border: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+.toast-alert.success {
+    background: rgba(46, 125, 50, 0.94);
+    color: #FFFFFF;
+    border: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+.toast-alert.info {
+    background: rgba(75, 40, 109, 0.94);
+    color: #FFFFFF;
+    border: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+/* Modal Overlay Styles */
+.modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(34, 22, 43, 0.55);
+    backdrop-filter: blur(6px);
+    -webkit-backdrop-filter: blur(6px);
+    z-index: 1080;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.25s ease;
+}
+
+.modal-overlay.show {
+    opacity: 1;
+    pointer-events: auto;
+}
+
+.modal-card {
+    background: var(--bg-card);
+    border: 1px solid var(--border-color);
+    border-radius: 24px;
+    padding: 32px;
+    max-width: 440px;
+    width: 100%;
+    box-shadow: 0 16px 40px rgba(0, 0, 0, 0.18);
+    transform: scale(0.95);
+    transition: transform 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.modal-overlay.show .modal-card {
+    transform: scale(1);
+}
+
+
+

@@ -43,3 +43,5 @@ urllib3==2.7.0
 # --- AI services dependencies ---
 groq                      # Groq API client (ASR via Whisper + LLM description generation)
 razorpay==2.0.1
+sentry-sdk==2.22.0
+

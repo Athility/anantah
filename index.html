@@ -4,71 +4,56 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Anantah - AI Marketplace for Artisans</title>
+    <!-- Favicon -->
+    <link rel="icon" type="image/png" href="favicon.png">
+    <link rel="shortcut icon" href="favicon.ico">
     <!-- Premium Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;600;700;800&family=Inter:wght@400;500;600;700&family=Playfair+Display:ital,wght@0,400..900;1,400..900&family=Poppins:ital,wght@0,100..900;1,100..900&display=swap" rel="stylesheet">
     <!-- Main Style -->
     <link rel="stylesheet" href="style.css">
+    <!-- Sentry Error Monitoring & PostHog Analytics SDKs (Placeholders) -->
+    <script src="https://browser.sentry-cdn.com/7.100.0/bundle.min.js" crossorigin="anonymous"></script>
+    <script>
+        if (window.Sentry) {
+            Sentry.init({ dsn: "https://placeholder_key@o0.ingest.sentry.io/0", tracesSampleRate: 1.0 });
+        }
+        function trackEvent(eventName, properties = {}) {
+            console.log(`[Analytics Event Tracked]: ${eventName}`, properties);
+            if (window.posthog) posthog.capture(eventName, properties);
+        }
+    </script>
 </head>
 <body>
+    <!-- Global Toast Alert Banner -->
+    <div id="toast-alert" class="toast-alert"></div>
 
     <!-- Header Navbar (Visible only when logged in) -->
     <header class="navbar" id="app-navbar" style="display: none;">
         <div class="navbar-container">
-            <div class="navbar-brand">
-                <!-- Inline SVG Infinity Loop Logo -->
-                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="color: var(--primary-color);">
-                    <path d="M12 12c-2-2.67-4-4-6-4a4 4 0 1 0 0 8c2 0 4-1.33 6-4Zm0 0c2 2.67 4 4 6 4a4 4 0 1 0 0-8c-2 0-4 1.33-6 4Z"/>
-                </svg>
+            <div class="navbar-brand" style="display: flex; align-items: center; gap: 10px;">
+                <img src="anantah_logo.png" alt="Anantah Logo" style="height: 36px; width: auto; object-fit: contain; vertical-align: middle;">
                 <span>Anantah</span>
-            </div>
-            <div class="navbar-actions" style="display: flex; align-items: center; gap: 12px;">
-                <div class="user-badge-container" style="position: relative;">
-                    <div class="user-badge" id="navbar-user-badge" style="cursor: pointer; display: flex; align-items: center; gap: 6px; user-select: none;">
-                        <span id="user-display-name">Username</span>
-                        <!-- Dropdown Arrow -->
-                        <svg width="12" height="12" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path d="m19.5 8.25-7.5 7.5-7.5-7.5"/></svg>
-                    </div>
-                    
-                    <!-- Artisan Dropdown Menu (only works when role is artisan) -->
-                    <div class="user-dropdown-menu" id="artisan-user-dropdown" style="display: none; position: absolute; right: 0; top: calc(100% + 8px); background: #FFFFFF; border: 1px solid var(--border-color); border-radius: 12px; box-shadow: 0 10px 25px rgba(0,0,0,0.08); width: 220px; z-index: 1000; overflow: hidden;">
-                        <div class="dropdown-header" style="padding: 12px 16px; font-size: 11px; font-weight: 700; text-transform: uppercase; color: var(--text-light); border-bottom: 1px solid var(--border-color); letter-spacing: 0.5px; background: #FAF9FC;">Artisan Actions</div>
-                        <a href="#" class="dropdown-item" id="menu-see-listings" style="display: flex; align-items: center; gap: 10px; padding: 12px 16px; font-size: 13px; font-weight: 600; color: var(--text-secondary); text-decoration: none; transition: var(--transition-smooth); font-family: var(--font-inter);">
-                            <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><rect width="7" height="9" x="3" y="3" rx="1"/><rect width="7" height="5" x="14" y="3" rx="1"/><rect width="7" height="9" x="14" y="12" rx="1"/><rect width="7" height="5" x="3" y="16" rx="1"/></svg>
-                            See My Listings
-                        </a>
-                        <a href="#" class="dropdown-item" id="menu-new-listing" style="display: flex; align-items: center; gap: 10px; padding: 12px 16px; font-size: 13px; font-weight: 600; color: var(--text-secondary); text-decoration: none; transition: var(--transition-smooth); font-family: var(--font-inter);">
-                            <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M12 4.5v15m7.5-7.5h-15"/></svg>
-                            Make New Listing
-                        </a>
-                        <a href="#" class="dropdown-item" id="menu-communities" style="display: flex; align-items: center; justify-content: space-between; padding: 12px 16px; font-size: 13px; font-weight: 600; color: var(--text-secondary); text-decoration: none; transition: var(--transition-smooth); font-family: var(--font-inter);">
-                            <div style="display: flex; align-items: center; gap: 10px;">
-                                <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M18 18.72a6 6 0 0 0-3.44-10.67M6 18.72a6 6 0 0 1 3.44-10.67M12 12a4 4 0 1 0 0-8 4 4 0 0 0 0 8z"/></svg>
-                                Communities
-                            </div>
-                            <span style="font-size: 8px; font-weight: 700; background: var(--primary-light); color: var(--primary-color); padding: 2px 6px; border-radius: 8px; text-transform: uppercase; letter-spacing: 0.5px;">Soon</span>
-                        </a>
-                        <a href="#" class="dropdown-item" id="menu-orders" style="display: flex; align-items: center; justify-content: space-between; padding: 12px 16px; font-size: 13px; font-weight: 600; color: var(--text-secondary); text-decoration: none; transition: var(--transition-smooth); font-family: var(--font-inter);">
-                            <div style="display: flex; align-items: center; gap: 10px;">
-                                <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M15.75 10.5V6a3.75 3.75 0 1 0-7.5 0v4.5m11.356-1.993 1.263 12c.07.665-.45 1.243-1.119 1.243H4.25a1.125 1.125 0 0 1-1.12-1.243l1.264-12A1.125 1.125 0 0 1 5.513 7.5h12.974c.576 0 1.059.435 1.119 1.007zM8.625 10.5a.375.375 0 1 1-.75 0 .375.375 0 0 1 .75 0zm7.5 0a.375.375 0 1 1-.75 0 .375.375 0 0 1 .75 0z"/></svg>
-                                Orders
-                            </div>
-                            <span style="font-size: 8px; font-weight: 700; background: var(--primary-light); color: var(--primary-color); padding: 2px 6px; border-radius: 8px; text-transform: uppercase; letter-spacing: 0.5px;">Soon</span>
-                        </a>
-                        <a href="#" class="dropdown-item" id="menu-analytics" style="display: flex; align-items: center; justify-content: space-between; padding: 12px 16px; font-size: 13px; font-weight: 600; color: var(--text-secondary); text-decoration: none; transition: var(--transition-smooth); font-family: var(--font-inter);">
-                            <div style="display: flex; align-items: center; gap: 10px;">
-                                <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M3 13.125C3 12.504 3.504 12 4.125 12h2.25c.621 0 1.125.504 1.125 1.125v5.25c0 .621-.504 1.125-1.125 1.125h-2.25A1.125 1.125 0 0 1 3 18.375v-5.25zM9.75 8.625c0-.621.504-1.125 1.125-1.125h2.25c.621 0 1.125.504 1.125 1.125v9.75c0 .621-.504 1.125-1.125 1.125h-2.25a1.125 1.125 0 0 1-1.125-1.125v-9.75zM16.5 4.125c0-.621.504-1.125 1.125-1.125h2.25C20.496 3 21 3.504 21 4.125v14.25c0 .621-.504 1.125-1.125 1.125h-2.25a1.125 1.125 0 0 1-1.125-1.125V4.125z"/></svg>
-                                Analytics
-                            </div>
-                            <span style="font-size: 8px; font-weight: 700; background: var(--primary-light); color: var(--primary-color); padding: 2px 6px; border-radius: 8px; text-transform: uppercase; letter-spacing: 0.5px;">Soon</span>
-                        </a>
-                    </div>
-                </div>
-                <button class="btn-nav" id="logout-button">Logout</button>
             </div>
         </div>
     </header>
+
+    <!-- Desktop Horizontal Secondary Nav Strip (Visible on Desktop >=768px when logged in) -->
+    <nav class="desktop-nav-strip" id="desktop-nav-strip">
+        <div class="desktop-nav-container">
+            <!-- Sliding Purple Active Badge Indicator -->
+            <div class="desktop-nav-indicator" id="desktop-nav-indicator"></div>
+            <ul class="desktop-nav-list" id="desktop-nav-list">
+                <!-- Dynamically populated based on role -->
+            </ul>
+        </div>
+    </nav>
+
+    <!-- Mobile Floating Bottom Navigation Pill (Visible on Mobile <768px when logged in) -->
+    <nav class="mobile-bottom-nav" id="mobile-bottom-nav" aria-label="Mobile Bottom Navigation">
+        <!-- Dynamically populated based on role -->
+    </nav>
 
     <div class="app-wrapper">
 
@@ -110,17 +95,9 @@
         <section id="screen-onboarding" class="screen">
             <div class="onboarding-card">
                 <div class="logo-section">
-                    <!-- Elegant Custom SVG Infinity Logo -->
-                    <div style="margin-bottom: 20px;">
-                        <svg width="72" height="72" viewBox="0 0 24 24" fill="none" stroke="url(#logoGrad)" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="filter: drop-shadow(0 4px 10px rgba(75, 40, 109, 0.15));">
-                            <defs>
-                                <linearGradient id="logoGrad" x1="0%" y1="0%" x2="100%" y2="100%">
-                                    <stop offset="0%" stop-color="#4B286D" />
-                                    <stop offset="100%" stop-color="#803DBC" />
-                                </linearGradient>
-                            </defs>
-                            <path d="M12 12c-2-2.67-4-4-6-4a4 4 0 1 0 0 8c2 0 4-1.33 6-4Zm0 0c2 2.67 4 4 6 4a4 4 0 1 0 0-8c-2 0-4 1.33-6 4Z"/>
-                        </svg>
+                    <!-- Official Anantah Brand Logo -->
+                    <div style="margin-bottom: 16px;">
+                        <img src="anantah_logo.png" alt="Anantah Logo" style="max-width: 240px; width: 100%; height: auto; object-fit: contain; mix-blend-mode: multiply; filter: drop-shadow(0 4px 12px rgba(75, 40, 109, 0.12));">
                     </div>
                     <h1 class="logo-title">Anantah</h1>
                     <div class="logo-subtitle">— Infinite —</div>
@@ -156,6 +133,9 @@
                         <input class="form-input" type="password" id="login-password" placeholder="••••••••" required>
                         <div class="error-message">Invalid password.</div>
                     </div>
+                    <div style="text-align: right; margin-top: -6px; margin-bottom: 16px;">
+                        <a href="#" id="link-goto-forgot-password" style="font-size: 13px; color: var(--primary-color); font-weight: 600; text-decoration: none;">Forgot Password?</a>
+                    </div>
                     
                     <div id="login-general-error" style="color: var(--danger-color); font-size: 14px; text-align: center; margin-bottom: 15px; display: none;"></div>
 
@@ -164,6 +144,55 @@
                 <div class="form-footer-text">
                     Don't have an account? <br>
                     <a href="#" id="link-goto-artisan-signup">Register as Artisan</a> or <a href="#" id="link-goto-buyer-signup">Register as Buyer</a>
+                </div>
+            </div>
+        </section>
+
+        <!-- 3.1 FORGOT PASSWORD SCREEN (Request Reset Code) -->
+        <section id="screen-forgot-password" class="screen">
+            <div class="form-container">
+                <div class="form-header">
+                    <h2>Reset Password</h2>
+                    <p>Enter your phone number or username to receive a reset code</p>
+                </div>
+                <form id="form-forgot-password">
+                    <div class="form-group" id="group-pwd-reset-identifier">
+                        <label class="form-label" for="pwd-reset-identifier">Registered Phone or Username</label>
+                        <input class="form-input" type="text" id="pwd-reset-identifier" placeholder="e.g. 9876543210 or mohit_artisan" required>
+                        <div class="error-message">Account not found.</div>
+                    </div>
+                    <div id="forgot-general-error" style="color: var(--danger-color); font-size: 14px; text-align: center; margin-bottom: 15px; display: none;"></div>
+                    <button class="btn btn-primary" type="submit" id="btn-pwd-reset-send">Send Verification Code</button>
+                </form>
+                <div class="form-footer-text" style="margin-top: 16px;">
+                    <a href="#" class="link-goto-login" style="color: var(--primary-color); font-weight: 600; text-decoration: none;">&larr; Back to Login</a>
+                </div>
+            </div>
+        </section>
+
+        <!-- 3.2 RESET PASSWORD CONFIRM SCREEN (Enter Code & New Password) -->
+        <section id="screen-reset-password" class="screen">
+            <div class="form-container">
+                <div class="form-header">
+                    <h2>Set New Password</h2>
+                    <p>Enter the verification code sent to your phone and your new password</p>
+                </div>
+                <form id="form-reset-confirm">
+                    <div class="form-group" id="group-pwd-reset-otp">
+                        <label class="form-label" for="pwd-reset-otp">Verification Code (OTP)</label>
+                        <input class="form-input" type="text" id="pwd-reset-otp" placeholder="e.g. 1234" maxlength="6" required>
+                        <div class="error-message">Invalid code.</div>
+                    </div>
+                    <div class="form-group" id="group-pwd-reset-new-password">
+                        <label class="form-label" for="pwd-reset-new-password">New Password</label>
+                        <input class="form-input" type="password" id="pwd-reset-new-password" placeholder="••••••••" required minlength="4">
+                        <div class="error-message">Password must be at least 4 characters.</div>
+                    </div>
+                    <div id="reset-confirm-general-error" style="color: var(--danger-color); font-size: 14px; text-align: center; margin-bottom: 15px; display: none;"></div>
+                    <button class="btn btn-primary" type="submit" id="btn-pwd-reset-confirm">Reset Password</button>
+                </form>
+                <div class="form-footer-text" style="margin-top: 16px;">
+                    <a href="#" class="link-goto-login" style="color: var(--primary-color); font-weight: 600; text-decoration: none;">&larr; Back to Login</a>
                 </div>
             </div>
         </section>
@@ -340,19 +369,12 @@
         </section>
 
         <!-- 6. ARTISAN DASHBOARD SCREEN -->
-        <section id="screen-artisan-dashboard" class="screen">
+        <section id="screen-artisan-dashboard" class="screen" style="padding-top: 24px;">
             <div class="dashboard-header" style="margin-bottom: 16px;">
                 <div class="dashboard-title">
                     <h2>Artisan Studio</h2>
                     <p>Manage your listings and enhance new products using AI</p>
                 </div>
-            </div>
-
-            <!-- Artisan Dashboard Sub-Navigation Tabs -->
-            <div class="artisan-tab-bar" style="display: flex; gap: 16px; border-bottom: 1px solid var(--border-color); margin-bottom: 24px; padding-bottom: 8px;">
-                <button type="button" class="artisan-nav-btn active" id="tab-btn-listings" style="background: none; border: none; font-size: 15px; font-weight: 600; font-family: var(--font-outfit); color: var(--primary-color); cursor: pointer; transition: var(--transition-smooth); outline: none;">My Listings</button>
-                <button type="button" class="artisan-nav-btn" id="tab-btn-create" style="background: none; border: none; font-size: 15px; font-weight: 600; font-family: var(--font-outfit); color: var(--text-secondary); cursor: pointer; transition: var(--transition-smooth); outline: none;">Make New Listing</button>
-                <button type="button" class="artisan-nav-btn" id="tab-btn-coming" style="background: none; border: none; font-size: 15px; font-weight: 600; font-family: var(--font-outfit); color: var(--text-secondary); cursor: pointer; transition: var(--transition-smooth); outline: none;">More Features</button>
             </div>
 
             <!-- Tab 1: My Listings View -->
@@ -628,6 +650,9 @@
                         </div>
                     </div><!-- /voice-cataloger-section -->
 
+                    <!-- Guaranteed clearance spacer on mobile viewports -->
+                    <div class="mobile-nav-spacer"></div>
+
                 </div>
             </div>
 
@@ -667,17 +692,46 @@
                     </div>
                 </div>
             </div>
+
+            <!-- Tab 4: Communities View -->
+            <div id="artisan-view-communities" class="artisan-tab-view" style="display: none;">
+                <div style="background: var(--bg-card); border: 1px solid var(--border-color); border-radius: 24px; padding: 40px 24px; text-align: center; max-width: 600px; margin: 20px auto; box-shadow: var(--shadow-premium);">
+                    <div style="width: 64px; height: 64px; border-radius: 20px; background: var(--primary-light); color: var(--primary-color); display: flex; align-items: center; justify-content: center; margin: 0 auto 20px auto;">
+                        <svg width="32" height="32" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+                    </div>
+                    <h3 class="brand-font" style="font-size: 24px; color: var(--primary-color); margin-bottom: 8px;">Artisan Communities</h3>
+                    <p style="color: var(--text-secondary); font-size: 14px; line-height: 1.6; margin-bottom: 20px;">Connect with fellow craftspeople across India. Collaborate on large orders, share authentic techniques, and source raw materials directly.</p>
+                    <span style="display: inline-block; background: var(--accent-gold); color: #22162B; font-weight: 700; font-size: 11px; padding: 6px 14px; border-radius: 20px; text-transform: uppercase; letter-spacing: 0.5px;">Launching Soon</span>
+                </div>
+            </div>
+
+            <!-- Tab 5: Artisan Account View -->
+            <div id="artisan-view-account" class="artisan-tab-view" style="display: none;">
+                <div style="background: var(--bg-card); border: 1px solid var(--border-color); border-radius: 24px; padding: 32px; max-width: 600px; margin: 20px auto; box-shadow: var(--shadow-premium);">
+                    <div style="display: flex; align-items: center; gap: 16px; margin-bottom: 24px;">
+                        <div style="width: 60px; height: 60px; border-radius: 50%; background: var(--primary-light); color: var(--primary-color); display: flex; align-items: center; justify-content: center; font-size: 24px; font-weight: 700;" id="artisan-account-avatar">A</div>
+                        <div>
+                            <h3 class="brand-font" style="font-size: 20px; color: var(--text-primary); margin: 0;" id="artisan-account-name">Artisan Profile</h3>
+                            <span style="font-size: 13px; color: var(--text-secondary);" id="artisan-account-craft">Master Craftsperson</span>
+                        </div>
+                    </div>
+                    <div style="display: flex; flex-direction: column; gap: 12px;">
+                        <div style="padding: 12px 16px; background: var(--bg-cream); border-radius: 12px; font-size: 14px; display: flex; justify-content: space-between;">
+                            <span style="color: var(--text-secondary);">Account Role</span>
+                            <strong style="color: var(--primary-color);">Artisan</strong>
+                        </div>
+                        <div style="padding: 12px 16px; background: var(--bg-cream); border-radius: 12px; font-size: 14px; display: flex; justify-content: space-between;">
+                            <span style="color: var(--text-secondary);">Shop Status</span>
+                            <strong style="color: #2E7D32;">Verified Active</strong>
+                        </div>
+                        <button type="button" onclick="clearAuth()" class="btn btn-secondary" style="margin-top: 12px; color: var(--danger-color); border-color: var(--danger-color);">Logout of Account</button>
+                    </div>
+                </div>
+            </div>
         </section>
 
         <!-- 7. BUYER DASHBOARD SCREEN -->
-        <section id="screen-buyer-dashboard" class="screen">
-            <!-- Buyer Tab Bar -->
-            <div id="buyer-tab-bar" style="display:flex; align-items:center; border-bottom: 2px solid var(--border-color); margin-bottom: 20px; gap: 0;">
-                <button id="buyer-tab-shop" class="buyer-tab-btn active" onclick="switchBuyerTab('shop')" style="flex:1; background:none; border:none; padding: 14px 0; font-size:14px; font-weight:700; color:var(--primary-color); border-bottom: 3px solid var(--primary-color); cursor:pointer; transition:var(--transition-smooth); font-family:var(--font-inter);">🏪 Shop</button>
-                <button id="buyer-tab-cart" class="buyer-tab-btn" onclick="switchBuyerTab('cart')" style="flex:1; background:none; border:none; padding: 14px 0; font-size:14px; font-weight:700; color:var(--text-secondary); border-bottom: 3px solid transparent; cursor:pointer; transition:var(--transition-smooth); font-family:var(--font-inter); position:relative;">🛒 Cart <span id="cart-badge" style="display:none; position:absolute; top:8px; right:calc(50% - 36px); background:#D96A3D; color:#fff; font-size:10px; font-weight:800; border-radius:50%; width:17px; height:17px; line-height:17px; text-align:center;">0</span></button>
-                <button id="buyer-tab-orders" class="buyer-tab-btn" onclick="switchBuyerTab('orders')" style="flex:1; background:none; border:none; padding: 14px 0; font-size:14px; font-weight:700; color:var(--text-secondary); border-bottom: 3px solid transparent; cursor:pointer; transition:var(--transition-smooth); font-family:var(--font-inter);">📦 My Orders</button>
-            </div>
-
+        <section id="screen-buyer-dashboard" class="screen" style="padding-top: 24px;">
             <!-- TAB: Shop -->
             <div id="buyer-view-shop">
                 <h3 class="brand-font" style="font-size: 22px; color: var(--primary-color); margin-bottom: 20px;">Popular Crafts</h3>
@@ -719,7 +773,70 @@
                     <p style="font-size:14px;">Place your first order from the shop!</p>
                 </div>
             </div>
+
+            <!-- TAB: Reels -->
+            <div id="buyer-view-reels" style="display: none;">
+                <div style="background: var(--bg-card); border: 1px solid var(--border-color); border-radius: 24px; padding: 40px 24px; text-align: center; max-width: 600px; margin: 20px auto; box-shadow: var(--shadow-premium);">
+                    <div style="width: 64px; height: 64px; border-radius: 20px; background: #FFE8E8; color: #D32F2F; display: flex; align-items: center; justify-content: center; margin: 0 auto 20px auto;">
+                        <svg width="32" height="32" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><polygon points="23 7 16 12 23 17 23 7"/><rect x="1" y="5" width="15" height="14" rx="2" ry="2"/></svg>
+                    </div>
+                    <h3 class="brand-font" style="font-size: 24px; color: var(--primary-color); margin-bottom: 8px;">Artisan Short Reels</h3>
+                    <p style="color: var(--text-secondary); font-size: 14px; line-height: 1.6; margin-bottom: 20px;">Watch short behind-the-scenes videos of Indian master artisans creating handmade pottery, silk weaving, and brass casting in real-time.</p>
+                    <span style="display: inline-block; background: var(--accent-gold); color: #22162B; font-weight: 700; font-size: 11px; padding: 6px 14px; border-radius: 20px; text-transform: uppercase; letter-spacing: 0.5px;">Coming Soon</span>
+                </div>
+            </div>
+
+            <!-- TAB: Discover -->
+            <div id="buyer-view-discover" style="display: none;">
+                <div style="background: var(--bg-card); border: 1px solid var(--border-color); border-radius: 24px; padding: 40px 24px; text-align: center; max-width: 600px; margin: 20px auto; box-shadow: var(--shadow-premium);">
+                    <div style="width: 64px; height: 64px; border-radius: 20px; background: var(--primary-light); color: var(--primary-color); display: flex; align-items: center; justify-content: center; margin: 0 auto 20px auto;">
+                        <svg width="32" height="32" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><polygon points="16.24 7.76 14.12 14.12 7.76 16.24 9.88 9.88 16.24 7.76"/></svg>
+                    </div>
+                    <h3 class="brand-font" style="font-size: 24px; color: var(--primary-color); margin-bottom: 8px;">Heritage Craft Discovery</h3>
+                    <p style="color: var(--text-secondary); font-size: 14px; line-height: 1.6; margin-bottom: 20px;">Explore products by GI tag, artisan state, craft technique, and historical origin in an Instagram Explore-style interactive layout.</p>
+                    <span style="display: inline-block; background: var(--accent-gold); color: #22162B; font-weight: 700; font-size: 11px; padding: 6px 14px; border-radius: 20px; text-transform: uppercase; letter-spacing: 0.5px;">Coming Soon</span>
+                </div>
+            </div>
+
+            <!-- TAB: Account Details -->
+            <div id="buyer-view-account" style="display: none;">
+                <div style="background: var(--bg-card); border: 1px solid var(--border-color); border-radius: 24px; padding: 32px; max-width: 600px; margin: 20px auto; box-shadow: var(--shadow-premium);">
+                    <div style="display: flex; align-items: center; gap: 16px; margin-bottom: 24px;">
+                        <div style="width: 60px; height: 60px; border-radius: 50%; background: #E5F6DF; color: #2E7D32; display: flex; align-items: center; justify-content: center; font-size: 24px; font-weight: 700;" id="buyer-account-avatar">B</div>
+                        <div>
+                            <h3 class="brand-font" style="font-size: 20px; color: var(--text-primary); margin: 0;" id="buyer-account-name">Buyer Profile</h3>
+                            <span style="font-size: 13px; color: var(--text-secondary);">Craft Enthusiast & Collector</span>
+                        </div>
+                    </div>
+                    <div style="display: flex; flex-direction: column; gap: 12px;">
+                        <div style="padding: 12px 16px; background: var(--bg-cream); border-radius: 12px; font-size: 14px; display: flex; justify-content: space-between;">
+                            <span style="color: var(--text-secondary);">Account Role</span>
+                            <strong style="color: #2E7D32;">Buyer</strong>
+                        </div>
+                        <div style="padding: 12px 16px; background: var(--bg-cream); border-radius: 12px; font-size: 14px; display: flex; justify-content: space-between;">
+                            <span style="color: var(--text-secondary);">Impact Status</span>
+                            <strong style="color: var(--primary-color);">Artisan Patron</strong>
+                        </div>
+                        <button type="button" onclick="clearAuth()" class="btn btn-secondary" style="margin-top: 12px; color: var(--text-primary); border-color: var(--border-color);">Logout of Account</button>
+                        <button type="button" onclick="openDeleteAccountModal()" class="btn btn-secondary" style="margin-top: 4px; color: var(--danger-color); border-color: var(--danger-color);">Delete Account</button>
+                    </div>
+                </div>
+            </div>
         </section>
+
+        <!-- DELETE ACCOUNT CONFIRMATION MODAL -->
+        <div class="modal-overlay" id="modal-delete-account" style="display: none; position: fixed; inset: 0; z-index: 3000; background: rgba(0,0,0,0.5); align-items: center; justify-content: center;">
+            <div class="modal-card" style="background: #fff; padding: 32px; border-radius: 20px; max-width: 340px; text-align: center;">
+                <h3 class="brand-font" style="font-size: 20px; color: var(--danger-color); margin-bottom: 8px;">Delete Account</h3>
+                <p style="font-size: 13px; color: var(--text-secondary); line-height: 1.5; margin-bottom: 20px;">
+                    This will permanently delete your user profile, listings, and order records. This action cannot be undone.
+                </p>
+                <div style="display: flex; flex-direction: column; gap: 10px;">
+                    <button type="button" class="btn btn-primary" id="btn-confirm-delete-account" style="background: var(--danger-color); border-color: var(--danger-color);">Permanently Delete My Account</button>
+                    <button type="button" class="btn btn-secondary" onclick="closeDeleteAccountModal()">Cancel</button>
+                </div>
+            </div>
+        </div>
 
         <!-- CHECKOUT SCREEN (slides in as overlay) -->
         <div id="checkout-overlay" style="display:none; position:fixed; inset:0; z-index:1000; background:#f7f4ef; overflow-y:auto; padding: 0 0 60px 0;">
@@ -802,13 +919,33 @@
         let accessToken = localStorage.getItem('access_token');
         let refreshToken = localStorage.getItem('refresh_token');
         let verifiedPhoneNumber = null; // Verified phone number from Step 1
+        let registrationToken = null; // Registration token from VerifyOTP
+        let isRefinerFormDirty = false; // Unsaved changes dirty flag
 
+        // Helper to show floating toast alerts
+        function showToastAlert(msg, type = 'info') {
+            const toast = document.getElementById('toast-alert');
+            if (!toast) return;
+            toast.textContent = msg;
+            toast.className = `toast-alert ${type} show`;
+            setTimeout(() => { toast.classList.remove('show'); }, 3500);
+        }
+
+        // Global offline/online listeners
+        window.addEventListener('offline', () => {
+            showToastAlert('Network connection lost. Please check your internet.', 'error');
+        });
+        window.addEventListener('online', () => {
+            showToastAlert('Internet connection restored!', 'success');
+        });
 
         // References to DOM elements
         const screens = {
             language: document.getElementById('screen-language'),
             onboarding: document.getElementById('screen-onboarding'),
             login: document.getElementById('screen-login'),
+            forgotPassword: document.getElementById('screen-forgot-password'),
+            resetPassword: document.getElementById('screen-reset-password'),
             register: document.getElementById('screen-register'),
             artisanDashboard: document.getElementById('screen-artisan-dashboard'),
             buyerDashboard: document.getElementById('screen-buyer-dashboard')
@@ -819,18 +956,30 @@
         const userDisplayName = document.getElementById('user-display-name');
         const logoutBtn = document.getElementById('logout-button');
 
-        // Core Helper: Navigation between screens
-        function navigateTo(screenKey) {
+        // Core Helper: Navigation between screens with SPA history support
+        function navigateTo(screenKey, pushHistory = true) {
+            if (pushHistory && history.state?.screen !== screenKey) {
+                history.pushState({ screen: screenKey }, '', '#' + screenKey);
+            }
+
+            const dtStrip = document.getElementById('desktop-nav-strip');
+            const mbNav = document.getElementById('mobile-bottom-nav');
+
             // Hide navbar by default unless dashboard screens are active
             if (screenKey === 'artisanDashboard' || screenKey === 'buyerDashboard') {
                 navbar.style.display = 'block';
                 if (currentUser) {
-                    userDisplayName.textContent = currentUser.username;
-                    navbarBadge.style.backgroundColor = currentUser.role === 'artisan' ? 'var(--primary-light)' : '#E5F6DF';
-                    navbarBadge.style.color = currentUser.role === 'artisan' ? 'var(--primary-color)' : '#2E7D32';
+                    if (userDisplayName) userDisplayName.textContent = currentUser.username;
+                    if (navbarBadge) {
+                        navbarBadge.style.backgroundColor = currentUser.role === 'artisan' ? 'var(--primary-light)' : '#E5F6DF';
+                        navbarBadge.style.color = currentUser.role === 'artisan' ? 'var(--primary-color)' : '#2E7D32';
+                    }
+                    renderRoleNavbar();
                 }
             } else {
                 navbar.style.display = 'none';
+                if (dtStrip) dtStrip.classList.remove('active');
+                if (mbNav) mbNav.classList.remove('active');
             }
 
             if (screenKey === 'register') {
@@ -861,6 +1010,464 @@
                 }
             });
             window.scrollTo(0, 0);
+        }
+
+        // SPA History popstate listener
+        window.addEventListener('popstate', (e) => {
+            if (e.state && e.state.screen && screens[e.state.screen]) {
+                navigateTo(e.state.screen, false);
+            }
+        });
+
+        // Unsaved changes beforeunload protection
+        window.addEventListener('beforeunload', (e) => {
+            if (isRefinerFormDirty) {
+                e.preventDefault();
+                e.returnValue = '';
+            }
+        });
+
+        // ─── Role-Based Navigation System Manager ─────────────────────────────
+        let activeRoleNavTab = 'home';
+        let accountDropdownTimer = null;
+
+        const NAV_ITEMS_BY_ROLE = {
+            artisan: [
+                {
+                    id: 'home',
+                    label: 'Home',
+                    icon: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m3 9 9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>`,
+                    targetView: 'artisan-view-listings'
+                },
+                {
+                    id: 'my-listings',
+                    label: 'My Listings',
+                    icon: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="7" height="9" x="3" y="3" rx="1"/><rect width="7" height="5" x="14" y="3" rx="1"/><rect width="7" height="9" x="14" y="12" rx="1"/><rect width="7" height="5" x="3" y="16" rx="1"/></svg>`,
+                    targetView: 'artisan-view-listings'
+                },
+                {
+                    id: 'new-listing',
+                    label: 'Make New Listing',
+                    isCenter: true,
+                    icon: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>`,
+                    targetView: 'artisan-view-create'
+                },
+                {
+                    id: 'communities',
+                    label: 'Communities',
+                    icon: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>`,
+                    targetView: 'artisan-view-communities'
+                },
+                {
+                    id: 'account',
+                    label: 'My Account',
+                    isAccount: true,
+                    icon: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>`,
+                    targetView: 'artisan-view-account'
+                }
+            ],
+            buyer: [
+                {
+                    id: 'home',
+                    label: 'Home',
+                    icon: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m3 9 9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>`,
+                    targetView: 'buyer-view-shop',
+                    targetBuyerTab: 'shop'
+                },
+                {
+                    id: 'reels',
+                    label: 'Reels',
+                    icon: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="23 7 16 12 23 17 23 7"/><rect x="1" y="5" width="15" height="14" rx="2" ry="2"/></svg>`,
+                    targetView: 'buyer-view-reels'
+                },
+                {
+                    id: 'listings',
+                    label: 'Listings',
+                    isCenter: true,
+                    icon: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 2 3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"/><line x1="3" y1="6" x2="21" y2="6"/><path d="M16 10a4 4 0 0 1-8 0"/></svg>`,
+                    targetView: 'buyer-view-shop',
+                    targetBuyerTab: 'shop'
+                },
+                {
+                    id: 'discover',
+                    label: 'Discover',
+                    icon: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polygon points="16.24 7.76 14.12 14.12 7.76 16.24 9.88 9.88 16.24 7.76"/></svg>`,
+                    targetView: 'buyer-view-discover'
+                },
+                {
+                    id: 'account',
+                    label: 'My Account',
+                    isAccount: true,
+                    icon: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>`,
+                    targetView: 'buyer-view-account'
+                }
+            ]
+        };
+
+        function renderRoleNavbar() {
+            const desktopStrip = document.getElementById('desktop-nav-strip');
+            const desktopList = document.getElementById('desktop-nav-list');
+            const mobileNav = document.getElementById('mobile-bottom-nav');
+
+            if (!currentUser) {
+                if (desktopStrip) desktopStrip.classList.remove('active');
+                if (mobileNav) mobileNav.classList.remove('active');
+                return;
+            }
+
+            const role = (currentUser.role === 'artisan') ? 'artisan' : 'buyer';
+            const items = NAV_ITEMS_BY_ROLE[role];
+
+            // Update profile labels inside account views
+            if (role === 'artisan') {
+                const nameEl = document.getElementById('artisan-account-name');
+                const avatarEl = document.getElementById('artisan-account-avatar');
+                const craftEl = document.getElementById('artisan-account-craft');
+                if (nameEl) nameEl.textContent = currentUser.username || 'Artisan';
+                if (avatarEl) avatarEl.textContent = (currentUser.username || 'A')[0].toUpperCase();
+                if (craftEl && currentUser.craft_type) craftEl.textContent = currentUser.craft_type;
+            } else {
+                const nameEl = document.getElementById('buyer-account-name');
+                const avatarEl = document.getElementById('buyer-account-avatar');
+                if (nameEl) nameEl.textContent = currentUser.username || 'Buyer';
+                if (avatarEl) avatarEl.textContent = (currentUser.username || 'B')[0].toUpperCase();
+            }
+
+            // Render Desktop Nav List
+            if (desktopList) {
+                desktopList.innerHTML = '';
+                items.forEach(item => {
+                    const li = document.createElement('li');
+                    
+                    if (item.isAccount) {
+                        li.className = 'desktop-account-menu-wrapper';
+                        li.innerHTML = `
+                            <div class="desktop-nav-item ${activeRoleNavTab === item.id ? 'active' : ''}" id="desktop-account-trigger">
+                                ${item.icon}
+                                <span>${item.label}</span>
+                            </div>
+                            <div class="desktop-account-dropdown" id="desktop-account-dropdown">
+                                <div class="dropdown-user-header">
+                                    <div class="dropdown-user-avatar">${(currentUser.username || 'U')[0].toUpperCase()}</div>
+                                    <div>
+                                        <div style="font-size:14px; font-weight:700; color:var(--text-primary);">${currentUser.username}</div>
+                                        <div style="font-size:12px; color:var(--text-secondary); text-transform:capitalize;">Role: ${currentUser.role}</div>
+                                    </div>
+                                </div>
+                                ${role === 'buyer' ? `
+                                    <div class="dropdown-cart-preview" id="dropdown-cart-preview">
+                                        <div class="dropdown-cart-title">
+                                            <span>Your Cart</span>
+                                            <span id="dropdown-cart-count">0 items</span>
+                                        </div>
+                                        <div class="dropdown-cart-items" id="dropdown-cart-items">
+                                            <p style="font-size:12px; color:var(--text-secondary);">Loading cart...</p>
+                                        </div>
+                                        <div class="dropdown-cart-total-row">
+                                            <span>Total:</span>
+                                            <span id="dropdown-cart-total">₹0.00</span>
+                                        </div>
+                                    </div>
+                                ` : ''}
+                                <div class="dropdown-nav-links">
+                                    <div class="dropdown-nav-link" onclick="switchRoleNavTab('${item.id}')">
+                                        <svg width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+                                        Profile Details
+                                    </div>
+                                    ${role === 'buyer' ? `
+                                        <div class="dropdown-nav-link" onclick="switchRoleNavTab('cart')">
+                                            <svg width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="9" cy="21" r="1"/><circle cx="20" cy="21" r="1"/><path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"/></svg>
+                                            View Full Cart
+                                        </div>
+                                        <div class="dropdown-nav-link" onclick="openCheckout()">
+                                            <svg width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+                                            Proceed to Checkout
+                                        </div>
+                                    ` : ''}
+                                    <div class="dropdown-nav-link danger" onclick="clearAuth()">
+                                        <svg width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
+                                        Logout
+                                    </div>
+                                </div>
+                            </div>
+                        `;
+                    } else {
+                        li.className = `desktop-nav-item ${activeRoleNavTab === item.id ? 'active' : ''}`;
+                        li.setAttribute('data-tab-id', item.id);
+                        li.innerHTML = `${item.icon}<span>${item.label}</span>`;
+                        li.onclick = () => switchRoleNavTab(item.id);
+                    }
+                    desktopList.appendChild(li);
+                });
+            }
+
+            // Render Mobile Nav List
+            if (mobileNav) {
+                mobileNav.innerHTML = '';
+                items.forEach(item => {
+                    const a = document.createElement('div');
+                    a.className = `mobile-nav-item ${item.isCenter ? 'nav-center-item' : ''} ${activeRoleNavTab === item.id ? 'active' : ''}`;
+                    a.setAttribute('data-tab-id', item.id);
+                    
+                    a.innerHTML = `
+                        ${item.icon}
+                        <span class="mobile-nav-label">${item.label}</span>
+                        ${!item.isCenter ? '<span class="active-dot"></span>' : ''}
+                    `;
+
+                    a.onclick = (e) => {
+                        a.classList.add('tap-pop');
+                        setTimeout(() => a.classList.remove('tap-pop'), 200);
+
+                        if (item.isAccount) {
+                            openAccountSheet();
+                        } else {
+                            switchRoleNavTab(item.id);
+                        }
+                    };
+                    mobileNav.appendChild(a);
+                });
+            }
+
+            if (desktopStrip) desktopStrip.classList.add('active');
+            if (mobileNav) mobileNav.classList.add('active');
+
+            // Attach Desktop Dropdown Mouse Events with 250ms Buffer
+            setupDesktopDropdownEvents();
+
+            // Position 0.5s sliding desktop active indicator badge
+            setTimeout(updateDesktopNavIndicator, 20);
+        }
+
+        // Smooth 0.5s Desktop Navbar Active Badge Indicator Manager
+        function updateDesktopNavIndicator() {
+            const indicator = document.getElementById('desktop-nav-indicator');
+            const container = document.querySelector('.desktop-nav-container');
+            if (!indicator || !container) return;
+
+            const activeItem = container.querySelector('.desktop-nav-item.active') ||
+                               container.querySelector('#desktop-account-trigger.active') ||
+                               container.querySelector(`.desktop-nav-item[data-tab-id="${activeRoleNavTab}"]`);
+
+            if (!activeItem || getComputedStyle(container).display === 'none') {
+                indicator.style.opacity = '0';
+                return;
+            }
+
+            const containerRect = container.getBoundingClientRect();
+            const itemRect = activeItem.getBoundingClientRect();
+
+            // Calculate relative left offset and dimensions
+            const left = itemRect.left - containerRect.left;
+            const width = itemRect.width;
+            const height = itemRect.height || 38;
+
+            indicator.style.left = `${left}px`;
+            indicator.style.width = `${width}px`;
+            indicator.style.height = `${height}px`;
+            indicator.style.opacity = '1';
+            indicator.style.background = 'var(--primary-light)';
+        }
+
+        window.addEventListener('resize', updateDesktopNavIndicator);
+
+        function setupDesktopDropdownEvents() {
+            const wrapper = document.querySelector('.desktop-account-menu-wrapper');
+            const dropdown = document.getElementById('desktop-account-dropdown');
+            const trigger = document.getElementById('desktop-account-trigger');
+
+            if (!wrapper || !dropdown) return;
+
+            const openDropdown = () => {
+                if (accountDropdownTimer) clearTimeout(accountDropdownTimer);
+                dropdown.classList.add('show');
+                if (currentUser && currentUser.role === 'buyer') {
+                    fetchCartForNav();
+                }
+            };
+
+            const closeDropdown = () => {
+                accountDropdownTimer = setTimeout(() => {
+                    dropdown.classList.remove('show');
+                }, 250); // 250ms hover delay buffer
+            };
+
+            wrapper.addEventListener('mouseenter', openDropdown);
+            wrapper.addEventListener('mouseleave', closeDropdown);
+            if (trigger) {
+                trigger.addEventListener('click', (e) => {
+                    e.stopPropagation();
+                    dropdown.classList.toggle('show');
+                    if (dropdown.classList.contains('show') && currentUser && currentUser.role === 'buyer') {
+                        fetchCartForNav();
+                    }
+                });
+            }
+        }
+
+        function switchRoleNavTab(tabId) {
+            if (isRefinerFormDirty) {
+                if (!confirm("You have unsaved changes in your listing refiner. Are you sure you want to discard them and leave?")) {
+                    return;
+                }
+                isRefinerFormDirty = false;
+            }
+            activeRoleNavTab = tabId;
+            const role = (currentUser && currentUser.role === 'artisan') ? 'artisan' : 'buyer';
+            const item = NAV_ITEMS_BY_ROLE[role].find(i => i.id === tabId);
+
+            // Update UI active states
+            document.querySelectorAll('.desktop-nav-item').forEach(el => {
+                if (el.getAttribute('data-tab-id') === tabId || (tabId === 'account' && el.id === 'desktop-account-trigger')) {
+                    el.classList.add('active');
+                } else {
+                    el.classList.remove('active');
+                }
+            });
+            document.querySelectorAll('.mobile-nav-item').forEach(el => {
+                if (el.getAttribute('data-tab-id') === tabId) {
+                    el.classList.add('active');
+                } else {
+                    el.classList.remove('active');
+                }
+            });
+
+            // Smoothly slide the 0.5s purple active indicator badge
+            setTimeout(updateDesktopNavIndicator, 10);
+
+            if (!item) {
+                if (tabId === 'cart') {
+                    navigateTo('buyerDashboard');
+                    switchBuyerTab('cart');
+                }
+                return;
+            }
+
+            // Route to dashboard screen & view
+            if (role === 'artisan') {
+                navigateTo('artisanDashboard');
+                const artisanViews = ['artisan-view-listings', 'artisan-view-create', 'artisan-view-communities', 'artisan-view-account'];
+                artisanViews.forEach(vId => {
+                    const v = document.getElementById(vId);
+                    if (v) v.style.display = (vId === item.targetView) ? 'block' : 'none';
+                });
+                if (item.id === 'home' || item.id === 'my-listings') {
+                    loadArtisanProducts();
+                }
+            } else {
+                navigateTo('buyerDashboard');
+                if (item.targetBuyerTab) {
+                    switchBuyerTab(item.targetBuyerTab);
+                } else if (item.targetView) {
+                    const buyerViews = ['buyer-view-shop', 'buyer-view-cart', 'buyer-view-orders', 'buyer-view-reels', 'buyer-view-discover', 'buyer-view-account'];
+                    buyerViews.forEach(vId => {
+                        const v = document.getElementById(vId);
+                        if (v) v.style.display = (vId === item.targetView) ? 'block' : 'none';
+                    });
+                }
+            }
+
+            const dropdown = document.getElementById('desktop-account-dropdown');
+            if (dropdown) dropdown.classList.remove('show');
+        }
+
+        // Mobile Slide-Up Sheet Controls
+        function openAccountSheet() {
+            if (!currentUser) return;
+            const backdrop = document.getElementById('account-sheet-backdrop');
+            const panel = document.getElementById('account-sheet-panel');
+            
+            document.getElementById('sheet-user-avatar').textContent = (currentUser.username || 'U')[0].toUpperCase();
+            document.getElementById('sheet-user-name').textContent = currentUser.username || 'User';
+            document.getElementById('sheet-user-role').textContent = `${currentUser.role} Account`;
+
+            const cartSection = document.getElementById('sheet-cart-section');
+            if (currentUser.role === 'buyer') {
+                cartSection.style.display = 'block';
+                fetchCartForNav();
+            } else {
+                cartSection.style.display = 'none';
+            }
+
+            backdrop.classList.add('show');
+            panel.classList.add('show');
+            document.body.style.overflow = 'hidden';
+        }
+
+        function closeAccountSheet() {
+            const backdrop = document.getElementById('account-sheet-backdrop');
+            const panel = document.getElementById('account-sheet-panel');
+            if (backdrop) backdrop.classList.remove('show');
+            if (panel) panel.classList.remove('show');
+            document.body.style.overflow = '';
+        }
+
+        // Fetch cart data for Desktop Dropdown and Mobile Sheet
+        async function fetchCartForNav() {
+            if (!currentUser || currentUser.role !== 'buyer' || !accessToken) return;
+            try {
+                const r = await fetch(`${CONFIG.API_BASE_URL}/cart/`, { headers: { 'Authorization': `Bearer ${accessToken}` } });
+                if (!r.ok) return;
+                const data = await r.json();
+
+                // Desktop Dropdown Cart Render
+                const dtItemsList = document.getElementById('dropdown-cart-items');
+                const dtCount = document.getElementById('dropdown-cart-count');
+                const dtTotal = document.getElementById('dropdown-cart-total');
+
+                if (dtCount) dtCount.textContent = `${data.item_count || 0} items`;
+                if (dtTotal) dtTotal.textContent = `₹${(data.cart_total || 0).toFixed(2)}`;
+
+                if (dtItemsList) {
+                    if (!data.items || data.items.length === 0) {
+                        dtItemsList.innerHTML = '<p style="font-size:12px; color:var(--text-secondary); text-align:center; padding:10px;">Cart is empty.</p>';
+                    } else {
+                        dtItemsList.innerHTML = '';
+                        data.items.slice(0, 3).forEach(item => {
+                            const row = document.createElement('div');
+                            row.className = 'dropdown-cart-item';
+                            const img = item.product.refined_image || '';
+                            row.innerHTML = `
+                                ${img ? `<img src="${img}" class="dropdown-cart-thumb">` : `<div class="dropdown-cart-thumb" style="display:flex;align-items:center;justify-content:center;font-size:16px;">🎨</div>`}
+                                <div style="flex:1; min-width:0;">
+                                    <div style="font-weight:600; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">${item.product.title_en}</div>
+                                    <div style="color:var(--text-secondary); font-size:11px;">Qty: ${item.quantity} · ₹${item.subtotal.toFixed(2)}</div>
+                                </div>
+                            `;
+                            dtItemsList.appendChild(row);
+                        });
+                    }
+                }
+
+                // Mobile Sheet Cart Render
+                const mbItemsList = document.getElementById('sheet-cart-items-list');
+                const mbCount = document.getElementById('sheet-cart-count');
+                const mbTotal = document.getElementById('sheet-cart-total');
+
+                if (mbCount) mbCount.textContent = `${data.item_count || 0} items`;
+                if (mbTotal) mbTotal.textContent = `₹${(data.cart_total || 0).toFixed(2)}`;
+
+                if (mbItemsList) {
+                    if (!data.items || data.items.length === 0) {
+                        mbItemsList.innerHTML = '<p style="font-size:12px; color:var(--text-secondary); text-align:center; padding:10px;">Cart is empty.</p>';
+                    } else {
+                        mbItemsList.innerHTML = '';
+                        data.items.slice(0, 3).forEach(item => {
+                            const row = document.createElement('div');
+                            row.className = 'sheet-cart-row';
+                            const img = item.product.refined_image || '';
+                            row.innerHTML = `
+                                ${img ? `<img src="${img}" class="sheet-cart-img">` : `<div class="sheet-cart-img" style="display:flex;align-items:center;justify-content:center;font-size:18px;">🎨</div>`}
+                                <div style="flex:1; min-width:0;">
+                                    <div style="font-size:13px; font-weight:700; color:var(--text-primary); white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">${item.product.title_en}</div>
+                                    <div style="font-size:12px; color:var(--primary-color); font-weight:700;">Qty: ${item.quantity} · ₹${item.subtotal.toFixed(2)}</div>
+                                </div>
+                            `;
+                            mbItemsList.appendChild(row);
+                        });
+                    }
+                }
+            } catch(e) { console.error('fetchCartForNav error:', e); }
         }
 
         // Core Helper: Check JWT token health and load user
@@ -955,6 +1562,7 @@
 
         document.getElementById('btn-guest-login').addEventListener('click', () => {
             // Guests can view the buyer marketplace feed, but can't buy or upload
+            currentUser = { username: 'Guest', role: 'buyer', isGuest: true };
             navigateTo('buyerDashboard');
             loadBuyerProducts(true); // Is guest
         });
@@ -979,9 +1587,134 @@
             });
         });
 
-        logoutBtn.addEventListener('click', () => {
-            clearAuth();
-        });
+        // Password Reset Navigation & Handlers
+        const linkForgotPwd = document.getElementById('link-goto-forgot-password');
+        if (linkForgotPwd) {
+            linkForgotPwd.addEventListener('click', (e) => {
+                e.preventDefault();
+                navigateTo('forgotPassword');
+            });
+        }
+
+        const formForgotPassword = document.getElementById('form-forgot-password');
+        if (formForgotPassword) {
+            formForgotPassword.addEventListener('submit', async (e) => {
+                e.preventDefault();
+                const identifier = document.getElementById('pwd-reset-identifier').value.trim();
+                const submitBtn = document.getElementById('btn-pwd-reset-send');
+                const errDiv = document.getElementById('forgot-general-error');
+                errDiv.style.display = 'none';
+                submitBtn.disabled = true;
+                submitBtn.textContent = 'Sending code...';
+
+                try {
+                    const res = await customFetch(`${CONFIG.API_BASE_URL}/accounts/password-reset/send-otp/`, {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ identifier })
+                    });
+                    const data = await res.json();
+                    if (res.ok) {
+                        verifiedPhoneNumber = data.phone;
+                        showToastAlert('Verification code sent successfully!', 'success');
+                        navigateTo('resetPassword');
+                    } else {
+                        errDiv.textContent = data.identifier?.[0] || data.non_field_errors?.[0] || 'Failed to send reset code.';
+                        errDiv.style.display = 'block';
+                    }
+                } catch (err) {
+                    errDiv.textContent = 'Network error. Please try again.';
+                    errDiv.style.display = 'block';
+                } finally {
+                    submitBtn.disabled = false;
+                    submitBtn.textContent = 'Send Verification Code';
+                }
+            });
+        }
+
+        const formResetConfirm = document.getElementById('form-reset-confirm');
+        if (formResetConfirm) {
+            formResetConfirm.addEventListener('submit', async (e) => {
+                e.preventDefault();
+                const otp = document.getElementById('pwd-reset-otp').value.trim();
+                const new_password = document.getElementById('pwd-reset-new-password').value.trim();
+                const submitBtn = document.getElementById('btn-pwd-reset-confirm');
+                const errDiv = document.getElementById('reset-confirm-general-error');
+                errDiv.style.display = 'none';
+                submitBtn.disabled = true;
+                submitBtn.textContent = 'Resetting...';
+
+                try {
+                    const res = await customFetch(`${CONFIG.API_BASE_URL}/accounts/password-reset/confirm/`, {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ phone: verifiedPhoneNumber, otp, new_password })
+                    });
+                    const data = await res.json();
+                    if (res.ok) {
+                        showToastAlert('Password reset successful! Please log in.', 'success');
+                        navigateTo('login');
+                    } else {
+                        errDiv.textContent = data.otp?.[0] || data.new_password?.[0] || data.non_field_errors?.[0] || 'Password reset failed.';
+                        errDiv.style.display = 'block';
+                    }
+                } catch (err) {
+                    errDiv.textContent = 'Network error. Please try again.';
+                    errDiv.style.display = 'block';
+                } finally {
+                    submitBtn.disabled = false;
+                    submitBtn.textContent = 'Reset Password';
+                }
+            });
+        }
+
+        // Account Deletion Modal Handlers
+        function openDeleteAccountModal() {
+            const modal = document.getElementById('modal-delete-account');
+            if (modal) {
+                modal.style.display = 'flex';
+                modal.classList.add('show');
+            }
+        }
+
+        function closeDeleteAccountModal() {
+            const modal = document.getElementById('modal-delete-account');
+            if (modal) {
+                modal.classList.remove('show');
+                modal.style.display = 'none';
+            }
+        }
+
+        const btnConfirmDelete = document.getElementById('btn-confirm-delete-account');
+        if (btnConfirmDelete) {
+            btnConfirmDelete.addEventListener('click', async () => {
+                btnConfirmDelete.disabled = true;
+                btnConfirmDelete.textContent = 'Deleting...';
+                try {
+                    const res = await customFetch(`${CONFIG.API_BASE_URL}/accounts/me/delete/`, {
+                        method: 'DELETE'
+                    });
+                    if (res.ok) {
+                        showToastAlert('Account deleted successfully.', 'info');
+                        closeDeleteAccountModal();
+                        clearAuth();
+                    } else {
+                        showToastAlert('Failed to delete account.', 'error');
+                    }
+                } catch (err) {
+                    showToastAlert('Network error during account deletion.', 'error');
+                } finally {
+                    btnConfirmDelete.disabled = false;
+                    btnConfirmDelete.textContent = 'Permanently Delete My Account';
+                }
+            });
+        }
+
+        if (logoutBtn) {
+            logoutBtn.addEventListener('click', () => {
+                clearAuth();
+            });
+        }
 
         // API interaction: Login submission
         const formLogin = document.getElementById('form-login');
@@ -1218,6 +1951,7 @@
                     const data = await response.json();
 
                     if (response.ok) {
+                        registrationToken = data.registration_token;
                         // 2.5–3.3s — Gooey merge:
                         digitsContainer.classList.add('gooey-merge-active');
                         
@@ -1395,6 +2129,7 @@
                 craft_type: document.getElementById('artisan-craft').value,
                 email: document.getElementById('artisan-email').value,
                 password: document.getElementById('artisan-password').value,
+                registration_token: registrationToken || '',
                 role: 'artisan'
             };
 
@@ -1413,6 +2148,7 @@
                     localStorage.setItem('access_token', accessToken);
                     localStorage.setItem('refresh_token', refreshToken);
                     
+                    trackEvent('signup_completed', { role: 'artisan', username: payload.username });
                     await checkAuthState();
                 } else {
                     handleFormErrors(formArtisanSignup, data);
@@ -2203,12 +2939,14 @@
                     );
 
                     if (response.ok) {
+                        isRefinerFormDirty = false;
+                        trackEvent('listing_created', { product_id: currentProductId });
                         loadArtisanProducts();
                         document.getElementById('voice-cataloger-section').style.display = 'none';
                         resetVoiceCatalogerUI();
                         setTimeout(() => {
-                            alert('🎉 Listing published successfully!\n\nNavigating to "My Listings".');
-                            switchArtisanTab('listings');
+                            showToastAlert('🎉 Listing published successfully!', 'success');
+                            switchRoleNavTab('my-listings');
                         }, 200);
                     } else {
                         const errData = await response.json();
@@ -2847,10 +3585,11 @@
                 }
             }
             pendingOrdersToPay = [];
+            trackEvent('order_placed', { order_count: orders.length });
             closeCheckout();
             updateCartBadge();
             switchBuyerTab('orders');
-            alert('Payment received! Your order has been placed successfully.');
+            showToastAlert('Payment received! Your order has been placed successfully.', 'success');
         }
 
         async function placeOrder() {
@@ -2974,6 +3713,56 @@
             
             <!-- Proceed Button -->
             <button id="btn-drawer-checkout" onclick="proceedFromDrawer(event)" style="width:100%; background:#482E83; color:#fff; border:none; border-radius:14px; padding:16px; font-size:15px; font-weight:700; cursor:pointer; font-family:var(--font-inter); transition:var(--transition-smooth); box-sizing:border-box;">Proceed to Checkout &rarr;</button>
+        </div>
+    </div>
+
+    <!-- Mobile Floating Bottom Navigation Pill Bar (< 768px) -->
+    <nav class="mobile-bottom-nav" id="mobile-bottom-nav">
+        <!-- Dynamically populated based on role -->
+    </nav>
+
+    <!-- Mobile Account Slide-Up Sheet -->
+    <div class="account-sheet-backdrop" id="account-sheet-backdrop" onclick="closeAccountSheet()"></div>
+    <div class="account-sheet-panel" id="account-sheet-panel">
+        <div class="sheet-handle"></div>
+        <div class="sheet-user-profile">
+            <div class="sheet-user-avatar" id="sheet-user-avatar">A</div>
+            <div>
+                <div class="sheet-user-name" id="sheet-user-name">User</div>
+                <div class="sheet-user-role" id="sheet-user-role">Artisan</div>
+            </div>
+        </div>
+        
+        <!-- Live Cart preview for Buyer -->
+        <div class="sheet-cart-section" id="sheet-cart-section" style="display: none;">
+            <div class="sheet-cart-header">
+                <span>🛒 Your Cart</span>
+                <span id="sheet-cart-count" style="background: var(--primary-color); color: #fff; border-radius: 12px; padding: 2px 8px; font-size: 11px;">0 items</span>
+            </div>
+            <div class="sheet-cart-items-list" id="sheet-cart-items-list"></div>
+            <div class="sheet-cart-header" style="border-top: 1px solid var(--border-color); padding-top: 10px; margin-bottom: 0;">
+                <span>Total Amount:</span>
+                <span id="sheet-cart-total" style="color: var(--primary-color); font-size: 15px; font-weight: 800;">₹0.00</span>
+            </div>
+            <div class="sheet-cart-btns" style="margin-top: 12px;">
+                <button type="button" onclick="closeAccountSheet(); switchRoleNavTab('cart');" class="btn btn-secondary" style="flex: 1; padding: 10px; font-size: 13px;">View Cart</button>
+                <button type="button" onclick="closeAccountSheet(); openCheckout();" class="btn btn-primary" style="flex: 1; padding: 10px; font-size: 13px;">Checkout &rarr;</button>
+            </div>
+        </div>
+
+        <div class="sheet-action-list">
+            <div class="sheet-action-item" onclick="closeAccountSheet(); switchRoleNavTab('home');">
+                <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="m3 9 9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/></svg>
+                <span>Dashboard Home</span>
+            </div>
+            <div class="sheet-action-item" onclick="closeAccountSheet(); switchRoleNavTab('account');">
+                <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+                <span>Profile Settings</span>
+            </div>
+            <div class="sheet-action-item danger" onclick="closeAccountSheet(); clearAuth();">
+                <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
+                <span>Logout</span>
+            </div>
         </div>
     </div>
 

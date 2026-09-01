@@ -1,3 +1,4 @@
+import secrets
 from rest_framework import status
 from rest_framework.views import APIView
 from rest_framework.response import Response
@@ -6,6 +7,7 @@ from rest_framework_simplejwt.tokens import RefreshToken
 from .serializers import SignupSerializer, UserSerializer
 from django.contrib.auth import get_user_model
 from django.core.cache import cache
+from django.db import transaction
 from .otp_service import generate_and_send_otp, verify_otp
 
 User = get_user_model()
@@ -50,7 +52,13 @@ class VerifyOTPView(APIView):
         if verify_otp(phone, otp):
             # Set verification status in cache with 15 min TTL (900 seconds)
             cache.set(f"phone_verified:{phone}", True, timeout=900)
-            return Response({'success': True, 'message': 'Phone number verified successfully.'}, status=status.HTTP_200_OK)
+            reg_token = secrets.token_urlsafe(32)
+            cache.set(f"reg_token:{reg_token}", phone, timeout=900)
+            return Response({
+                'success': True,
+                'message': 'Phone number verified successfully.',
+                'registration_token': reg_token
+            }, status=status.HTTP_200_OK)
         else:
             return Response({'otp': ['Invalid or expired OTP. Please try again.']}, status=status.HTTP_400_BAD_REQUEST)
 
@@ -77,3 +85,59 @@ class MeView(APIView):
     def get(self, request, *args, **kwargs):
         serializer = UserSerializer(request.user)
         return Response(serializer.data, status=status.HTTP_200_OK)
+
+
+class PasswordResetSendOTPView(APIView):
+    permission_classes = [AllowAny]
+
+    def post(self, request, *args, **kwargs):
+        identifier = (request.data.get('identifier') or request.data.get('phone') or '').strip()
+        if not identifier:
+            return Response({'identifier': ['Please provide your registered phone number or username.']}, status=status.HTTP_400_BAD_REQUEST)
+
+        user = User.objects.filter(phone=identifier).first() or User.objects.filter(username=identifier).first()
+        if not user or not user.phone:
+            return Response({'identifier': ['No registered account found matching this identifier.']}, status=status.HTTP_404_NOT_FOUND)
+
+        res = generate_and_send_otp(user.phone)
+        if res['success']:
+            return Response({'message': res['message'], 'phone': user.phone}, status=status.HTTP_200_OK)
+        else:
+            return Response({'non_field_errors': [res['message']]}, status=status.HTTP_400_BAD_REQUEST)
+
+
+class PasswordResetConfirmView(APIView):
+    permission_classes = [AllowAny]
+
+    def post(self, request, *args, **kwargs):
+        phone = (request.data.get('phone') or '').strip()
+        otp = (request.data.get('otp') or '').strip()
+        new_password = (request.data.get('new_password') or '').strip()
+
+        if not phone or not otp or not new_password:
+            return Response({'non_field_errors': ['Phone, OTP, and new_password are required.']}, status=status.HTTP_400_BAD_REQUEST)
+
+        if len(new_password) < 4:
+            return Response({'new_password': ['Password must be at least 4 characters long.']}, status=status.HTTP_400_BAD_REQUEST)
+
+        if not verify_otp(phone, otp):
+            return Response({'otp': ['Invalid or expired OTP. Please try again.']}, status=status.HTTP_400_BAD_REQUEST)
+
+        user = User.objects.filter(phone=phone).first()
+        if not user:
+            return Response({'non_field_errors': ['User not found.']}, status=status.HTTP_404_NOT_FOUND)
+
+        user.set_password(new_password)
+        user.save()
+        return Response({'success': True, 'message': 'Password reset successfully. You can now log in.'}, status=status.HTTP_200_OK)
+
+
+class DeleteAccountView(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def delete(self, request, *args, **kwargs):
+        user = request.user
+        with transaction.atomic():
+            user.delete()
+        return Response({'detail': 'Account deleted successfully.'}, status=status.HTTP_200_OK)
+
