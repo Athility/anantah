@@ -1,13 +1,8 @@
 from rest_framework import serializers
-from .models import Category, Product
+from .models import WishlistItem
+from listings.models import Product
 
-class CategorySerializer(serializers.ModelSerializer):
-    class Meta:
-        model = Category
-        fields = ['id', 'name']
-
-
-class ProductSerializer(serializers.ModelSerializer):
+class WishlistProductSerializer(serializers.ModelSerializer):
     raw_image_url = serializers.SerializerMethodField()
     refined_image_url = serializers.SerializerMethodField()
     raw_audio_url = serializers.SerializerMethodField()
@@ -17,9 +12,9 @@ class ProductSerializer(serializers.ModelSerializer):
     class Meta:
         model = Product
         fields = [
-            'id', 'title_en', 'title_hi', 'description_en', 'description_hi', 
+            'id', 'title_en', 'title_hi', 'description_en', 'description_hi',
             'price', 'raw_image_url', 'refined_image_url', 'raw_audio_url', 
-            'artisan_name', 'category_name', 'status', 'created_at'
+            'artisan_name', 'category_name', 'status'
         ]
 
     def get_raw_image_url(self, obj):
@@ -57,3 +52,12 @@ class ProductSerializer(serializers.ModelSerializer):
         if obj.category:
             return obj.category.name
         return "Traditional Handicraft"
+
+
+class WishlistItemSerializer(serializers.ModelSerializer):
+    product = WishlistProductSerializer(read_only=True)
+    product_id = serializers.IntegerField(source='product.id', read_only=True)
+
+    class Meta:
+        model = WishlistItem
+        fields = ['id', 'buyer_id', 'product_id', 'product', 'added_at']

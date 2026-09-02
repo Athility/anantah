@@ -49,6 +49,7 @@ INSTALLED_APPS = [
     'ai_services',
     'cart',
     'payments',
+    'wishlist',
 ]
 
 MIDDLEWARE = [

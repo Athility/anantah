@@ -17,6 +17,7 @@
 ### 🛒 For Buyers & Craft Enthusiasts
 - **Authentic Handmade Feed**: Browse verified artisan creations directly from traditional craft clusters across India.
 - **Cart & Checkout**: Interactive cart drawer, multi-address management, and secure Razorpay payment gateway integration.
+- **Buyer Wishlist**: Save handcrafted items to a personal wishlist from product cards or detail modal views, view and manage saved products in a dedicated Wishlist screen, add items directly to cart, and view compact "Saved for later" reminder cards on the buyer Home page.
 - **Artisan Reels & Regional Craft Map**: Watch short behind-the-scenes videos of master artisans at work and explore interactive regional craft maps (Launching Soon).
 
 ---
@@ -26,6 +27,7 @@
 - **PC Desktop Navigation Bar**: Features a uniform 5-option navigation strip with a smooth, 0.5-second sliding purple indicator badge that glides seamlessly across active menu items.
 - **Mobile Bottom Navigation Pill**: Floating glassmorphic bottom navigation bar with a central elevated button, account slide-up sheet, and safe area bottom clearance ensuring all action buttons remain fully visible and clickable on phone screens.
 - **Design Tokens**: Tailored color palette (`--primary-color: #4B286D`, `--primary-light: #F4EFFF`, `--accent-gold: #E5A85A`), custom typography (Outfit, Inter, Playfair Display), and responsive glassmorphism aesthetic.
+- **Heritage Craft Gradient**: Deep aubergine/plum (`#4A1D4A` to `#6B2D5C`) transitioning into warm terracotta (`#C1573A` to `#D4694A`) applied across the Cart page total bar and checkout buttons.
 
 ---
 
