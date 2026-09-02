@@ -178,6 +178,7 @@ REST_FRAMEWORK = {
         'user': '1000/day',
         'payments_create': '10/minute',
         'payments_verify': '10/minute',
+        'otp_request': '15/hour',
     }
 }
 

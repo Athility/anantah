@@ -50,10 +50,10 @@ class Order(models.Model):
         ('refunded', 'Refunded'),
     )
 
-    buyer = models.ForeignKey('accounts.BuyerProfile', on_delete=models.CASCADE, db_column='buyer_id', related_name='buyer_orders')
-    product = models.ForeignKey('listings.Product', on_delete=models.CASCADE, db_column='product_id')
-    artisan = models.ForeignKey('accounts.ArtisanProfile', on_delete=models.CASCADE, db_column='artisan_id', related_name='artisan_orders')
-    shipping_address = models.ForeignKey(Address, on_delete=models.CASCADE, db_column='shipping_address_id')
+    buyer = models.ForeignKey('accounts.BuyerProfile', on_delete=models.SET_NULL, null=True, blank=True, db_column='buyer_id', related_name='buyer_orders')
+    product = models.ForeignKey('listings.Product', on_delete=models.SET_NULL, null=True, blank=True, db_column='product_id')
+    artisan = models.ForeignKey('accounts.ArtisanProfile', on_delete=models.SET_NULL, null=True, blank=True, db_column='artisan_id', related_name='artisan_orders')
+    shipping_address = models.ForeignKey(Address, on_delete=models.PROTECT, db_column='shipping_address_id')
     quantity = models.IntegerField(default=1)
     total_amount = models.DecimalField(max_digits=10, decimal_places=2)
     currency = models.CharField(max_length=10, default='INR')
