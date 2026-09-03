@@ -14,7 +14,8 @@ jsonschema==4.26.0
 jsonschema-specifications==2025.9.1
 lazy-loader==0.5
 llvmlite==0.49.0
-mysqlclient==2.2.8
+pymysql==1.1.1
+cryptography==43.0.1
 networkx==3.6.1
 numba==0.67.0
 numpy==2.5.2
