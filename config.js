@@ -1,6 +1,13 @@
 const getBackendBaseUrl = () => {
-    if (window.location.hostname && window.location.hostname !== 'localhost' && window.location.hostname !== '127.0.0.1' && window.location.protocol !== 'file:') {
-        return `${window.location.protocol}//${window.location.hostname}:8000`;
+    if (typeof window !== 'undefined' && window.location) {
+        const hostname = window.location.hostname;
+        // Localhost development: Django typically runs on port 8000
+        if (hostname === 'localhost' || hostname === '127.0.0.1' || window.location.protocol === 'file:') {
+            return 'http://127.0.0.1:8000';
+        }
+        // Hosted production (e.g. Vercel, custom domain):
+        // Frontend and backend are served on the same origin (routing defined in vercel.json)
+        return window.location.origin;
     }
     return 'http://127.0.0.1:8000';
 };
@@ -10,8 +17,7 @@ const CONFIG = {
 };
 
 function getMediaUrl(path) {
-    if (!path) return 'anantah_logo.png';
-    if (typeof path !== 'string') return 'anantah_logo.png';
+    if (!path || typeof path !== 'string') return 'anantah_logo.png';
     path = path.trim();
     if (!path) return 'anantah_logo.png';
     
@@ -23,10 +29,7 @@ function getMediaUrl(path) {
     
     if (path.startsWith('http://127.0.0.1:8000') || path.startsWith('http://localhost:8000')) {
         const relativePath = path.replace(/^http:\/\/(127\.0\.0\.1|localhost):8000/, '');
-        if (window.location.hostname && window.location.hostname !== '127.0.0.1' && window.location.hostname !== 'localhost' && window.location.protocol !== 'file:') {
-            return `${window.location.protocol}//${window.location.hostname}:8000${relativePath}`;
-        }
-        return path;
+        return `${backendBase}${relativePath}`;
     }
     
     if (path.startsWith('/')) {
@@ -43,12 +46,17 @@ function getMediaUrl(path) {
 let isRefreshingToken = false;
 let refreshSubscribers = [];
 
-function subscribeTokenRefresh(cb) {
-    refreshSubscribers.push(cb);
+function subscribeTokenRefresh(resolve, reject) {
+    refreshSubscribers.push({ resolve, reject });
 }
 
 function onRefreshed(token) {
-    refreshSubscribers.map(cb => cb(token));
+    refreshSubscribers.forEach(({ resolve }) => resolve(token));
+    refreshSubscribers = [];
+}
+
+function onRefreshError(error) {
+    refreshSubscribers.forEach(({ reject }) => reject(error));
     refreshSubscribers = [];
 }
 
@@ -64,55 +72,63 @@ async function customFetch(url, options = {}) {
     try {
         let response = await fetch(url, options);
 
-        // If 401 Unauthorized, attempt token refresh unless this request IS login or refresh endpoint
-        if (response.status === 401 && !url.includes('/accounts/login/')) {
+        // If 401 Unauthorized, attempt token refresh unless this request IS login, refresh endpoint, or already retried
+        if (response.status === 401 && !url.includes('/accounts/login/') && !options._retry) {
             const refreshToken = localStorage.getItem('refresh_token') || localStorage.getItem('refreshToken');
             if (!refreshToken) {
                 if (typeof clearAuth === 'function') clearAuth();
                 return response;
             }
 
-            if (!isRefreshingToken) {
-                isRefreshingToken = true;
-                try {
-                    const refreshRes = await fetch(`${CONFIG.API_BASE_URL}/accounts/login/refresh/`, {
-                        method: 'POST',
-                        headers: { 'Content-Type': 'application/json' },
-                        body: JSON.stringify({ refresh: refreshToken })
-                    });
+            options._retry = true;
 
-                    if (refreshRes.ok) {
-                        const refreshData = await refreshRes.json();
-                        const newToken = refreshData.access;
-                        localStorage.setItem('access_token', newToken);
-                        localStorage.setItem('accessToken', newToken);
-                        if (refreshData.refresh) {
-                            localStorage.setItem('refresh_token', refreshData.refresh);
-                            localStorage.setItem('refreshToken', refreshData.refresh);
-                        }
-                        isRefreshingToken = false;
-                        onRefreshed(newToken);
-                    } else {
-                        isRefreshingToken = false;
-                        refreshSubscribers = [];
-                        if (typeof clearAuth === 'function') clearAuth();
-                        return response;
+            if (isRefreshingToken) {
+                // Another request is already refreshing; wait for it
+                return new Promise((resolve, reject) => {
+                    subscribeTokenRefresh((newToken) => {
+                        options.headers['Authorization'] = 'Bearer ' + newToken;
+                        resolve(fetch(url, options));
+                    }, reject);
+                });
+            }
+
+            // We are the initiator of the refresh
+            isRefreshingToken = true;
+            try {
+                const refreshRes = await fetch(`${CONFIG.API_BASE_URL}/accounts/login/refresh/`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ refresh: refreshToken })
+                });
+
+                if (refreshRes.ok) {
+                    const refreshData = await refreshRes.json();
+                    const newToken = refreshData.access;
+                    localStorage.setItem('access_token', newToken);
+                    localStorage.setItem('accessToken', newToken);
+                    if (refreshData.refresh) {
+                        localStorage.setItem('refresh_token', refreshData.refresh);
+                        localStorage.setItem('refreshToken', refreshData.refresh);
                     }
-                } catch (refreshErr) {
                     isRefreshingToken = false;
-                    refreshSubscribers = [];
+                    onRefreshed(newToken);
+
+                    // Retry the initiator's request directly with the new token
+                    options.headers['Authorization'] = 'Bearer ' + newToken;
+                    return fetch(url, options);
+                } else {
+                    isRefreshingToken = false;
+                    const err = new Error('Token refresh failed');
+                    onRefreshError(err);
                     if (typeof clearAuth === 'function') clearAuth();
                     return response;
                 }
+            } catch (refreshErr) {
+                isRefreshingToken = false;
+                onRefreshError(refreshErr);
+                if (typeof clearAuth === 'function') clearAuth();
+                return response;
             }
-
-            // Return promise that resolves when refresh is completed
-            return new Promise((resolve) => {
-                subscribeTokenRefresh((newToken) => {
-                    options.headers['Authorization'] = 'Bearer ' + newToken;
-                    resolve(fetch(url, options));
-                });
-            });
         }
 
         return response;

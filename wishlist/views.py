@@ -27,9 +27,9 @@ class WishlistAddView(APIView):
             return Response({'detail': 'product_id is required.'}, status=status.HTTP_400_BAD_REQUEST)
 
         try:
-            product = Product.objects.get(id=product_id)
+            product = Product.objects.get(id=product_id, status='live')
         except (Product.DoesNotExist, ValueError, TypeError):
-            return Response({'detail': 'Product not found.'}, status=status.HTTP_404_NOT_FOUND)
+            return Response({'detail': 'Product not found or not available.'}, status=status.HTTP_404_NOT_FOUND)
 
         buyer_profile = getattr(request.user, 'buyer_profile', None)
         if not buyer_profile:

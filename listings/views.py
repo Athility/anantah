@@ -87,7 +87,7 @@ class ProductUploadView(APIView):
             title_en=title_en,
             price=price_val,
             raw_image=raw_image,
-            status='live'
+            status='draft'
         )
         try:
             product.full_clean(exclude=['title_hi', 'description_en', 'description_hi', 'category_en', 'category_hi', 'audio_description_hi'])

@@ -48,9 +48,16 @@ class Product(models.Model):
 from django.db.models.signals import post_delete
 from django.dispatch import receiver
 import os
+import logging
+
+logger = logging.getLogger(__name__)
 
 @receiver(post_delete, sender=Product)
 def delete_product_files(sender, instance, **kwargs):
     for field in [instance.raw_image, instance.refined_image, instance.raw_audio]:
         if field and hasattr(field, 'path') and os.path.isfile(field.path):
-            os.remove(field.path)
+            try:
+                os.remove(field.path)
+            except (OSError, PermissionError) as e:
+                logger.warning(f"Failed to delete product file {field.path}: {e}")
+

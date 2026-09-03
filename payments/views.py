@@ -183,23 +183,29 @@ class RazorpayWebhookView(APIView):
                     logger.warning("Webhook warning: Missing order_id or payment_id in payload.")
                     return Response({'detail': 'Incomplete payload.'}, status=status.HTTP_200_OK)
                 
-                # Lock row to prevent race conditions (idempotency wrapper)
+                # Lock rows to prevent race conditions (idempotency wrapper)
                 with transaction.atomic():
-                    try:
-                        order = Order.objects.select_for_update().get(razorpay_order_id=rzp_order_id)
-                    except Order.DoesNotExist:
-                        logger.error(f"Webhook error: Order with razorpay_order_id {rzp_order_id} not found.")
+                    orders = Order.objects.select_for_update().filter(razorpay_order_id=rzp_order_id)
+                    
+                    if not orders.exists():
+                        logger.error(f"Webhook error: No orders with razorpay_order_id {rzp_order_id} found.")
                         return Response({'detail': 'Order not found.'}, status=status.HTTP_200_OK)
                     
-                    if order.status == 'paid':
-                        logger.info(f"Webhook info: Order {order.id} is already paid.")
-                        return Response({'detail': 'Order already processed.'}, status=status.HTTP_200_OK)
+                    if all(o.status == 'paid' for o in orders):
+                        logger.info(f"Webhook info: Orders for {rzp_order_id} are already paid.")
+                        return Response({'detail': 'Orders already processed.'}, status=status.HTTP_200_OK)
                     
-                    order.status = 'paid'
-                    order.razorpay_payment_id = rzp_payment_id
-                    order.save()
+                    orders.update(status='paid', razorpay_payment_id=rzp_payment_id)
+                    logger.info(f"Webhook success: {orders.count()} order(s) marked as paid for {rzp_order_id}.")
                     
-                    logger.info(f"Webhook success: Order {order.id} marked as paid by Webhook.")
+                    # Cart cleanup: remove purchased items from the buyer's cart
+                    from cart.models import CartItem
+                    first_order = orders.first()
+                    buyer = first_order.buyer if first_order else None
+                    if buyer:
+                        purchased_product_ids = [o.product_id for o in orders if o.product_id]
+                        if purchased_product_ids:
+                            CartItem.objects.filter(buyer=buyer, product_id__in=purchased_product_ids).delete()
             
             return Response({'status': 'processed'}, status=status.HTTP_200_OK)
             

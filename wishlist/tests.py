@@ -78,3 +78,16 @@ class WishlistAPITestCase(TestCase):
         self.client.force_authenticate(user=self.artisan_user)
         response = self.client.get('/api/wishlist/')
         self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
+
+    def test_cannot_add_draft_product_to_wishlist(self):
+        draft_product = Product.objects.create(
+            artisan=self.artisan_profile,
+            title_en='Draft Pot',
+            price=250.00,
+            status='draft'
+        )
+        self.client.force_authenticate(user=self.buyer_user)
+        response = self.client.post('/api/wishlist/add/', {'product_id': draft_product.id}, format='json')
+        self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
+        self.assertFalse(WishlistItem.objects.filter(product=draft_product).exists())
+

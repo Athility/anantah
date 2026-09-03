@@ -199,3 +199,141 @@ class PaymentsTestCase(APITestCase):
         self.order.refresh_from_db()
         self.assertEqual(self.order.status, 'paid')
         self.assertEqual(self.order.razorpay_payment_id, 'pay_web999')
+
+    @patch('payments.views.verify_webhook_signature')
+    def test_webhook_multi_item_payment_captured_and_cart_cleanup(self, mock_verify_webhook):
+        from cart.models import CartItem
+        mock_verify_webhook.return_value = True
+        
+        # Create second product and order sharing the same razorpay_order_id
+        product2 = Product.objects.create(
+            artisan=self.artisan_profile,
+            category=self.category,
+            title_en='Brass Bell',
+            price=200.00,
+            status='live'
+        )
+        
+        self.order.razorpay_order_id = 'order_multi123'
+        self.order.status = 'created'
+        self.order.save()
+        
+        order2 = Order.objects.create(
+            buyer=self.buyer1_profile,
+            product=product2,
+            artisan=self.artisan_profile,
+            shipping_address=self.address,
+            quantity=1,
+            total_amount=280.00,
+            total_payable=280.00,
+            status='created',
+            razorpay_order_id='order_multi123'
+        )
+        
+        # Add items to buyer's cart
+        CartItem.objects.create(buyer=self.buyer1_profile, product=self.product, quantity=1)
+        CartItem.objects.create(buyer=self.buyer1_profile, product=product2, quantity=1)
+        self.assertEqual(CartItem.objects.filter(buyer=self.buyer1_profile).count(), 2)
+        
+        url = reverse('razorpay-webhook')
+        payload = {
+            'event': 'payment.captured',
+            'payload': {
+                'payment': {
+                    'entity': {
+                        'id': 'pay_multi_captured',
+                        'order_id': 'order_multi123'
+                    }
+                }
+            }
+        }
+        response = self.client.post(
+            url,
+            data=json.dumps(payload),
+            content_type='application/json',
+            HTTP_X_RAZORPAY_SIGNATURE='dummy_sig'
+        )
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        
+        # Verify BOTH orders are marked as paid
+        self.order.refresh_from_db()
+        order2.refresh_from_db()
+        self.assertEqual(self.order.status, 'paid')
+        self.assertEqual(order2.status, 'paid')
+        self.assertEqual(self.order.razorpay_payment_id, 'pay_multi_captured')
+        self.assertEqual(order2.razorpay_payment_id, 'pay_multi_captured')
+        
+        # Verify cart was cleared for the purchased items
+        self.assertEqual(CartItem.objects.filter(buyer=self.buyer1_profile).count(), 0)
+
+    @patch('payments.views.verify_webhook_signature')
+    def test_webhook_duplicate_delivery(self, mock_verify_webhook):
+        mock_verify_webhook.return_value = True
+        self.order.razorpay_order_id = 'order_dup123'
+        self.order.status = 'created'
+        self.order.save()
+        
+        url = reverse('razorpay-webhook')
+        payload = {
+            'event': 'payment.captured',
+            'payload': {
+                'payment': {
+                    'entity': {
+                        'id': 'pay_dup123',
+                        'order_id': 'order_dup123'
+                    }
+                }
+            }
+        }
+        
+        # First delivery
+        res1 = self.client.post(url, data=json.dumps(payload), content_type='application/json', HTTP_X_RAZORPAY_SIGNATURE='dummy_sig')
+        self.assertEqual(res1.status_code, status.HTTP_200_OK)
+        self.order.refresh_from_db()
+        self.assertEqual(self.order.status, 'paid')
+        
+        # Second delivery (duplicate)
+        res2 = self.client.post(url, data=json.dumps(payload), content_type='application/json', HTTP_X_RAZORPAY_SIGNATURE='dummy_sig')
+        self.assertEqual(res2.status_code, status.HTTP_200_OK)
+        self.order.refresh_from_db()
+        self.assertEqual(self.order.status, 'paid')
+        self.assertEqual(res2.data['detail'], 'Orders already processed.')
+
+    @patch('payments.views.verify_webhook_signature')
+    @patch('payments.views.verify_payment_signature')
+    def test_webhook_and_frontend_verify_idempotency(self, mock_verify_sig, mock_verify_webhook):
+        mock_verify_sig.return_value = True
+        mock_verify_webhook.return_value = True
+        
+        self.order.razorpay_order_id = 'order_race123'
+        self.order.status = 'created'
+        self.order.save()
+        
+        # 1. Frontend verification arrives first
+        self.client.force_authenticate(user=self.buyer1_user)
+        verify_url = reverse('verify-payment')
+        v_res = self.client.post(verify_url, {
+            'razorpay_order_id': 'order_race123',
+            'razorpay_payment_id': 'pay_race123',
+            'razorpay_signature': 'sig_race123'
+        })
+        self.assertEqual(v_res.status_code, status.HTTP_200_OK)
+        self.assertEqual(v_res.data['status'], 'paid')
+        
+        # 2. Webhook arrives second
+        webhook_url = reverse('razorpay-webhook')
+        payload = {
+            'event': 'payment.captured',
+            'payload': {
+                'payment': {
+                    'entity': {
+                        'id': 'pay_race123',
+                        'order_id': 'order_race123'
+                    }
+                }
+            }
+        }
+        w_res = self.client.post(webhook_url, data=json.dumps(payload), content_type='application/json', HTTP_X_RAZORPAY_SIGNATURE='dummy_sig')
+        self.assertEqual(w_res.status_code, status.HTTP_200_OK)
+        self.assertEqual(w_res.data['detail'], 'Orders already processed.')
+
