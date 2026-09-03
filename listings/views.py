@@ -18,10 +18,10 @@ class ProductUploadView(APIView):
     def get(self, request, *args, **kwargs):
         user = request.user
         if user.role == 'artisan':
-            # Artisans see only their own live products
+            # Artisans see all their own products
             try:
                 artisan_profile = user.artisan_profile
-                products = Product.objects.filter(artisan=artisan_profile, status='live').order_by('-created_at')
+                products = Product.objects.filter(artisan=artisan_profile).order_by('-created_at')
             except Exception:
                 products = Product.objects.none()
         else:
@@ -87,7 +87,7 @@ class ProductUploadView(APIView):
             title_en=title_en,
             price=price_val,
             raw_image=raw_image,
-            status='draft'
+            status='live'
         )
         try:
             product.full_clean(exclude=['title_hi', 'description_en', 'description_hi', 'category_en', 'category_hi', 'audio_description_hi'])

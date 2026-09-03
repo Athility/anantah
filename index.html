@@ -2567,10 +2567,14 @@
                     // Success! Update "After" image preview
                     const imgAfter = document.getElementById('img-after');
                     const previewAfterPlaceholder = document.getElementById('preview-after-placeholder');
-                    
-                    imgAfter.src = data.refined_image_url;
-                    imgAfter.style.display = 'block';
-                    previewAfterPlaceholder.style.display = 'none';
+                    if (imgAfter) {
+                        imgAfter.onerror = function() { this.onerror = null; this.src = 'anantah_logo.png'; };
+                        imgAfter.src = getMediaUrl(data.refined_image_url || data.raw_image_url);
+                        imgAfter.style.display = 'block';
+                    }
+                    if (previewAfterPlaceholder) {
+                        previewAfterPlaceholder.style.display = 'none';
+                    }
 
                     // Only mark tool buttons as applied if enhancements were used
                     const appliedTools = selectedTools;
@@ -2637,11 +2641,11 @@
                             const card = document.createElement('div');
                             card.className = 'product-card';
                             
-                            const displayImage = p.refined_image_url || p.raw_image_url;
+                            const displayImage = getMediaUrl(p.refined_image_url || p.raw_image_url);
 
                             card.innerHTML = `
                                 <div class="product-card-image-box">
-                                    <img class="product-card-image" src="${displayImage}" alt="${p.title_en}">
+                                    <img class="product-card-image" src="${displayImage}" alt="${p.title_en}" onerror="this.onerror=null; this.src='anantah_logo.png';">
                                 </div>
                                 <div class="product-card-info" style="padding: 16px; display: flex; flex-direction: column; flex-grow: 1;">
                                     <h4 class="product-card-title" style="font-size: 15px; font-weight: 700; color: var(--text-primary); margin: 0 0 4px 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">${p.title_en}</h4>
@@ -2880,12 +2884,12 @@
                         if (!p) return;
                         const card = document.createElement('div');
                         card.className = 'product-card';
-                        const displayImage = p.refined_image_url || p.raw_image_url || 'anantah_logo.png';
+                        const displayImage = getMediaUrl(p.refined_image_url || p.raw_image_url || 'anantah_logo.png');
                         const artisanName = p.artisan_name || 'Master Artisan';
 
                         card.innerHTML = `
                             <div class="product-card-image-box" style="cursor: pointer;">
-                                <img class="product-card-image" src="${displayImage}" alt="${p.title_en}">
+                                <img class="product-card-image" src="${displayImage}" alt="${p.title_en}" onerror="this.onerror=null; this.src='anantah_logo.png';">
                                 ${renderWishlistHeartBtn(p.id)}
                             </div>
                             <div class="product-card-info" style="padding: 16px; display: flex; flex-direction: column; flex-grow: 1;">
@@ -2965,11 +2969,11 @@
                     displayItems.forEach(item => {
                         const p = item.product;
                         if (!p) return;
-                        const displayImage = p.refined_image_url || p.raw_image_url || 'anantah_logo.png';
+                        const displayImage = getMediaUrl(p.refined_image_url || p.raw_image_url || 'anantah_logo.png');
                         const tile = document.createElement('div');
                         tile.className = 'home-wishlist-item-tile';
                         tile.innerHTML = `
-                            <img class="home-wishlist-item-img" src="${displayImage}" alt="${p.title_en}">
+                            <img class="home-wishlist-item-img" src="${displayImage}" alt="${p.title_en}" onerror="this.onerror=null; this.src='anantah_logo.png';">
                             <span class="home-wishlist-item-title">${p.title_en}</span>
                         `;
                         tile.addEventListener('click', () => openProductDetailModal(p));
@@ -2986,7 +2990,7 @@
         function openProductDetailModal(product, pushHistory = true) {
             if (!product) return;
 
-            const displayImage = product.refined_image_url || product.raw_image_url || 'anantah_logo.png';
+            const displayImage = getMediaUrl(product.refined_image_url || product.raw_image_url || 'anantah_logo.png');
             const artisanName = product.artisan_name || 'Master Artisan';
             const categoryName = product.category_name || 'Traditional Handicraft';
             const isBuyerUser = currentUser && currentUser.role === 'buyer' && !currentUser.isGuest;
@@ -3007,7 +3011,11 @@
             const heartWrapper = document.getElementById('detail-page-heart-wrapper');
             const actionEl = document.getElementById('detail-page-cart-action');
 
-            if (imgEl) { imgEl.src = displayImage; imgEl.alt = product.title_en; }
+            if (imgEl) {
+                imgEl.onerror = function() { this.onerror = null; this.src = 'anantah_logo.png'; };
+                imgEl.src = displayImage;
+                imgEl.alt = product.title_en;
+            }
             if (artisanEl) artisanEl.textContent = `Crafted by ${artisanName}`;
             if (categoryEl) categoryEl.textContent = categoryName;
             if (priceEl) priceEl.textContent = `₹${parseFloat(product.price).toFixed(2)}`;
@@ -3016,13 +3024,14 @@
             // Gallery thumbnails (if raw and refined images are available)
             if (galleryWrapper) {
                 const images = [];
-                if (product.refined_image_url) images.push({ url: product.refined_image_url, label: 'Refined Image' });
-                if (product.raw_image_url && product.raw_image_url !== product.refined_image_url) images.push({ url: product.raw_image_url, label: 'Raw Original Image' });
+                if (product.refined_image_url) images.push({ url: getMediaUrl(product.refined_image_url), label: 'Refined Image' });
+                if (product.raw_image_url && product.raw_image_url !== product.refined_image_url) images.push({ url: getMediaUrl(product.raw_image_url), label: 'Raw Original Image' });
 
                 if (images.length > 1) {
                     galleryWrapper.innerHTML = '';
                     images.forEach((imgObj, idx) => {
                         const thumb = document.createElement('img');
+                        thumb.onerror = function() { this.onerror = null; this.src = 'anantah_logo.png'; };
                         thumb.src = imgObj.url;
                         thumb.alt = imgObj.label;
                         thumb.title = imgObj.label;
@@ -3164,7 +3173,7 @@
                             const card = document.createElement('div');
                             card.className = 'product-card';
                             
-                            const displayImage = p.refined_image_url || p.raw_image_url;
+                            const displayImage = getMediaUrl(p.refined_image_url || p.raw_image_url);
 
                             const addCartBtn = isGuest
                                 ? `<button disabled style="width:100%; margin-top:auto; background:#f0f0f0; border:none; border-radius:20px; padding:8px; font-size:13px; color:#aaa; cursor:not-allowed; font-family:var(--font-inter); font-weight:600;">Login to Add to Cart</button>`
@@ -3176,7 +3185,7 @@
 
                             card.innerHTML = `
                                 <div class="product-card-image-box" style="cursor: pointer;">
-                                    <img class="product-card-image" src="${displayImage}" alt="${p.title_en}">
+                                    <img class="product-card-image" src="${displayImage}" alt="${p.title_en}" onerror="this.onerror=null; this.src='anantah_logo.png';">
                                     ${heartBtnHtml}
                                 </div>
                                 <div class="product-card-info" style="padding:16px; display:flex; flex-direction:column; flex-grow:1;">
@@ -3754,10 +3763,10 @@
                     itemCard.className = 'drawer-item';
                     itemCard.style.cssText = 'display:flex; align-items:center; gap:12px; opacity:0; transform:translateY(10px); transition:opacity 0.4s ease, transform 0.4s ease; padding:8px 0; border-bottom:1px solid rgba(0,0,0,0.05);';
                     
-                    const imgUrl = item.product.refined_image_url || item.product.raw_image_url || '';
+                    const imgUrl = getMediaUrl(item.product.refined_image_url || item.product.raw_image_url || '');
                     
                     itemCard.innerHTML = `
-                        ${imgUrl ? `<img src="${imgUrl}" style="width:48px; height:48px; border-radius:8px; object-fit:cover; flex-shrink:0;">` : `<div style="width:48px; height:48px; background:var(--primary-light); border-radius:8px; display:flex; align-items:center; justify-content:center; font-size:18px; flex-shrink:0;">🎨</div>`}
+                        ${imgUrl ? `<img src="${imgUrl}" onerror="this.onerror=null; this.src='anantah_logo.png';" style="width:48px; height:48px; border-radius:8px; object-fit:cover; flex-shrink:0;">` : `<div style="width:48px; height:48px; background:var(--primary-light); border-radius:8px; display:flex; align-items:center; justify-content:center; font-size:18px; flex-shrink:0;">🎨</div>`}
                         <div style="flex:1; min-width:0; line-height:1.3;">
                             <div style="font-size:13px; font-weight:700; color:var(--text-primary); white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">${item.product.title_en}</div>
                         </div>
@@ -3917,9 +3926,9 @@
                     const card = document.createElement('div');
                     card.id = `cart-item-${item.id}`;
                     card.style.cssText = 'background:#fff; border-radius:14px; padding:14px 16px; display:flex; align-items:center; gap:14px; box-shadow:0 2px 8px rgba(0,0,0,0.06); transition:var(--transition-smooth);';
-                    const img = item.product.refined_image || '';
+                    const img = getMediaUrl(item.product ? (item.product.refined_image || item.product.refined_image_url || item.product.raw_image || '') : '');
                     card.innerHTML = `
-                        ${img ? `<img src="${img}" alt="${item.product.title_en}" style="width:68px; height:68px; border-radius:10px; object-fit:cover; flex-shrink:0;">` : `<div style="width:68px; height:68px; background:var(--primary-light); border-radius:10px; flex-shrink:0; display:flex; align-items:center; justify-content:center; font-size:24px;">🎨</div>`}
+                        ${img ? `<img src="${img}" alt="${item.product.title_en}" onerror="this.onerror=null; this.src='anantah_logo.png';" style="width:68px; height:68px; border-radius:10px; object-fit:cover; flex-shrink:0;">` : `<div style="width:68px; height:68px; background:var(--primary-light); border-radius:10px; flex-shrink:0; display:flex; align-items:center; justify-content:center; font-size:24px;">🎨</div>`}
                         <div style="flex:1; min-width:0;">
                             <div style="font-size:14px; font-weight:700; color:var(--text-primary); white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">${item.product.title_en}</div>
                             <div style="font-size:13px; color:var(--primary-color); font-weight:800; margin:3px 0;">₹${parseFloat(item.product.price).toFixed(2)}</div>
@@ -4215,11 +4224,11 @@
                     const statusColor = statusColors[order.status] || '#555';
                     const card = document.createElement('div');
                     card.style.cssText = 'background:#fff; border-radius:16px; padding:18px; box-shadow:0 2px 8px rgba(0,0,0,0.07);';
-                    const img = order.product && order.product.refined_image ? order.product.refined_image : '';
+                    const img = getMediaUrl(order.product ? (order.product.refined_image || order.product.refined_image_url || order.product.raw_image || '') : '');
                     const dateStr = order.created_at ? new Date(order.created_at).toLocaleDateString('en-IN', { day:'numeric', month:'short', year:'numeric' }) : '';
                     card.innerHTML = `
                         <div style="display:flex; gap:14px; align-items:flex-start;">
-                            ${img ? `<img src="${img}" style="width:62px; height:62px; border-radius:10px; object-fit:cover; flex-shrink:0;">` : `<div style="width:62px; height:62px; background:var(--primary-light); border-radius:10px; display:flex; align-items:center; justify-content:center; font-size:22px; flex-shrink:0;">🎨</div>`}
+                            ${img ? `<img src="${img}" onerror="this.onerror=null; this.src='anantah_logo.png';" style="width:62px; height:62px; border-radius:10px; object-fit:cover; flex-shrink:0;">` : `<div style="width:62px; height:62px; background:var(--primary-light); border-radius:10px; display:flex; align-items:center; justify-content:center; font-size:22px; flex-shrink:0;">🎨</div>`}
                             <div style="flex:1; min-width:0;">
                                 <div style="font-size:14px; font-weight:700; color:var(--text-primary); white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">${order.product ? order.product.title_en : 'Product'}</div>
                                 <div style="font-size:12px; color:var(--text-secondary); margin-top:2px;">Qty: ${order.quantity} &nbsp;·&nbsp; ${dateStr}</div>

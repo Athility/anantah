@@ -1,6 +1,44 @@
-const CONFIG = {
-    API_BASE_URL: 'http://127.0.0.1:8000/api'
+const getBackendBaseUrl = () => {
+    if (window.location.hostname && window.location.hostname !== 'localhost' && window.location.hostname !== '127.0.0.1' && window.location.protocol !== 'file:') {
+        return `${window.location.protocol}//${window.location.hostname}:8000`;
+    }
+    return 'http://127.0.0.1:8000';
 };
+
+const CONFIG = {
+    API_BASE_URL: `${getBackendBaseUrl()}/api`
+};
+
+function getMediaUrl(path) {
+    if (!path) return 'anantah_logo.png';
+    if (typeof path !== 'string') return 'anantah_logo.png';
+    path = path.trim();
+    if (!path) return 'anantah_logo.png';
+    
+    if (path.startsWith('data:') || path.startsWith('blob:')) {
+        return path;
+    }
+    
+    const backendBase = getBackendBaseUrl();
+    
+    if (path.startsWith('http://127.0.0.1:8000') || path.startsWith('http://localhost:8000')) {
+        const relativePath = path.replace(/^http:\/\/(127\.0\.0\.1|localhost):8000/, '');
+        if (window.location.hostname && window.location.hostname !== '127.0.0.1' && window.location.hostname !== 'localhost' && window.location.protocol !== 'file:') {
+            return `${window.location.protocol}//${window.location.hostname}:8000${relativePath}`;
+        }
+        return path;
+    }
+    
+    if (path.startsWith('/')) {
+        return `${backendBase}${path}`;
+    }
+    
+    if (path.startsWith('media/')) {
+        return `${backendBase}/${path}`;
+    }
+
+    return path;
+}
 
 let isRefreshingToken = false;
 let refreshSubscribers = [];
