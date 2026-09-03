@@ -1549,7 +1549,7 @@
         async function fetchCartForNav() {
             if (!currentUser || currentUser.role !== 'buyer' || !accessToken) return;
             try {
-                const r = await fetch(`${CONFIG.API_BASE_URL}/cart/`, { headers: { 'Authorization': `Bearer ${accessToken}` } });
+                const r = await customFetch(`${CONFIG.API_BASE_URL}/cart/`, { headers: { 'Authorization': `Bearer ${accessToken}` } });
                 if (!r.ok) return;
                 const data = await r.json();
 
@@ -1622,7 +1622,7 @@
             }
 
             try {
-                const response = await fetch(`${CONFIG.API_BASE_URL}/accounts/me/`, {
+                const response = await customFetch(`${CONFIG.API_BASE_URL}/accounts/me/`, {
                     headers: {
                         'Authorization': `Bearer ${accessToken}`
                     }
@@ -1645,7 +1645,7 @@
                 } else {
                     // Try refreshing token
                     if (refreshToken) {
-                        const refreshResponse = await fetch(`${CONFIG.API_BASE_URL}/accounts/login/refresh/`, {
+                        const refreshResponse = await customFetch(`${CONFIG.API_BASE_URL}/accounts/login/refresh/`, {
                             method: 'POST',
                             headers: { 'Content-Type': 'application/json' },
                             body: JSON.stringify({ refresh: refreshToken })
@@ -1878,7 +1878,7 @@
             submitBtn.textContent = 'Logging in...';
 
             try {
-                const response = await fetch(`${CONFIG.API_BASE_URL}/accounts/login/`, {
+                const response = await customFetch(`${CONFIG.API_BASE_URL}/accounts/login/`, {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({
@@ -1972,7 +1972,7 @@
             btnPhoneSubmit.textContent = 'Sending...';
 
             try {
-                const response = await fetch(`${CONFIG.API_BASE_URL}/accounts/send-otp/`, {
+                const response = await customFetch(`${CONFIG.API_BASE_URL}/accounts/send-otp/`, {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({ phone })
@@ -2012,7 +2012,7 @@
         document.getElementById('btn-otp-resend').addEventListener('click', async () => {
             const phone = verifiedPhoneNumber;
             try {
-                const response = await fetch(`${CONFIG.API_BASE_URL}/accounts/send-otp/`, {
+                const response = await customFetch(`${CONFIG.API_BASE_URL}/accounts/send-otp/`, {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({ phone })
@@ -2086,7 +2086,7 @@
             
             async function handleOtpSubmit(otpCode) {
                 try {
-                    const response = await fetch(`${CONFIG.API_BASE_URL}/accounts/verify-otp/`, {
+                    const response = await customFetch(`${CONFIG.API_BASE_URL}/accounts/verify-otp/`, {
                         method: 'POST',
                         headers: { 'Content-Type': 'application/json' },
                         body: JSON.stringify({ phone: verifiedPhoneNumber, otp: otpCode })
@@ -2277,7 +2277,7 @@
             };
 
             try {
-                const response = await fetch(`${CONFIG.API_BASE_URL}/accounts/signup/`, {
+                const response = await customFetch(`${CONFIG.API_BASE_URL}/accounts/signup/`, {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify(payload)
@@ -2328,7 +2328,7 @@
             };
 
             try {
-                const response = await fetch(`${CONFIG.API_BASE_URL}/accounts/signup/`, {
+                const response = await customFetch(`${CONFIG.API_BASE_URL}/accounts/signup/`, {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify(payload)
@@ -2553,7 +2553,7 @@
             }
 
             try {
-                const response = await fetch(`${CONFIG.API_BASE_URL}/listings/upload/`, {
+                const response = await customFetch(`${CONFIG.API_BASE_URL}/listings/upload/`, {
                     method: 'POST',
                     headers: {
                         'Authorization': `Bearer ${accessToken}`
@@ -2617,7 +2617,7 @@
         // API interaction: Fetch and display artisan shop products
         async function loadArtisanProducts() {
             try {
-                const response = await fetch(`${CONFIG.API_BASE_URL}/listings/upload/`, {
+                const response = await customFetch(`${CONFIG.API_BASE_URL}/listings/upload/`, {
                     headers: {
                         'Authorization': `Bearer ${accessToken}`
                     }
@@ -2662,7 +2662,7 @@
                                 const confirmed = confirm(`Delete "${productTitle}"? This cannot be undone.`);
                                 if (!confirmed) return;
                                 try {
-                                    const delRes = await fetch(`${CONFIG.API_BASE_URL}/listings/${productId}/delete/`, {
+                                    const delRes = await customFetch(`${CONFIG.API_BASE_URL}/listings/${productId}/delete/`, {
                                         method: 'DELETE',
                                         headers: { 'Authorization': `Bearer ${accessToken}` }
                                     });
@@ -2701,7 +2701,7 @@
                 return;
             }
             try {
-                const response = await fetch(`${CONFIG.API_BASE_URL}/wishlist/`, {
+                const response = await customFetch(`${CONFIG.API_BASE_URL}/wishlist/`, {
                     headers: { 'Authorization': `Bearer ${accessToken}` }
                 });
                 if (response.ok) {
@@ -2774,7 +2774,7 @@
                     // Remove request
                     let itemId = existingItemId;
                     if (!itemId || itemId === 'pending') {
-                        const checkRes = await fetch(`${CONFIG.API_BASE_URL}/wishlist/check/${productId}/`, {
+                        const checkRes = await customFetch(`${CONFIG.API_BASE_URL}/wishlist/check/${productId}/`, {
                             headers: { 'Authorization': `Bearer ${accessToken}` }
                         });
                         if (checkRes.ok) {
@@ -2784,7 +2784,7 @@
                     }
 
                     if (itemId) {
-                        const res = await fetch(`${CONFIG.API_BASE_URL}/wishlist/${itemId}/`, {
+                        const res = await customFetch(`${CONFIG.API_BASE_URL}/wishlist/${itemId}/`, {
                             method: 'DELETE',
                             headers: { 'Authorization': `Bearer ${accessToken}` }
                         });
@@ -2793,7 +2793,7 @@
                     showToastAlert('Removed from wishlist.', 'info');
                 } else {
                     // Add request
-                    const res = await fetch(`${CONFIG.API_BASE_URL}/wishlist/add/`, {
+                    const res = await customFetch(`${CONFIG.API_BASE_URL}/wishlist/add/`, {
                         method: 'POST',
                         headers: {
                             'Authorization': `Bearer ${accessToken}`,
@@ -2854,7 +2854,7 @@
             emptyState.style.display = 'none';
 
             try {
-                const response = await fetch(`${CONFIG.API_BASE_URL}/wishlist/`, {
+                const response = await customFetch(`${CONFIG.API_BASE_URL}/wishlist/`, {
                     headers: { 'Authorization': `Bearer ${accessToken}` }
                 });
 
@@ -2946,7 +2946,7 @@
             }
 
             try {
-                const response = await fetch(`${CONFIG.API_BASE_URL}/wishlist/`, {
+                const response = await customFetch(`${CONFIG.API_BASE_URL}/wishlist/`, {
                     headers: { 'Authorization': `Bearer ${accessToken}` }
                 });
 
@@ -3149,7 +3149,7 @@
             }
 
             try {
-                const response = await fetch(`${CONFIG.API_BASE_URL}/listings/upload/`, { headers });
+                const response = await customFetch(`${CONFIG.API_BASE_URL}/listings/upload/`, { headers });
 
                 if (response.ok) {
                     const products = await response.json();
@@ -3414,7 +3414,7 @@
                 }, 5000);
 
                 try {
-                    const response = await fetch(
+                    const response = await customFetch(
                         `${CONFIG.API_BASE_URL}/listings/${currentProductId}/voice-catalog/`,
                         {
                             method:  'POST',
@@ -3503,7 +3503,7 @@
                 };
 
                 try {
-                    const response = await fetch(
+                    const response = await customFetch(
                         `${CONFIG.API_BASE_URL}/listings/${currentProductId}/confirm-catalog/`,
                         {
                             method:  'PATCH',
@@ -3735,7 +3735,7 @@
             list.innerHTML = '<p style="color:var(--text-secondary); font-size:13px; padding:10px;">Loading...</p>';
             
             try {
-                const r = await fetch(`${CONFIG.API_BASE_URL}/cart/`, { headers: { 'Authorization': `Bearer ${accessToken}` } });
+                const r = await customFetch(`${CONFIG.API_BASE_URL}/cart/`, { headers: { 'Authorization': `Bearer ${accessToken}` } });
                 if (!r.ok) throw new Error('Cart fetch failed');
                 const data = await r.json();
                 
@@ -3844,7 +3844,7 @@
         async function updateCartBadge() {
             if (!currentUser || currentUser.role !== 'buyer' || !accessToken) return;
             try {
-                const r = await fetch(`${CONFIG.API_BASE_URL}/cart/`, { headers: { 'Authorization': `Bearer ${accessToken}` } });
+                const r = await customFetch(`${CONFIG.API_BASE_URL}/cart/`, { headers: { 'Authorization': `Bearer ${accessToken}` } });
                 if (r.ok) {
                     const data = await r.json();
                     const badge = document.getElementById('cart-badge');
@@ -3864,7 +3864,7 @@
         // ─── Add to Cart API call ──────────────────────────────────────────────
         async function addToCart(productId, quantity = 1) {
             try {
-                const r = await fetch(`${CONFIG.API_BASE_URL}/cart/add/`, {
+                const r = await customFetch(`${CONFIG.API_BASE_URL}/cart/add/`, {
                     method: 'POST',
                     headers: {
                         'Authorization': `Bearer ${accessToken}`,
@@ -3895,7 +3895,7 @@
             list.innerHTML = '<p style="color:var(--text-secondary); font-size:13px;">Loading cart…</p>';
 
             try {
-                const r = await fetch(`${CONFIG.API_BASE_URL}/cart/`, { headers: { 'Authorization': `Bearer ${accessToken}` } });
+                const r = await customFetch(`${CONFIG.API_BASE_URL}/cart/`, { headers: { 'Authorization': `Bearer ${accessToken}` } });
                 if (!r.ok) throw new Error('Cart fetch failed');
                 const data = await r.json();
 
@@ -3945,7 +3945,7 @@
         async function changeQty(itemId, newQty) {
             if (newQty < 1) { await removeCartItem(itemId); return; }
             try {
-                await fetch(`${CONFIG.API_BASE_URL}/cart/${itemId}/`, {
+                await customFetch(`${CONFIG.API_BASE_URL}/cart/${itemId}/`, {
                     method: 'PATCH',
                     headers: { 'Authorization': `Bearer ${accessToken}`, 'Content-Type': 'application/json' },
                     body: JSON.stringify({ quantity: newQty })
@@ -3956,7 +3956,7 @@
 
         async function removeCartItem(itemId) {
             try {
-                await fetch(`${CONFIG.API_BASE_URL}/cart/${itemId}/`, {
+                await customFetch(`${CONFIG.API_BASE_URL}/cart/${itemId}/`, {
                     method: 'DELETE',
                     headers: { 'Authorization': `Bearer ${accessToken}` }
                 });
@@ -3976,7 +3976,7 @@
 
             // Load checkout summary
             try {
-                const r = await fetch(`${CONFIG.API_BASE_URL}/orders/checkout-summary/`, {
+                const r = await customFetch(`${CONFIG.API_BASE_URL}/orders/checkout-summary/`, {
                     method: 'POST',
                     headers: { 'Authorization': `Bearer ${accessToken}`, 'Content-Type': 'application/json' }
                 });
@@ -4015,7 +4015,7 @@
             container.innerHTML = '';
             selectedAddressId = null;
             try {
-                const r = await fetch(`${CONFIG.API_BASE_URL}/cart/addresses/`, { headers: { 'Authorization': `Bearer ${accessToken}` } });
+                const r = await customFetch(`${CONFIG.API_BASE_URL}/cart/addresses/`, { headers: { 'Authorization': `Bearer ${accessToken}` } });
                 if (!r.ok) return;
                 const addresses = await r.json();
                 if (addresses.length === 0) {
@@ -4073,7 +4073,7 @@
                 alert('Please fill in all required address fields.'); return;
             }
             try {
-                const r = await fetch(`${CONFIG.API_BASE_URL}/cart/addresses/`, {
+                const r = await customFetch(`${CONFIG.API_BASE_URL}/cart/addresses/`, {
                     method: 'POST',
                     headers: { 'Authorization': `Bearer ${accessToken}`, 'Content-Type': 'application/json' },
                     body: JSON.stringify(payload)
@@ -4091,126 +4091,88 @@
 
         let pendingOrdersToPay = [];
 
-        function startRazorpayPayment(orderId) {
-            return new Promise(async (resolve, reject) => {
-                try {
-                    const response = await fetch(`${CONFIG.API_BASE_URL}/payments/create-order/`, {
-                        method: 'POST',
-                        headers: {
-                            'Authorization': `Bearer ${accessToken}`,
-                            'Content-Type': 'application/json'
-                        },
-                        body: JSON.stringify({ order_id: orderId })
-                    });
-                    
-                    const data = await response.json();
-                    if (!response.ok) {
-                        return reject(new Error(data.detail || 'Could not initiate Razorpay order.'));
-                    }
-                    
-                    const options = {
-                        key: data.razorpay_key_id,
-                        amount: data.amount,
-                        currency: data.currency,
-                        name: "Anantah",
-                        description: `Order #${orderId} Payment`,
-                        order_id: data.razorpay_order_id,
-                        handler: async function (paymentResponse) {
-                            try {
-                                const verifyResponse = await fetch(`${CONFIG.API_BASE_URL}/payments/verify/`, {
-                                    method: 'POST',
-                                    headers: {
-                                        'Authorization': `Bearer ${accessToken}`,
-                                        'Content-Type': 'application/json'
-                                    },
-                                    body: JSON.stringify({
-                                        our_order_id: data.our_order_id,
-                                        razorpay_order_id: paymentResponse.razorpay_order_id,
-                                        razorpay_payment_id: paymentResponse.razorpay_payment_id,
-                                        razorpay_signature: paymentResponse.razorpay_signature
-                                    })
-                                });
-                                
-                                const verifyData = await verifyResponse.json();
-                                if (verifyResponse.ok && verifyData.status === 'paid') {
-                                    resolve(verifyData);
-                                } else {
-                                    reject(new Error(verifyData.detail || 'Payment verification failed.'));
-                                }
-                            } catch (verifyErr) {
-                                reject(new Error('Network error during payment verification.'));
-                            }
-                        },
-                        prefill: {
-                            name: currentUser ? currentUser.username : "",
-                            email: currentUser ? currentUser.email : "",
-                            contact: currentUser ? currentUser.phone : ""
-                        },
-                        modal: {
-                            ondismiss: function () {
-                                reject(new Error('Payment not completed. Please try again.'));
-                            }
-                        },
-                        theme: {
-                            color: "#482E83"
-                        }
-                    };
-                    
-                    const rzp = new Razorpay(options);
-                    rzp.open();
-                    
-                } catch (err) {
-                    reject(err);
-                }
-            });
-        }
-
-        async function payOrdersSequentially(orders) {
-            const btn = document.getElementById('btn-place-order');
-            for (let i = 0; i < orders.length; i++) {
-                const order = orders[i];
-                btn.textContent = `Paying for Order ${i + 1}/${orders.length}...`;
-                try {
-                    await startRazorpayPayment(order.id);
-                } catch (paymentErr) {
-                    throw new Error(paymentErr.message || 'Payment failed or cancelled.');
-                }
-            }
-            pendingOrdersToPay = [];
-            trackEvent('order_placed', { order_count: orders.length });
-            closeCheckout();
-            updateCartBadge();
-            switchBuyerTab('orders');
-            showToastAlert('Payment received! Your order has been placed successfully.', 'success');
-        }
-
         async function placeOrder() {
             if (!selectedAddressId) { alert('Please select a delivery address.'); return; }
             const btn = document.getElementById('btn-place-order');
             const errEl = document.getElementById('checkout-error');
             btn.disabled = true;
-            btn.textContent = 'Processing…';
+            btn.textContent = 'Processing.';
             errEl.style.display = 'none';
             try {
-                    const r = await fetch(`${CONFIG.API_BASE_URL}/orders/create/`, {
-                        method: 'POST',
-                        headers: { 'Authorization': `Bearer ${accessToken}`, 'Content-Type': 'application/json' },
-                        body: JSON.stringify({ address_id: selectedAddressId })
-                    });
-                    
-                    let data = {};
-                    try { data = await r.json(); } catch(_) {}
-
-                    if (!r.ok) {
-                        errEl.textContent = data.detail || `Could not place order (Error ${r.status}). Please try again.`;
-                        errEl.style.display = 'block';
-                        btn.disabled = false;
-                        btn.textContent = 'Pay Now';
-                        return;
-                    }
-                    pendingOrdersToPay = data.orders || [];
+                const r = await customFetch(`${CONFIG.API_BASE_URL}/orders/create/`, {
+                    method: 'POST',
+                    headers: { 'Authorization': `Bearer ${accessToken}`, 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ address_id: selectedAddressId })
+                });
                 
-                await payOrdersSequentially(pendingOrdersToPay);
+                let data = {};
+                try { data = await r.json(); } catch(_) {}
+
+                if (!r.ok) {
+                    errEl.textContent = data.detail || `Could not create order (Error ${r.status}). Please try again.`;
+                    errEl.style.display = 'block';
+                    btn.disabled = false;
+                    btn.textContent = 'Pay Now';
+                    return;
+                }
+                
+                const options = {
+                    key: data.razorpay_key_id,
+                    amount: data.amount,
+                    currency: data.currency,
+                    name: "Anantah",
+                    description: "Cart Checkout",
+                    order_id: data.razorpay_order_id,
+                    handler: async function (paymentResponse) {
+                        try {
+                            btn.textContent = 'Verifying Payment...';
+                            const verifyResponse = await customFetch(`${CONFIG.API_BASE_URL}/payments/verify/`, {
+                                method: 'POST',
+                                headers: {
+                                    'Authorization': `Bearer ${accessToken}`,
+                                    'Content-Type': 'application/json'
+                                },
+                                body: JSON.stringify({
+                                    razorpay_order_id: paymentResponse.razorpay_order_id,
+                                    razorpay_payment_id: paymentResponse.razorpay_payment_id,
+                                    razorpay_signature: paymentResponse.razorpay_signature
+                                })
+                            });
+                            
+                            const verifyData = await verifyResponse.json();
+                            if (!verifyResponse.ok) {
+                                throw new Error(verifyData.detail || 'Payment verification failed.');
+                            }
+                            
+                            trackEvent('order_placed', { order_count: data.orders ? data.orders.length : 1 });
+                            closeCheckout();
+                            updateCartBadge();
+                            switchBuyerTab('orders');
+                            showToastAlert('Payment received! Your order has been placed successfully.', 'success');
+                        } catch (err) {
+                            errEl.textContent = err.message || 'Payment verification failed.';
+                            errEl.style.display = 'block';
+                            btn.disabled = false;
+                            btn.textContent = 'Pay Now';
+                        }
+                    },
+                    prefill: {
+                        name: currentUser.first_name || '',
+                        contact: currentUser.phone_number || ''
+                    },
+                    theme: { color: "#0f172a" },
+                    modal: {
+                        ondismiss: function() {
+                            errEl.textContent = 'Payment window closed by user.';
+                            errEl.style.display = 'block';
+                            btn.disabled = false;
+                            btn.textContent = 'Pay Now';
+                        }
+                    }
+                };
+                
+                const rzp = new window.Razorpay(options);
+                rzp.open();
                 
             } catch(e) {
                 console.error("Payment flow failure:", e);
@@ -4233,7 +4195,7 @@
             const emptyMsg = document.getElementById('orders-empty-msg');
             list.innerHTML = '<p style="color:var(--text-secondary); font-size:13px;">Loading orders…</p>';
             try {
-                const r = await fetch(`${CONFIG.API_BASE_URL}/orders/`, { headers: { 'Authorization': `Bearer ${accessToken}` } });
+                const r = await customFetch(`${CONFIG.API_BASE_URL}/orders/`, { headers: { 'Authorization': `Bearer ${accessToken}` } });
                 if (!r.ok) throw new Error('orders fetch failed');
                 const orders = await r.json();
                 list.innerHTML = '';

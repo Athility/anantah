@@ -44,3 +44,13 @@ class Product(models.Model):
 
     def __str__(self):
         return self.title_en
+
+from django.db.models.signals import post_delete
+from django.dispatch import receiver
+import os
+
+@receiver(post_delete, sender=Product)
+def delete_product_files(sender, instance, **kwargs):
+    for field in [instance.raw_image, instance.refined_image, instance.raw_audio]:
+        if field and hasattr(field, 'path') and os.path.isfile(field.path):
+            os.remove(field.path)

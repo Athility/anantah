@@ -104,32 +104,24 @@ class VerifyPaymentView(APIView):
 
     def post(self, request):
         try:
-            our_order_id = request.data.get('our_order_id')
             razorpay_order_id = request.data.get('razorpay_order_id')
             razorpay_payment_id = request.data.get('razorpay_payment_id')
             razorpay_signature = request.data.get('razorpay_signature')
             
-            if not all([our_order_id, razorpay_order_id, razorpay_payment_id, razorpay_signature]):
+            if not all([razorpay_order_id, razorpay_payment_id, razorpay_signature]):
                 return Response({'detail': 'Missing payment verification fields.'}, status=status.HTTP_400_BAD_REQUEST)
             
             buyer_profile = request.user.buyer_profile
             
-            # Lock the DB row to avoid race conditions
             with transaction.atomic():
-                try:
-                    order = Order.objects.select_for_update().get(id=our_order_id, buyer=buyer_profile)
-                except (Order.DoesNotExist, ValueError, TypeError):
-                    return Response({'detail': 'Order not found.'}, status=status.HTTP_404_NOT_FOUND)
+                orders = Order.objects.select_for_update().filter(razorpay_order_id=razorpay_order_id, buyer=buyer_profile)
                 
-                # Check for order id mismatch
-                if order.razorpay_order_id != razorpay_order_id:
-                    return Response({'detail': 'Order ID mismatch.'}, status=status.HTTP_400_BAD_REQUEST)
+                if not orders.exists():
+                    return Response({'detail': 'Orders not found.'}, status=status.HTTP_404_NOT_FOUND)
                 
-                # If already paid, return early (idempotent success)
-                if order.status == 'paid':
-                    return Response({'status': 'paid', 'detail': 'Order is already marked as paid.'}, status=status.HTTP_200_OK)
+                if all(o.status == 'paid' for o in orders):
+                    return Response({'status': 'paid', 'detail': 'Orders are already marked as paid.'}, status=status.HTTP_200_OK)
                 
-                # Verify cryptographic signature
                 is_valid = verify_payment_signature(
                     razorpay_order_id=razorpay_order_id,
                     razorpay_payment_id=razorpay_payment_id,
@@ -137,14 +129,15 @@ class VerifyPaymentView(APIView):
                 )
                 
                 if not is_valid:
-                    order.status = 'payment_failed'
-                    order.save()
+                    orders.update(status='payment_failed')
                     return Response({'detail': 'Payment signature verification failed.', 'status': 'payment_failed'}, status=status.HTTP_400_BAD_REQUEST)
                 
-                # Securely update order status to paid
-                order.status = 'paid'
-                order.razorpay_payment_id = razorpay_payment_id
-                order.save()
+                orders.update(status='paid', razorpay_payment_id=razorpay_payment_id)
+                
+                # Clear purchased items from the cart
+                from cart.models import CartItem
+                purchased_product_ids = [o.product_id for o in orders if o.product_id]
+                CartItem.objects.filter(buyer=buyer_profile, product_id__in=purchased_product_ids).delete()
                 
                 return Response({'status': 'paid'}, status=status.HTTP_200_OK)
                 
@@ -214,3 +207,4 @@ class RazorpayWebhookView(APIView):
             logger.error(f"Webhook processing error: {str(e)}")
             # Always return 200 to prevent Razorpay from retrying aggressively
             return Response({'detail': f"Webhook handling error: {str(e)}"}, status=status.HTTP_200_OK)
+

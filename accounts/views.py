@@ -1,6 +1,7 @@
 import secrets
 from rest_framework import status
 from rest_framework.views import APIView
+from rest_framework.throttling import ScopedRateThrottle
 from rest_framework.response import Response
 from rest_framework.permissions import AllowAny, IsAuthenticated
 from rest_framework_simplejwt.tokens import RefreshToken
@@ -14,6 +15,8 @@ User = get_user_model()
 
 class SendOTPView(APIView):
     permission_classes = [AllowAny]
+    throttle_classes = [ScopedRateThrottle]
+    throttle_scope = 'otp_request'
 
     def post(self, request, *args, **kwargs):
         phone = (request.data.get('phone') or '').strip()
@@ -89,6 +92,8 @@ class MeView(APIView):
 
 class PasswordResetSendOTPView(APIView):
     permission_classes = [AllowAny]
+    throttle_classes = [ScopedRateThrottle]
+    throttle_scope = 'otp_request'
 
     def post(self, request, *args, **kwargs):
         identifier = (request.data.get('identifier') or request.data.get('phone') or '').strip()
@@ -140,4 +145,5 @@ class DeleteAccountView(APIView):
         with transaction.atomic():
             user.delete()
         return Response({'detail': 'Account deleted successfully.'}, status=status.HTTP_200_OK)
+
 

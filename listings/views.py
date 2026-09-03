@@ -73,14 +73,28 @@ class ProductUploadView(APIView):
                 status=status.HTTP_400_BAD_REQUEST
             )
 
-        # 1. Create and save product in draft status
-        product = Product.objects.create(
+        from PIL import Image
+        try:
+            with Image.open(raw_image) as img:
+                img.verify()
+            raw_image.seek(0)
+        except Exception:
+            return Response({'raw_image': ['Upload a valid image.']}, status=status.HTTP_400_BAD_REQUEST)
+
+        from django.core.exceptions import ValidationError
+        product = Product(
             artisan=artisan_profile,
             title_en=title_en,
             price=price_val,
             raw_image=raw_image,
             status='draft'
         )
+        try:
+            product.full_clean(exclude=['title_hi', 'description_en', 'description_hi', 'category_en', 'category_hi', 'audio_description_hi'])
+        except ValidationError as e:
+            return Response(e.message_dict, status=status.HTTP_400_BAD_REQUEST)
+        
+        product.save()
 
         # Parse selected enhancements (comma-separated string from form-data)
         enhancements_raw = request.data.get('enhancements', '')

@@ -5,6 +5,10 @@ Buyer-only access enforced via IsBuyer permission class.
 All cost constants are clearly marked as placeholders for easy future swapping.
 """
 from decimal import Decimal
+from django.db import transaction
+import uuid
+from payments.razorpay_service import create_razorpay_order
+from django.conf import settings
 
 from rest_framework.views import APIView
 from rest_framework.response import Response
@@ -220,44 +224,56 @@ class OrderCreateView(APIView):
             return Response({'detail': 'Your cart is empty.'}, status=status.HTTP_400_BAD_REQUEST)
 
         costs = calculate_cart_costs(items)
-        items_list = list(items)  # materialize so delete() below doesn't affect the loop
+        items_list = list(items)  
         item_count = Decimal(len(items_list))
-        created_orders = []
+        
+        try:
+            with transaction.atomic():
+                created_orders = []
+                for item in items_list:
+                    product = item.product
+                    artisan_profile = product.artisan
+                    per_item_product_total = product.price * item.quantity
+                    per_item_shipping = (costs['shipping_cost'] / item_count).quantize(Decimal('0.01'))
+                    per_item_commission = (per_item_product_total * PLATFORM_COMMISSION_RATE).quantize(Decimal('0.01'))
+                    per_item_payable = per_item_product_total + per_item_shipping + per_item_commission
 
-        for item in items_list:
-            # Each cart item becomes one order row
-            product = item.product
-            artisan_profile = product.artisan
-            per_item_product_total = product.price * item.quantity
-            per_item_shipping = (costs['shipping_cost'] / item_count).quantize(Decimal('0.01'))
-            per_item_commission = (per_item_product_total * PLATFORM_COMMISSION_RATE).quantize(Decimal('0.01'))
-            per_item_payable = per_item_product_total + per_item_shipping + per_item_commission
+                    order = Order.objects.create(
+                        buyer=request.user.buyer_profile,
+                        product=product,
+                        artisan=artisan_profile,
+                        shipping_address=address,
+                        quantity=item.quantity,
+                        total_amount=per_item_payable,
+                        currency='INR',
+                        status='created',
+                        product_total=per_item_product_total,
+                        shipping_cost=per_item_shipping,
+                        platform_commission=per_item_commission,
+                        total_payable=per_item_payable,
+                    )
+                    created_orders.append(order)
 
-            order = Order.objects.create(
-                buyer=request.user.buyer_profile,
-                product=product,
-                artisan=artisan_profile,
-                shipping_address=address,
-                quantity=item.quantity,
-                total_amount=per_item_payable,
-                currency='INR',
-                status='created',
-                product_total=per_item_product_total,
-                shipping_cost=per_item_shipping,
-                platform_commission=per_item_commission,
-                total_payable=per_item_payable,
-            )
-            created_orders.append(order)
+                total_payable = sum(o.total_payable for o in created_orders)
+                receipt_id = f"cart_{uuid.uuid4().hex[:15]}"
+                rzp_order = create_razorpay_order(amount_rupees=float(total_payable), receipt_id=receipt_id)
 
-        # Clear the buyer's cart now that orders are created
-        CartItem.objects.filter(buyer=request.user.buyer_profile).delete()
-
-        serializer = OrderSerializer(created_orders, many=True, context={'request': request})
-        return Response({
-            'orders': serializer.data,
-            'summary': {k: float(v) for k, v in costs.items()},
-            'message': 'Orders placed successfully. Payment coming soon!',
-        }, status=status.HTTP_201_CREATED)
+                for order in created_orders:
+                    order.razorpay_order_id = rzp_order['id']
+                    order.save()
+                    
+                serializer = OrderSerializer(created_orders, many=True, context={'request': request})
+                return Response({
+                    'orders': serializer.data,
+                    'summary': {k: float(v) for k, v in costs.items()},
+                    'razorpay_order_id': rzp_order['id'],
+                    'razorpay_key_id': getattr(settings, 'RAZORPAY_KEY_ID', 'test_key'),
+                    'amount': rzp_order['amount'],
+                    'currency': 'INR',
+                    'message': 'Orders created successfully. Proceed to payment.',
+                }, status=status.HTTP_201_CREATED)
+        except Exception as e:
+            return Response({'detail': f'Order creation failed: {str(e)}'}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
 
 class OrderListView(APIView):
@@ -268,3 +284,5 @@ class OrderListView(APIView):
         orders = Order.objects.filter(buyer=request.user.buyer_profile).select_related('product', 'shipping_address').order_by('-created_at')
         serializer = OrderSerializer(orders, many=True, context={'request': request})
         return Response(serializer.data)
+
+
