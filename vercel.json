@@ -1,0 +1,22 @@
+{
+  "builds": [
+    {
+      "src": "anantah_core/wsgi.py",
+      "use": "@vercel/python"
+    }
+  ],
+  "routes": [
+    {
+      "src": "/api/(.*)",
+      "dest": "anantah_core/wsgi.py"
+    },
+    {
+      "src": "/admin/(.*)",
+      "dest": "anantah_core/wsgi.py"
+    },
+    {
+      "src": "/(.*)",
+      "dest": "/$1"
+    }
+  ]
+}
