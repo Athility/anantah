@@ -201,8 +201,8 @@ else:
             "BACKEND": "django.core.files.storage.FileSystemStorage",
         },
     }
+# DEFAULT_FILE_STORAGE is handled by STORAGES in Django 4.2+ / 5.x
 
-DEFAULT_FILE_STORAGE = STORAGES['default']['BACKEND']
 
 # REST Framework Configuration
 REST_FRAMEWORK = {
