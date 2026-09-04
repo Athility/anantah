@@ -1,4 +1,10 @@
 from django.db import models
+from django.core.files.storage import storages
+
+
+def get_audio_storage():
+    return storages['audio']
+
 
 class Category(models.Model):
     name = models.CharField(max_length=100)
@@ -35,7 +41,7 @@ class Product(models.Model):
     price = models.DecimalField(max_digits=10, decimal_places=2)
     raw_image = models.ImageField(upload_to='products/raw/', max_length=255)
     refined_image = models.ImageField(upload_to='products/refined/', max_length=255, null=True, blank=True)
-    raw_audio = models.FileField(upload_to='products/audio/', max_length=255, null=True, blank=True)
+    raw_audio = models.FileField(upload_to='products/audio/', storage=get_audio_storage, max_length=255, null=True, blank=True)
     status = models.CharField(max_length=10, choices=STATUS_CHOICES, default='draft')
     created_at = models.DateTimeField(auto_now_add=True)
 
@@ -55,9 +61,22 @@ logger = logging.getLogger(__name__)
 @receiver(post_delete, sender=Product)
 def delete_product_files(sender, instance, **kwargs):
     for field in [instance.raw_image, instance.refined_image, instance.raw_audio]:
-        if field and hasattr(field, 'path') and os.path.isfile(field.path):
+        if not field or not field.name:
+            continue
+        try:
+            is_local = False
             try:
-                os.remove(field.path)
-            except (OSError, PermissionError) as e:
-                logger.warning(f"Failed to delete product file {field.path}: {e}")
+                if hasattr(field, 'path') and field.path and os.path.isfile(field.path):
+                    is_local = True
+                    os.remove(field.path)
+            except (NotImplementedError, AttributeError, ValueError):
+                pass
+
+            if not is_local:
+                try:
+                    field.storage.delete(field.name)
+                except Exception as e:
+                    logger.warning(f"Failed to delete remote product file {field.name} from storage: {e}")
+        except (OSError, PermissionError) as e:
+            logger.warning(f"Failed to delete product file {field.name}: {e}")
 

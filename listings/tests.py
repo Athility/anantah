@@ -1,4 +1,4 @@
-from django.test import TestCase
+from django.test import TestCase, override_settings
 from rest_framework.test import APIClient
 from rest_framework import status
 from django.core.files.uploadedfile import SimpleUploadedFile
@@ -131,4 +131,83 @@ class UploadTests(TestCase):
         with mock.patch('os.remove', side_effect=PermissionError('File locked by another process')):
             product.delete()
             self.assertEqual(Product.objects.filter(id=product_id).count(), 0)
+
+    def test_remote_storage_cleanup_not_implemented_error(self):
+        """Verify delete_product_files safely handles storage backends where field.path raises NotImplementedError."""
+        from unittest import mock
+        from accounts.models import ArtisanProfile
+
+        artisan_profile = ArtisanProfile.objects.get(user=self.user)
+        product = Product.objects.create(
+            artisan=artisan_profile,
+            title_en="Remote Product",
+            price=150.00,
+            raw_image="media/products/raw/remote_sample",
+            refined_image="media/products/refined/remote_refined",
+            raw_audio="media/products/audio/remote_audio",
+            status="live"
+        )
+
+        with mock.patch('django.db.models.fields.files.FieldFile.path', new_callable=mock.PropertyMock) as mock_path:
+            mock_path.side_effect = NotImplementedError("Remote storage does not support local paths")
+            # Deletion should complete cleanly without error
+            product.delete()
+            self.assertEqual(Product.objects.filter(id=product.id).count(), 0)
+
+    @override_settings(
+        STORAGES={
+            "default": {"BACKEND": "cloudinary_storage.storage.MediaCloudinaryStorage"},
+            "staticfiles": {"BACKEND": "django.contrib.staticfiles.storage.StaticFilesStorage"},
+            "audio": {"BACKEND": "cloudinary_storage.storage.VideoMediaCloudinaryStorage"},
+        }
+    )
+    def test_serializer_returns_https_cloudinary_urls(self):
+        """Verify ProductSerializer produces absolute HTTPS URLs for Cloudinary-hosted assets."""
+        from listings.serializers import ProductSerializer
+        from accounts.models import ArtisanProfile
+        from cloudinary_storage.storage import VideoMediaCloudinaryStorage, MediaCloudinaryStorage
+        from unittest import mock
+
+        artisan_profile = ArtisanProfile.objects.get(user=self.user)
+        with mock.patch.object(Product._meta.get_field('raw_audio'), 'storage', VideoMediaCloudinaryStorage()), \
+             mock.patch.object(Product._meta.get_field('raw_image'), 'storage', MediaCloudinaryStorage()), \
+             mock.patch.object(Product._meta.get_field('refined_image'), 'storage', MediaCloudinaryStorage()):
+            
+            product = Product.objects.create(
+                artisan=artisan_profile,
+                title_en="Cloud Product",
+                price=299.99,
+                raw_image="products/raw/vase_123.jpg",
+                refined_image="products/refined/refined_vase_123.jpg",
+                raw_audio="products/audio/voice_vase_123.webm",
+                status="live"
+            )
+
+            serializer = ProductSerializer(product)
+            data = serializer.data
+            self.assertIsNotNone(data['raw_image_url'])
+            self.assertIsNotNone(data['refined_image_url'])
+            self.assertIsNotNone(data['raw_audio_url'])
+            self.assertTrue(data['raw_image_url'].startswith('https://res.cloudinary.com/'))
+            self.assertTrue(data['refined_image_url'].startswith('https://res.cloudinary.com/'))
+            self.assertTrue(data['raw_audio_url'].startswith('https://res.cloudinary.com/'))
+
+    @override_settings(
+        STORAGES={
+            "default": {"BACKEND": "cloudinary_storage.storage.MediaCloudinaryStorage"},
+            "staticfiles": {"BACKEND": "django.contrib.staticfiles.storage.StaticFilesStorage"},
+            "audio": {"BACKEND": "cloudinary_storage.storage.VideoMediaCloudinaryStorage"},
+        }
+    )
+    def test_migrate_command_dry_run_execution(self):
+        """Verify migrate_media_to_cloudinary command runs successfully in dry-run mode."""
+        from io import StringIO
+        from django.core.management import call_command
+
+        out = StringIO()
+        call_command('migrate_media_to_cloudinary', '--dry-run', stdout=out)
+        output = out.getvalue()
+        self.assertIn("Anantah Cloudinary Media Migration", output)
+        self.assertIn("Mode: DRY-RUN", output)
+        self.assertIn("Migration Summary", output)
 

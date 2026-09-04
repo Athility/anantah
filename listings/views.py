@@ -195,18 +195,19 @@ class VoiceCatalogView(APIView):
         # --- Always save raw audio first (before pipeline runs) ---
         # This ensures the artisan's audio is preserved even if processing fails.
         audio_file.seek(0)
+        audio_bytes = audio_file.read()
         product.raw_audio.save(
             f"voice_{product_id}_{audio_file.name}",
-            ContentFile(audio_file.read()),
+            ContentFile(audio_bytes),
             save=True
         )
 
         # --- STAGE 1: Transcription + Translation (Groq Whisper → HF fallback) ---
         try:
-            # Re-open from the saved file to ensure a clean stream for the API
-            with product.raw_audio.open('rb') as saved_audio:
-                saved_audio.name = audio_file.name  # Preserve extension for MIME detection
-                transcript_en = transcribe_and_translate(saved_audio)
+            import io
+            audio_stream = io.BytesIO(audio_bytes)
+            audio_stream.name = audio_file.name  # Preserve extension for MIME detection
+            transcript_en = transcribe_and_translate(audio_stream)
         except RuntimeError as e:
             return Response(
                 {

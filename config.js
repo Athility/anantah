@@ -24,13 +24,17 @@ function getMediaUrl(path) {
     if (path.startsWith('data:') || path.startsWith('blob:')) {
         return path;
     }
+
+    if (path.startsWith('http://') || path.startsWith('https://')) {
+        if (path.startsWith('http://127.0.0.1:8000') || path.startsWith('http://localhost:8000')) {
+            const backendBase = getBackendBaseUrl();
+            const relativePath = path.replace(/^http:\/\/(127\.0\.0\.1|localhost):8000/, '');
+            return `${backendBase}${relativePath}`;
+        }
+        return path;
+    }
     
     const backendBase = getBackendBaseUrl();
-    
-    if (path.startsWith('http://127.0.0.1:8000') || path.startsWith('http://localhost:8000')) {
-        const relativePath = path.replace(/^http:\/\/(127\.0\.0\.1|localhost):8000/, '');
-        return `${backendBase}${relativePath}`;
-    }
     
     if (path.startsWith('/')) {
         return `${backendBase}${path}`;

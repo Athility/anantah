@@ -46,3 +46,7 @@ groq                      # Groq API client (ASR via Whisper + LLM description g
 razorpay==2.0.1
 sentry-sdk==2.22.0
 
+# --- Cloudinary Centralized Media Storage ---
+cloudinary==1.46.2
+django-cloudinary-storage==0.3.0
+

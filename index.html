@@ -3123,9 +3123,10 @@
             }
 
             // Audio Player (PART 3)
-            const audioUrl = product.raw_audio_url || product.raw_audio;
+            const rawAudio = product.raw_audio_url || product.raw_audio;
+            const audioUrl = (rawAudio && typeof rawAudio === 'string') ? getMediaUrl(rawAudio) : '';
             if (audioWrapper && audioPlayer) {
-                if (audioUrl) {
+                if (audioUrl && audioUrl !== 'anantah_logo.png') {
                     audioPlayer.src = audioUrl;
                     audioWrapper.style.display = 'block';
                 } else {
