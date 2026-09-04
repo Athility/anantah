@@ -58,7 +58,7 @@
     <div class="app-wrapper">
 
         <!-- 1. LANGUAGE ONBOARDING SCREEN -->
-        <section id="screen-language" class="screen active">
+        <section id="screen-language" class="screen">
             <div class="onboarding-card">
                 <div class="logo-section">
                     <h2 class="brand-font" style="font-size: 22px; color: var(--primary-color); margin-bottom: 20px; font-weight: 700;">Choose Your Language<br><span style="font-size: 18px; color: var(--text-secondary); font-weight: 400;">अपनी भाषा चुनिए</span></h2>
@@ -1033,8 +1033,8 @@
     <script src="config.js"></script>
     <script>
         // Core State variables
-        let selectedLanguage = 'en';
-        let selectedRole = 'artisan'; // 'artisan' or 'buyer'
+        let selectedLanguage = localStorage.getItem('selected_language') || 'en';
+        let selectedRole = localStorage.getItem('selected_role') || 'artisan'; // 'artisan' or 'buyer'
         let currentUser = null;
         let accessToken = localStorage.getItem('access_token');
         let refreshToken = localStorage.getItem('refresh_token');
@@ -1138,14 +1138,22 @@
             if (e.state && e.state.screen && screens[e.state.screen]) {
                 navigateTo(e.state.screen, false);
                 if (e.state.tab) {
-                    switchBuyerTab(e.state.tab);
+                    if (e.state.screen === 'artisanDashboard') {
+                        switchRoleNavTab(e.state.tab);
+                    } else {
+                        switchBuyerTab(e.state.tab);
+                    }
                 }
             } else if (!e.state && location.hash.startsWith('#product-')) {
                 // If direct link or back to product route
                 const pId = location.hash.replace('#product-', '');
                 if (pId) switchBuyerTab('productDetail');
-            } else if (!e.state) {
-                switchBuyerTab('shop');
+            } else if (!e.state && currentUser) {
+                if (currentUser.role === 'artisan') {
+                    switchRoleNavTab('home');
+                } else {
+                    switchBuyerTab('shop');
+                }
             }
         });
 
@@ -1447,8 +1455,12 @@
                 isRefinerFormDirty = false;
             }
             activeRoleNavTab = tabId;
+            sessionStorage.setItem('anantah_active_tab', tabId);
             const role = (currentUser && currentUser.role === 'artisan') ? 'artisan' : 'buyer';
-            const item = NAV_ITEMS_BY_ROLE[role].find(i => i.id === tabId);
+            if (window.history && window.history.replaceState && currentUser) {
+                history.replaceState({ screen: role === 'artisan' ? 'artisanDashboard' : 'buyerDashboard', tab: tabId }, '', '#' + tabId);
+            }
+            const item = (NAV_ITEMS_BY_ROLE[role] || []).find(i => i.id === tabId);
 
             // Update UI active states
             document.querySelectorAll('.desktop-nav-item').forEach(el => {
@@ -1476,6 +1488,9 @@
                 } else if (tabId === 'wishlist') {
                     navigateTo('buyerDashboard');
                     switchBuyerTab('wishlist');
+                } else if (tabId === 'orders') {
+                    navigateTo('buyerDashboard');
+                    switchBuyerTab('orders');
                 }
                 return;
             }
@@ -1615,9 +1630,16 @@
 
         // Core Helper: Check JWT token health and load user
         async function checkAuthState() {
-            if (!accessToken) {
-                // If token does not exist, go to language onboarding first
-                navigateTo('language');
+            accessToken = localStorage.getItem('access_token');
+            refreshToken = localStorage.getItem('refresh_token');
+
+            if (!accessToken && !refreshToken) {
+                // If not authenticated, check if language was already chosen
+                if (localStorage.getItem('selected_language')) {
+                    navigateTo('onboarding');
+                } else {
+                    navigateTo('language');
+                }
                 return;
             }
 
@@ -1630,43 +1652,61 @@
 
                 if (response.ok) {
                     currentUser = await response.json();
+                    accessToken = localStorage.getItem('access_token');
+                    refreshToken = localStorage.getItem('refresh_token');
+
+                    const rawHash = (window.location.hash || '').replace('#', '').trim();
+
                     if (currentUser.role === 'artisan') {
                         navigateTo('artisanDashboard');
+                        const artisanValidTabs = ['home', 'my-listings', 'new-listing', 'communities', 'account'];
+                        const targetTab = (rawHash && artisanValidTabs.includes(rawHash)) ? rawHash : (sessionStorage.getItem('anantah_active_tab') || 'home');
+                        switchRoleNavTab(targetTab);
                         loadArtisanProducts();
                     } else if (currentUser.role === 'buyer') {
                         navigateTo('buyerDashboard');
-                        loadBuyerProducts();
-                        setTimeout(updateCartBadge, 500); // show badge count after cart loads
+                        const buyerValidTabs = ['shop', 'cart', 'orders', 'wishlist', 'reels', 'discover', 'account', 'productDetail'];
+                        let targetTab = 'shop';
+                        if (rawHash.startsWith('product-')) {
+                            targetTab = 'shop';
+                        } else if (rawHash && buyerValidTabs.includes(rawHash)) {
+                            targetTab = rawHash;
+                        } else {
+                            targetTab = sessionStorage.getItem('anantah_active_tab') || 'shop';
+                        }
+
+                        if (targetTab === 'cart' || targetTab === 'wishlist' || targetTab === 'orders') {
+                            switchRoleNavTab(targetTab);
+                        } else {
+                            switchBuyerTab(targetTab);
+                        }
+                        await loadBuyerProducts();
+                        if (rawHash.startsWith('product-')) {
+                            const pId = rawHash.replace('product-', '');
+                            const foundProd = (window._cachedBuyerProducts || []).find(p => String(p.id) === String(pId));
+                            if (foundProd) {
+                                openProductDetailModal(foundProd, false);
+                            }
+                        }
+                        setTimeout(updateCartBadge, 500);
                     } else {
-                        // Admin or fallback
                         navigateTo('buyerDashboard');
                         loadBuyerProducts();
                     }
+                } else if (response.status === 401 || response.status === 403) {
+                    clearAuth();
                 } else {
-                    // Try refreshing token
-                    if (refreshToken) {
-                        const refreshResponse = await customFetch(`${CONFIG.API_BASE_URL}/accounts/login/refresh/`, {
-                            method: 'POST',
-                            headers: { 'Content-Type': 'application/json' },
-                            body: JSON.stringify({ refresh: refreshToken })
-                        });
-
-                        if (refreshResponse.ok) {
-                            const data = await refreshResponse.json();
-                            accessToken = data.access;
-                            localStorage.setItem('access_token', accessToken);
-                            // Retry checking auth
-                            checkAuthState();
-                        } else {
-                            clearAuth();
-                        }
-                    } else {
-                        clearAuth();
+                    console.warn("Backend responded with non-auth status:", response.status);
+                    if (typeof showToastAlert === 'function') {
+                        showToastAlert("Connecting to backend server...", "info");
                     }
                 }
             } catch (err) {
                 console.error("Auth check failed:", err);
-                navigateTo('language');
+                // A temporary network failure should NOT clear auth tokens or session
+                if (typeof showToastAlert === 'function') {
+                    showToastAlert("Network issue while restoring session. Retrying...", "error");
+                }
             }
         }
 
@@ -1676,30 +1716,54 @@
             refreshToken = null;
             localStorage.removeItem('access_token');
             localStorage.removeItem('refresh_token');
-            navigateTo('language');
+            sessionStorage.removeItem('anantah_active_tab');
+            sessionStorage.removeItem('anantah_buyer_tab');
+            sessionStorage.removeItem('anantah_artisan_tab');
+            if (localStorage.getItem('selected_language')) {
+                navigateTo('login');
+            } else {
+                navigateTo('language');
+            }
         }
 
         // Language onboarding events
+        function initLanguageSelectionUI() {
+            const savedLang = localStorage.getItem('selected_language') || 'en';
+            selectedLanguage = savedLang;
+            document.querySelectorAll('.lang-item').forEach(item => {
+                if (item.getAttribute('data-lang') === savedLang) {
+                    item.classList.add('selected');
+                } else {
+                    item.classList.remove('selected');
+                }
+            });
+        }
+        initLanguageSelectionUI();
+
         document.querySelectorAll('.lang-item').forEach(item => {
             item.addEventListener('click', () => {
                 document.querySelectorAll('.lang-item').forEach(li => li.classList.remove('selected'));
                 item.classList.add('selected');
-                selectedLanguage = item.getAttribute('data-lang');
+                selectedLanguage = item.getAttribute('data-lang') || 'en';
+                localStorage.setItem('selected_language', selectedLanguage);
             });
         });
 
         document.getElementById('btn-language-continue').addEventListener('click', () => {
+            localStorage.setItem('selected_language', selectedLanguage);
             navigateTo('onboarding');
         });
 
         // Onboarding role buttons
         document.getElementById('btn-select-artisan').addEventListener('click', () => {
             selectedRole = 'artisan';
+            localStorage.setItem('selected_role', 'artisan');
             navigateTo('login');
         });
 
         document.getElementById('btn-select-buyer').addEventListener('click', () => {
             selectedRole = 'buyer';
+            localStorage.setItem('selected_role', 'buyer');
             navigateTo('login');
         });
 
@@ -3162,6 +3226,7 @@
 
                 if (response.ok) {
                     const products = await response.json();
+                    window._cachedBuyerProducts = products;
                     const container = document.getElementById('buyer-product-list');
                     const emptyState = document.getElementById('buyer-empty-state');
 
@@ -3611,10 +3676,10 @@
             closeArtisanDropdown();
         }
 
-        // Tab button click handlers
-        document.getElementById('tab-btn-listings').addEventListener('click', () => switchArtisanTab('listings'));
-        document.getElementById('tab-btn-create').addEventListener('click',   () => switchArtisanTab('create'));
-        document.getElementById('tab-btn-coming').addEventListener('click',   () => switchArtisanTab('coming'));
+        // Tab button click handlers (guarded for legacy DOM support)
+        document.getElementById('tab-btn-listings')?.addEventListener('click', () => switchArtisanTab('listings'));
+        document.getElementById('tab-btn-create')?.addEventListener('click',   () => switchArtisanTab('create'));
+        document.getElementById('tab-btn-coming')?.addEventListener('click',   () => switchArtisanTab('coming'));
 
         // =====================================================================
         // Artisan Navbar Dropdown Toggle
@@ -3637,40 +3702,40 @@
             }
         }
 
-        navbarBadge.addEventListener('click', (e) => {
+        navbarBadge?.addEventListener('click', (e) => {
             e.stopPropagation();
             toggleArtisanDropdown();
         });
 
         // Close dropdown on outside click
         document.addEventListener('click', (e) => {
-            if (artisanDropdown && !artisanDropdown.contains(e.target) && !navbarBadge.contains(e.target)) {
+            if (artisanDropdown && !artisanDropdown.contains(e.target) && (!navbarBadge || !navbarBadge.contains(e.target))) {
                 closeArtisanDropdown();
             }
         });
 
-        // Dropdown menu item handlers
-        document.getElementById('menu-see-listings').addEventListener('click', (e) => {
+        // Dropdown menu item handlers (guarded for legacy DOM support)
+        document.getElementById('menu-see-listings')?.addEventListener('click', (e) => {
             e.preventDefault();
             navigateTo('artisanDashboard');
             switchArtisanTab('listings');
         });
-        document.getElementById('menu-new-listing').addEventListener('click', (e) => {
+        document.getElementById('menu-new-listing')?.addEventListener('click', (e) => {
             e.preventDefault();
             navigateTo('artisanDashboard');
             switchArtisanTab('create');
         });
-        document.getElementById('menu-communities').addEventListener('click', (e) => {
+        document.getElementById('menu-communities')?.addEventListener('click', (e) => {
             e.preventDefault();
             navigateTo('artisanDashboard');
             switchArtisanTab('coming');
         });
-        document.getElementById('menu-orders').addEventListener('click', (e) => {
+        document.getElementById('menu-orders')?.addEventListener('click', (e) => {
             e.preventDefault();
             navigateTo('artisanDashboard');
             switchArtisanTab('coming');
         });
-        document.getElementById('menu-analytics').addEventListener('click', (e) => {
+        document.getElementById('menu-analytics')?.addEventListener('click', (e) => {
             e.preventDefault();
             navigateTo('artisanDashboard');
             switchArtisanTab('coming');
@@ -3702,6 +3767,12 @@
                 orders: 'buyer-tab-orders',
                 wishlist: 'buyer-tab-wishlist'
             };
+
+            activeRoleNavTab = tab;
+            sessionStorage.setItem('anantah_active_tab', tab);
+            if (window.history && window.history.replaceState && currentUser) {
+                history.replaceState({ screen: 'buyerDashboard', tab: tab }, '', '#' + tab);
+            }
 
             Object.keys(views).forEach(key => {
                 const view = document.getElementById(views[key]);
