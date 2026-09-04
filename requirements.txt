@@ -40,7 +40,7 @@ tifffile==2026.8.23
 tqdm==4.70.0
 tzdata==2026.3
 urllib3==2.7.0
-
+gunicorn==23.0.0
 # --- AI services dependencies ---
 groq                      # Groq API client (ASR via Whisper + LLM description generation)
 razorpay==2.0.1
