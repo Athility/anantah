@@ -1231,6 +1231,8 @@
                 <div id="payment-modal-order-count" style="background:var(--primary-light); border-radius:12px; padding:12px 16px; font-size:13px; color:var(--primary-color); font-weight:700; margin-bottom:24px;"></div>
                 <button onclick="closePaymentModal()" style="width:100%; background: linear-gradient(135deg,#482E83,#D96A3D); color:#fff; border:none; border-radius:14px; padding:14px; font-size:15px; font-weight:800; cursor:pointer; font-family:var(--font-inter);">View My Orders</button>
             </div>
+        </div>
+
         <!-- PRODUCT DETAIL MODAL -->
         <div class="modal-overlay" id="modal-product-detail" onclick="closeProductDetailModal(event)" style="display: none; position: fixed; inset: 0; z-index: 2500; background: rgba(0,0,0,0.55); backdrop-filter: blur(6px); align-items: center; justify-content: center;">
             <div class="product-detail-card" id="product-detail-card" onclick="event.stopPropagation()">
@@ -1241,6 +1243,235 @@
             </div>
         </div>
 
+        <!-- 9. ABOUT ANANTAH SCREEN -->
+        <section id="screen-about" class="screen">
+            <div class="about-screen-wrapper">
+                <div class="about-breadcrumb-bar">
+                    <button type="button" class="about-back-btn" onclick="handleAboutBackNavigation()">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="19" y1="12" x2="5" y2="12"></line><polyline points="12 19 5 12 12 5"></polyline></svg>
+                        <span>Back</span>
+                    </button>
+                    <div style="font-size: 13px; color: var(--text-secondary);">
+                        <span style="color: var(--primary-color); font-weight: 600;">Anantah</span> &nbsp;/&nbsp; About &amp; Mission
+                    </div>
+                </div>
+
+                <!-- Hero Section -->
+                <div class="about-hero-card">
+                    <div class="about-pill-badge">
+                        <span>✦</span> Preserving Living Indian Heritage with AI
+                    </div>
+                    <h1 class="about-main-title">Empowering India's Master Artisans, <span>Directly</span></h1>
+                    <p class="about-hero-subtitle">
+                        Anantah unites centuries-old indigenous craftsmanship with state-of-the-art AI technology — bridging rural craft clusters with conscious buyers worldwide.
+                    </p>
+                    <div style="display: flex; align-items: center; justify-content: center; gap: 14px; flex-wrap: wrap;">
+                        <a href="#about-mission" class="btn btn-primary" style="display: inline-flex; width: auto; padding: 12px 28px; font-size: 14px;" onclick="navigateToAboutSection('mission'); return false;">Read Our Mission</a>
+                        <button type="button" class="btn btn-secondary" style="display: inline-flex; width: auto; padding: 12px 28px; font-size: 14px;" onclick="handleAboutCtaAction()">Explore Craft Marketplace</button>
+                    </div>
+                </div>
+
+                <!-- Mission Section -->
+                <div id="about-mission" class="about-mission-quote-box">
+                    <div class="about-mission-header">
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+                        <span>Our Core Mission</span>
+                    </div>
+                    <div class="about-mission-quote">
+                        "Anantah exists to give marginalized and rural Indian artisans a direct, AI-powered path to buyers — removing the middlemen who traditionally undercut them, using AI to help with photography, cataloging, and storytelling barriers that keep skilled artisans invisible online — and to carry India's traditional craft heritage to a global audience, not just a local one."
+                    </div>
+                    <p class="about-mission-caption">
+                        Every listing on Anantah represents living cultural heritage. By enabling zero-middleman commerce and multilingual voice cataloging, we ensure that the artisan earns the true value of their masterwork.
+                    </p>
+                </div>
+
+                <!-- Why Anantah / 3 Pillars -->
+                <div class="about-section-heading-row">
+                    <h2 class="about-section-title">Why Anantah Matters</h2>
+                    <p class="about-section-sub">Solving three fundamental barriers facing traditional Indian artisans today</p>
+                </div>
+
+                <div class="about-pillars-grid">
+                    <div class="about-pillar-card">
+                        <div class="about-pillar-icon-box">🤝</div>
+                        <h3 class="about-pillar-title">Direct Fair Trade</h3>
+                        <p class="about-pillar-desc">
+                            Traditional supply chains take up to 70% of craft revenues in middleman cuts. Anantah connects buyers directly to craftspeople, ensuring 100% fair artisan compensation.
+                        </p>
+                    </div>
+                    <div class="about-pillar-card">
+                        <div class="about-pillar-icon-box">🎙️</div>
+                        <h3 class="about-pillar-title">Multilingual Voice AI</h3>
+                        <p class="about-pillar-desc">
+                            Artisans simply describe their craft by speaking in their mother tongue (Hindi, Marathi, Gujarati, Tamil). Our AI transcribes, translates, and drafts rich SEO-ready listings instantly.
+                        </p>
+                    </div>
+                    <div class="about-pillar-card">
+                        <div class="about-pillar-icon-box">✨</div>
+                        <h3 class="about-pillar-title">Studio AI Refinement</h3>
+                        <p class="about-pillar-desc">
+                            Raw workshop photos taken on basic smartphones are automatically transformed into crisp, studio-lit catalog imagery with pristine backgrounds and true-to-life colors.
+                        </p>
+                    </div>
+                </div>
+
+                <!-- Impact Numbers -->
+                <div class="about-stats-strip">
+                    <div class="about-stat-box">
+                        <div class="about-stat-val">100%</div>
+                        <div class="about-stat-tag">Direct Payouts</div>
+                    </div>
+                    <div class="about-stat-box">
+                        <div class="about-stat-val">5+</div>
+                        <div class="about-stat-tag">Regional Languages</div>
+                    </div>
+                    <div class="about-stat-box">
+                        <div class="about-stat-val">0%</div>
+                        <div class="about-stat-tag">Middleman Markups</div>
+                    </div>
+                    <div class="about-stat-box">
+                        <div class="about-stat-val">∞</div>
+                        <div class="about-stat-tag">Heritage Preserved</div>
+                    </div>
+                </div>
+
+                <!-- CTA Banner -->
+                <div class="about-cta-banner">
+                    <h3 class="about-cta-title">Join India's Living Heritage Movement</h3>
+                    <p class="about-cta-desc">
+                        Whether you are an artisan with timeless crafts or a buyer looking for authentic handmade treasures, Anantah is your home.
+                    </p>
+                    <div class="about-cta-buttons" id="about-cta-buttons-container">
+                        <!-- Populated dynamically based on authentication state -->
+                    </div>
+                </div>
+            </div>
+        </section>
+
+    </div>
+
+    <!-- ==========================================================================
+         Desktop-Only Site Footer (Amazon-Inspired Layout, Anantah Design System)
+         ========================================================================== -->
+    <footer id="app-footer" class="desktop-site-footer" role="contentinfo">
+        <!-- Part 1: Back to Top Strip -->
+        <div class="footer-back-to-top" id="footer-back-to-top" onclick="window.scrollTo({ top: 0, behavior: 'smooth' });" title="Scroll back to the top of the page">
+            <button type="button" class="footer-back-to-top-btn" aria-label="Back to top">
+                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="m18 15-6-6-6 6"/></svg>
+                <span>Back to top</span>
+            </button>
+        </div>
+
+        <!-- Part 2: 4-Column Responsive Grid -->
+        <div class="footer-main-container">
+            <!-- Column 1: Get to Know Us -->
+            <div class="footer-column">
+                <h4 class="footer-col-title">Get to Know Us</h4>
+                <ul class="footer-links-list">
+                    <li class="footer-link-item">
+                        <a href="#about" class="footer-link" onclick="navigateTo('about'); return false;">About Anantah</a>
+                    </li>
+                    <li class="footer-link-item">
+                        <a href="#about-mission" class="footer-link" onclick="navigateToAboutSection('mission'); return false;">Our Mission</a>
+                    </li>
+                </ul>
+            </div>
+
+            <!-- Column 2: Connect with Us -->
+            <div class="footer-column">
+                <h4 class="footer-col-title">Connect with Us</h4>
+                <ul class="footer-links-list">
+                    <li class="footer-link-item">
+                        <a href="https://mail.google.com/mail/?view=cm&fs=1&to=anantahsupport@gmail.com" class="footer-link" target="_blank" rel="noopener noreferrer">
+                            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="20" height="16" x="2" y="4" rx="2"/><path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7"/></svg>
+                            <span>Email Us <span class="footer-subtext">(anantahsupport@gmail.com)</span></span>
+                        </a>
+                    </li>
+                    <li class="footer-link-item">
+                        <a href="https://www.instagram.com/anantah_ig/" class="footer-link" target="_blank" rel="noopener noreferrer">
+                            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="20" height="20" x="2" y="2" rx="5" ry="5"/><path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"/><line x1="17.5" x2="17.51" y1="6.5" y2="6.5"/></svg>
+                            <span>Instagram <span class="footer-subtext">(@anantah_ig)</span></span>
+                        </a>
+                    </li>
+                </ul>
+            </div>
+
+            <!-- Column 3: Role-Specific Column -->
+            <div class="footer-column" id="footer-role-column">
+                <!-- Dynamically populated based on logged-in role (Artisan, Buyer, or Logged Out) -->
+            </div>
+
+            <!-- Column 4: Let Us Help You -->
+            <div class="footer-column">
+                <h4 class="footer-col-title">Let Us Help You</h4>
+                <ul class="footer-links-list">
+                    <li class="footer-link-item">
+                        <a href="#" class="footer-link" onclick="openHelpFaqModal(); return false;">
+                            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+                            <span>Help &amp; FAQ</span>
+                        </a>
+                    </li>
+                    <li class="footer-link-item">
+                        <a href="https://mail.google.com/mail/?view=cm&fs=1&to=anantahsupport@gmail.com" class="footer-link" target="_blank" rel="noopener noreferrer">
+                            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"/></svg>
+                            <span>Contact Support</span>
+                        </a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+
+        <!-- Part 3: Logo + Locale Bar -->
+        <div class="footer-middle-bar">
+            <div class="footer-middle-container">
+                <div class="footer-brand-lockup" onclick="handleFooterBrandClick();">
+                    <img src="anantah_logo.png" alt="Anantah Logo" class="footer-brand-logo-img">
+                    <div class="footer-brand-text">
+                        <span class="footer-brand-title">Anantah</span>
+                        <span class="footer-brand-sub">Infinite Heritage</span>
+                    </div>
+                </div>
+
+                <div class="footer-locale-picker" title="Select platform language">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg>
+                    <select id="footer-language-select" class="footer-locale-select" onchange="changeFooterLanguage(this.value)" aria-label="Change Language">
+                        <option value="en">English (India)</option>
+                        <option value="hi">हिंदी (Hindi)</option>
+                        <option value="mr">मराठी (Marathi)</option>
+                        <option value="gu">ગુજરાતી (Gujarati)</option>
+                        <option value="ta">தமிழ் (Tamil)</option>
+                    </select>
+                </div>
+            </div>
+        </div>
+
+        <!-- Part 4: Bottom Legal Bar -->
+        <div class="footer-bottom-legal-bar">
+            <div class="footer-bottom-container">
+                <span class="footer-copyright">&copy; 2026 Anantah. All rights reserved. Empowering Indian Master Artisans with AI.</span>
+                <ul class="footer-legal-links">
+                    <li><a href="#" class="footer-legal-link" onclick="openLegalModal('terms'); return false;">Terms of Use</a></li>
+                    <li><a href="#" class="footer-legal-link" onclick="openLegalModal('privacy'); return false;">Privacy Notice</a></li>
+                    <li><a href="#" class="footer-legal-link" onclick="openLegalModal('trust'); return false;">Artisan Trust &amp; Safety</a></li>
+                </ul>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Global Legal / Help Modals -->
+    <div id="anantah-modal-overlay" class="anantah-modal-overlay" onclick="closeAnantahModal(event)">
+        <div class="anantah-modal-card" onclick="event.stopPropagation()">
+            <div class="anantah-modal-header">
+                <h3 class="anantah-modal-title" id="anantah-modal-title">Modal Title</h3>
+                <button type="button" class="anantah-modal-close-btn" onclick="closeAnantahModal()">&times;</button>
+            </div>
+            <div class="anantah-modal-body" id="anantah-modal-body">
+                <!-- Injected dynamically -->
+            </div>
+            <div class="anantah-modal-footer">
+                <button type="button" class="btn btn-primary" style="width: auto; padding: 10px 24px;" onclick="closeAnantahModal()">Close</button>
+            </div>
+        </div>
     </div>
 
     <!-- Configuration and Javascript core -->
@@ -1283,7 +1514,8 @@
             resetPassword: document.getElementById('screen-reset-password'),
             register: document.getElementById('screen-register'),
             artisanDashboard: document.getElementById('screen-artisan-dashboard'),
-            buyerDashboard: document.getElementById('screen-buyer-dashboard')
+            buyerDashboard: document.getElementById('screen-buyer-dashboard'),
+            about: document.getElementById('screen-about')
         };
 
         const navbar = document.getElementById('app-navbar');
@@ -1346,6 +1578,9 @@
                 }
             });
             window.scrollTo(0, 0);
+
+            // Always synchronize site footer content with current user & language state
+            renderSiteFooter();
         }
 
         // SPA History popstate listener
@@ -1359,6 +1594,8 @@
                         switchBuyerTab(e.state.tab);
                     }
                 }
+            } else if (!e.state && location.hash === '#about') {
+                navigateTo('about', false);
             } else if (!e.state && location.hash === '#search') {
                 if (currentUser && currentUser.role === 'buyer') {
                     switchBuyerTab('search');
@@ -1383,6 +1620,332 @@
                 e.returnValue = '';
             }
         });
+
+        // ─── Desktop Site Footer & About Screen Management ──────────────────────
+        function renderSiteFooter() {
+            const roleCol = document.getElementById('footer-role-column');
+            if (!roleCol) return;
+
+            const isArtisan = currentUser && currentUser.role === 'artisan';
+            const isBuyer = currentUser && currentUser.role === 'buyer' && !currentUser.isGuest;
+            const isGuest = currentUser && currentUser.isGuest;
+
+            if (isArtisan) {
+                roleCol.innerHTML = `
+                    <h4 class="footer-col-title">
+                        <span>For Artisans</span>
+                        <span class="footer-col-title-badge">Artisan</span>
+                    </h4>
+                    <ul class="footer-links-list">
+                        <li class="footer-link-item">
+                            <a href="#my-listings" class="footer-link" onclick="switchRoleNavTab('my-listings'); return false;">
+                                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="7" height="9" x="3" y="3" rx="1"/><rect width="7" height="5" x="14" y="3" rx="1"/><rect width="7" height="9" x="14" y="12" rx="1"/><rect width="7" height="5" x="3" y="16" rx="1"/></svg>
+                                <span>My Listings</span>
+                            </a>
+                        </li>
+                        <li class="footer-link-item">
+                            <a href="#new-listing" class="footer-link" onclick="switchRoleNavTab('new-listing'); return false;">
+                                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+                                <span>Make a New Listing</span>
+                                <span class="footer-badge-pill">AI Studio</span>
+                            </a>
+                        </li>
+                        <li class="footer-link-item">
+                            <a href="#communities" class="footer-link" onclick="switchRoleNavTab('communities'); return false;">
+                                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+                                <span>Communities</span>
+                            </a>
+                        </li>
+                        <li class="footer-link-item">
+                            <a href="#account" class="footer-link" onclick="switchRoleNavTab('account'); return false;">
+                                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+                                <span>My Account</span>
+                            </a>
+                        </li>
+                        <li class="footer-link-item">
+                            <a href="#orders-to-ship" class="footer-link" onclick="handleArtisanOrdersToShip(); return false;">
+                                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="16" height="16" x="4" y="4" rx="2"/><path d="m9 12 2 2 4-4"/></svg>
+                                <span>Orders to Ship</span>
+                            </a>
+                        </li>
+                    </ul>
+                `;
+            } else if (isBuyer || isGuest) {
+                roleCol.innerHTML = `
+                    <h4 class="footer-col-title">
+                        <span>For Buyers</span>
+                        <span class="footer-col-title-badge">${isGuest ? 'Guest' : 'Buyer'}</span>
+                    </h4>
+                    <ul class="footer-links-list">
+                        <li class="footer-link-item">
+                            <a href="#shop" class="footer-link" onclick="switchRoleNavTab('home'); return false;">
+                                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m3 9 9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
+                                <span>Home Marketplace</span>
+                            </a>
+                        </li>
+                        <li class="footer-link-item">
+                            <a href="#discover" class="footer-link" onclick="switchRoleNavTab('discover'); return false;">
+                                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polygon points="16.24 7.76 14.12 14.12 7.76 16.24 9.88 9.88 16.24 7.76"/></svg>
+                                <span>Discover Heritage</span>
+                            </a>
+                        </li>
+                        <li class="footer-link-item">
+                            <a href="#reels" class="footer-link" onclick="switchRoleNavTab('reels'); return false;">
+                                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="23 7 16 12 23 17 23 7"/><rect x="1" y="5" width="15" height="14" rx="2" ry="2"/></svg>
+                                <span>Artisan Reels</span>
+                            </a>
+                        </li>
+                        <li class="footer-link-item">
+                            <a href="#wishlist" class="footer-link" onclick="switchRoleNavTab('wishlist'); return false;">
+                                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>
+                                <span>My Wishlist</span>
+                            </a>
+                        </li>
+                        <li class="footer-link-item">
+                            <a href="#orders" class="footer-link" onclick="switchRoleNavTab('orders'); return false;">
+                                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 2 3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4Z"/><path d="M3 6h18"/><path d="M16 10a4 4 0 0 1-8 0"/></svg>
+                                <span>My Orders</span>
+                            </a>
+                        </li>
+                        <li class="footer-link-item">
+                            <a href="#account" class="footer-link" onclick="switchRoleNavTab('account'); return false;">
+                                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+                                <span>My Account</span>
+                            </a>
+                        </li>
+                    </ul>
+                `;
+            } else {
+                // Logged-out Visitor
+                roleCol.innerHTML = `
+                    <h4 class="footer-col-title">
+                        <span>Join Anantah</span>
+                        <span class="footer-col-title-badge">Get Started</span>
+                    </h4>
+                    <ul class="footer-links-list">
+                        <li class="footer-link-item">
+                            <a href="#register" class="footer-link" onclick="selectedRole='artisan'; localStorage.setItem('selected_role', 'artisan'); navigateTo('register'); return false;">
+                                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><line x1="19" y1="8" x2="19" y2="14"/><line x1="22" y1="11" x2="16" y2="11"/></svg>
+                                <span>Sign Up as an Artisan</span>
+                                <span class="footer-badge-pill">Free</span>
+                            </a>
+                        </li>
+                        <li class="footer-link-item">
+                            <a href="#register" class="footer-link" onclick="selectedRole='buyer'; localStorage.setItem('selected_role', 'buyer'); navigateTo('register'); return false;">
+                                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><line x1="19" y1="8" x2="19" y2="14"/><line x1="22" y1="11" x2="16" y2="11"/></svg>
+                                <span>Sign Up as a Buyer</span>
+                            </a>
+                        </li>
+                        <li class="footer-link-item">
+                            <a href="#login" class="footer-link" onclick="navigateTo('login'); return false;">
+                                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4"/><polyline points="10 17 15 12 10 7"/><line x1="15" y1="12" x2="3" y2="12"/></svg>
+                                <span>Log In to Account</span>
+                            </a>
+                        </li>
+                    </ul>
+                `;
+            }
+
+            // Sync Footer Language Select dropdown
+            const curLang = localStorage.getItem('selected_language') || selectedLanguage || 'en';
+            const langSelect = document.getElementById('footer-language-select');
+            if (langSelect && langSelect.value !== curLang) {
+                langSelect.value = curLang;
+            }
+
+            // Sync About CTA buttons
+            renderAboutCtaButtons();
+        }
+
+        function renderAboutCtaButtons() {
+            const container = document.getElementById('about-cta-buttons-container');
+            if (!container) return;
+            if (currentUser && currentUser.role === 'artisan') {
+                container.innerHTML = `
+                    <button type="button" class="btn btn-primary" style="display:inline-flex; width:auto; padding:14px 28px; font-size:15px;" onclick="switchRoleNavTab('new-listing')">
+                        <span>Make a New Listing &rarr;</span>
+                    </button>
+                    <button type="button" class="btn btn-secondary" style="display:inline-flex; width:auto; padding:14px 28px; font-size:15px;" onclick="switchRoleNavTab('my-listings')">
+                        <span>View My Listings</span>
+                    </button>
+                `;
+            } else if (currentUser && currentUser.role === 'buyer' && !currentUser.isGuest) {
+                container.innerHTML = `
+                    <button type="button" class="btn btn-primary" style="display:inline-flex; width:auto; padding:14px 28px; font-size:15px;" onclick="switchRoleNavTab('home')">
+                        <span>Explore Marketplace &rarr;</span>
+                    </button>
+                    <button type="button" class="btn btn-secondary" style="display:inline-flex; width:auto; padding:14px 28px; font-size:15px;" onclick="switchRoleNavTab('discover')">
+                        <span>Discover Craft Heritage</span>
+                    </button>
+                `;
+            } else {
+                container.innerHTML = `
+                    <button type="button" class="btn btn-primary" style="display:inline-flex; width:auto; padding:14px 28px; font-size:15px;" onclick="selectedRole='artisan'; localStorage.setItem('selected_role', 'artisan'); navigateTo('register');">
+                        <span>Join as an Artisan</span>
+                    </button>
+                    <button type="button" class="btn btn-secondary" style="display:inline-flex; width:auto; padding:14px 28px; font-size:15px;" onclick="selectedRole='buyer'; localStorage.setItem('selected_role', 'buyer'); navigateTo('register');">
+                        <span>Shop Heritage Crafts</span>
+                    </button>
+                `;
+            }
+        }
+
+        function navigateToAboutSection(sectionId) {
+            navigateTo('about');
+            setTimeout(() => {
+                const el = document.getElementById('about-' + sectionId) || document.getElementById(sectionId);
+                if (el) {
+                    el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                }
+            }, 100);
+        }
+
+        function handleAboutBackNavigation() {
+            if (window.history && window.history.length > 1 && history.state?.screen && history.state.screen !== 'about') {
+                window.history.back();
+            } else if (currentUser) {
+                if (currentUser.role === 'artisan') {
+                    navigateTo('artisanDashboard');
+                    switchRoleNavTab('home');
+                } else {
+                    navigateTo('buyerDashboard');
+                    switchBuyerTab('shop');
+                }
+            } else {
+                navigateTo('onboarding');
+            }
+        }
+
+        function handleAboutCtaAction() {
+            if (currentUser && currentUser.role === 'artisan') {
+                navigateTo('artisanDashboard');
+                switchRoleNavTab('home');
+            } else if (currentUser && currentUser.role === 'buyer') {
+                navigateTo('buyerDashboard');
+                switchBuyerTab('shop');
+            } else {
+                currentUser = { username: 'Guest', role: 'buyer', isGuest: true };
+                navigateTo('buyerDashboard');
+                loadBuyerProducts(true);
+            }
+        }
+
+        function changeFooterLanguage(newLang) {
+            selectedLanguage = newLang;
+            localStorage.setItem('selected_language', newLang);
+            initLanguageSelectionUI();
+            updateBuyerHeroLanguage();
+            renderSiteFooter();
+            const langNames = { en: 'English', hi: 'हिंदी', mr: 'मराठी', gu: 'ગુજરાતી', ta: 'தமிழ்' };
+            showToastAlert(`Platform language changed to ${langNames[newLang] || newLang}`, 'success');
+        }
+
+        function handleFooterBrandClick() {
+            if (currentUser && currentUser.role === 'artisan') {
+                navigateTo('artisanDashboard');
+                switchRoleNavTab('home');
+            } else if (currentUser && currentUser.role === 'buyer') {
+                navigateTo('buyerDashboard');
+                switchBuyerTab('shop');
+            } else {
+                navigateTo('onboarding');
+            }
+        }
+
+        function handleArtisanOrdersToShip() {
+            if (!currentUser || currentUser.role !== 'artisan') return;
+            navigateTo('artisanDashboard');
+            const vComing = document.getElementById('artisan-view-coming');
+            const artisanViews = ['artisan-view-listings', 'artisan-view-create', 'artisan-view-communities', 'artisan-view-account'];
+            artisanViews.forEach(vId => {
+                const v = document.getElementById(vId);
+                if (v) v.style.display = 'none';
+            });
+            if (vComing) {
+                vComing.style.display = 'block';
+                const heading = vComing.querySelector('h3') || vComing.querySelector('.form-header h2');
+                if (heading) heading.textContent = 'Orders to Ship & Logistics';
+            }
+            showToastAlert('Orders & Shipment fulfillment console is active.', 'info');
+        }
+
+        // ─── Legal & Help Modal Controllers ────────────────────────────────────
+        function openLegalModal(type) {
+            const overlay = document.getElementById('anantah-modal-overlay');
+            const titleEl = document.getElementById('anantah-modal-title');
+            const bodyEl = document.getElementById('anantah-modal-body');
+            if (!overlay || !titleEl || !bodyEl) return;
+
+            if (type === 'terms') {
+                titleEl.textContent = 'Terms of Use';
+                bodyEl.innerHTML = `
+                    <h4>1. Direct Artisan Empowerment</h4>
+                    <p>Anantah provides an AI-powered marketplace platform connecting traditional Indian master artisans directly with worldwide buyers. We adhere to zero-middleman principles and fair trade remuneration.</p>
+                    <h4>2. Authentic Craft Integrity</h4>
+                    <p>Artisans represent that their listed handicrafts are genuinely handmade or handloom creations reflecting authentic cultural heritage. Plagiarism or factory counterfeit items are strictly prohibited.</p>
+                    <h4>3. Buyer Protection & Payments</h4>
+                    <p>All transactions are safeguarded. Buyers receive handcrafted items verified through catalog AI and voice descriptions provided directly by the maker.</p>
+                    <h4>4. Intellectual Property & AI</h4>
+                    <p>Craft designs and indigenous techniques remain the perpetual intellectual heritage of the artisans and their communities. Anantah's AI tools are used exclusively to assist in photography, transcription, and catalog generation.</p>
+                `;
+            } else if (type === 'privacy') {
+                titleEl.textContent = 'Privacy Notice';
+                bodyEl.innerHTML = `
+                    <h4>1. Information We Collect</h4>
+                    <p>We collect essential account details (phone number, username, role) and workshop voice recordings used to draft craft listings in regional languages.</p>
+                    <h4>2. Multilingual Voice Data Protection</h4>
+                    <p>Voice recordings uploaded by artisans are processed securely through Whisper AI models strictly for generating bilingual titles, descriptions, and fair pricing suggestions.</p>
+                    <h4>3. Zero Middleman Data Sharing</h4>
+                    <p>We do not sell, rent, or monetize your personal information to third-party data brokers or marketing middlemen.</p>
+                    <h4>4. Account Security & Deletion</h4>
+                    <p>You can view, edit, or delete your account data at any time from your Profile Settings console.</p>
+                `;
+            } else {
+                titleEl.textContent = 'Artisan Trust & Safety';
+                bodyEl.innerHTML = `
+                    <h4>1. Fair Remuneration Guarantee</h4>
+                    <p>100% of the artisan's asking price goes directly to the craftsperson. We eliminate predatory middleman commissions.</p>
+                    <h4>2. Regional Language Accessibility</h4>
+                    <p>Our interface and voice cataloging are designed with regional audio assistance in Hindi, Marathi, Gujarati, and Tamil to ensure artisans of all literacy backgrounds participate equally.</p>
+                    <h4>3. Direct Communication & Verification</h4>
+                    <p>Orders are dispatched with authentic artisan provenance cards detailing the village, craft cluster, and craftsperson behind each treasure.</p>
+                `;
+            }
+
+            overlay.classList.add('active');
+            document.body.style.overflow = 'hidden';
+        }
+
+        function openHelpFaqModal() {
+            const overlay = document.getElementById('anantah-modal-overlay');
+            const titleEl = document.getElementById('anantah-modal-title');
+            const bodyEl = document.getElementById('anantah-modal-body');
+            if (!overlay || !titleEl || !bodyEl) return;
+
+            titleEl.textContent = 'Help & Frequently Asked Questions';
+            bodyEl.innerHTML = `
+                <h4>How does Anantah help rural Indian artisans?</h4>
+                <p>Traditional artisans often lack professional cameras or English typing skills, making them invisible online. Anantah solves this with AI: artisans take a simple smartphone photo and speak about their craft in their mother tongue. Our AI enhances the photo to studio quality and drafts rich English & regional catalog listings.</p>
+                <h4>How do I buy handcrafted products?</h4>
+                <p>Explore the Marketplace feed, add items to your cart or wishlist, and proceed through our streamlined checkout. You can also watch artisan Reels to see the making process.</p>
+                <h4>What languages are supported?</h4>
+                <p>We support English, Hindi (हिंदी), Marathi (मराठी), Gujarati (ગુજરાતી), and Tamil (தமிழ்) across cataloging and browsing.</p>
+                <h4>Need more help?</h4>
+                <p>Reach out to our team anytime at <a href="https://mail.google.com/mail/?view=cm&fs=1&to=anantahsupport@gmail.com" target="_blank" rel="noopener noreferrer" style="color:var(--primary-color);font-weight:700;">anantahsupport@gmail.com</a> or visit our Instagram <a href="https://www.instagram.com/anantah_ig/" target="_blank" rel="noopener noreferrer" style="color:var(--primary-color);font-weight:700;">@anantah_ig</a>.</p>
+            `;
+
+            overlay.classList.add('active');
+            document.body.style.overflow = 'hidden';
+        }
+
+        function closeAnantahModal(event) {
+            if (event && event.target && event.target.id !== 'anantah-modal-overlay' && !event.target.classList.contains('anantah-modal-close-btn') && !event.target.closest('.anantah-modal-footer button')) {
+                return;
+            }
+            const overlay = document.getElementById('anantah-modal-overlay');
+            if (overlay) overlay.classList.remove('active');
+            document.body.style.overflow = '';
+        }
 
         // ─── Role-Based Navigation System Manager ─────────────────────────────
         let activeRoleNavTab = 'home';
@@ -1888,12 +2451,15 @@
             refreshToken = localStorage.getItem('refresh_token');
 
             if (!accessToken && !refreshToken) {
-                // If not authenticated, check if language was already chosen
-                if (localStorage.getItem('selected_language')) {
+                const rawHash = (window.location.hash || '').replace('#', '').trim();
+                if (rawHash === 'about') {
+                    navigateTo('about');
+                } else if (localStorage.getItem('selected_language')) {
                     navigateTo('onboarding');
                 } else {
                     navigateTo('language');
                 }
+                renderSiteFooter();
                 return;
             }
 
@@ -1911,7 +2477,9 @@
 
                     const rawHash = (window.location.hash || '').replace('#', '').trim();
 
-                    if (currentUser.role === 'artisan') {
+                    if (rawHash === 'about') {
+                        navigateTo('about');
+                    } else if (currentUser.role === 'artisan') {
                         navigateTo('artisanDashboard');
                         const artisanValidTabs = ['home', 'my-listings', 'new-listing', 'communities', 'account'];
                         const targetTab = (rawHash && artisanValidTabs.includes(rawHash)) ? rawHash : (sessionStorage.getItem('anantah_active_tab') || 'home');
@@ -1947,6 +2515,7 @@
                         navigateTo('buyerDashboard');
                         loadBuyerProducts();
                     }
+                    renderSiteFooter();
                 } else if (response.status === 401 || response.status === 403) {
                     clearAuth();
                 } else {
@@ -1954,6 +2523,7 @@
                     if (typeof showToastAlert === 'function') {
                         showToastAlert("Connecting to backend server...", "info");
                     }
+                    renderSiteFooter();
                 }
             } catch (err) {
                 console.error("Auth check failed:", err);
@@ -1961,6 +2531,7 @@
                 if (typeof showToastAlert === 'function') {
                     showToastAlert("Network issue while restoring session. Retrying...", "error");
                 }
+                renderSiteFooter();
             }
         }
 
@@ -1978,6 +2549,7 @@
             } else {
                 navigateTo('language');
             }
+            renderSiteFooter();
         }
 
         // Language onboarding events
@@ -3689,7 +4261,11 @@
 
             // Update count badge
             if (countBadge) {
-                countBadge.textContent = `${filtered.length} ${filtered.length === 1 ? 'item' : 'items'}`;
+                if (isBuyerLoading) {
+                    countBadge.textContent = 'Loading crafts...';
+                } else {
+                    countBadge.textContent = `${filtered.length} ${filtered.length === 1 ? 'item' : 'items'}`;
+                }
             }
 
             // Update active filter indicator tag
@@ -3972,18 +4548,28 @@
         });
 
         // API interaction: Fetch and display buyer feed products
+        let isBuyerLoading = false;
         async function loadBuyerProducts(isGuest = false) {
             window._buyerIsGuest = isGuest;
+            isBuyerLoading = true;
             const skeletonGrid = document.getElementById('buyer-product-skeleton');
             const productListGrid = document.getElementById('buyer-product-list');
             const emptyState = document.getElementById('buyer-empty-state');
+            const countBadge = document.getElementById('buyer-product-count-badge');
 
             // Apply bilingual hero strings
             updateBuyerHeroLanguage();
 
             // Show skeleton shimmer while loading
-            if (skeletonGrid) skeletonGrid.style.display = 'grid';
-            if (productListGrid) productListGrid.style.display = 'none';
+            if (countBadge) countBadge.textContent = 'Loading crafts...';
+            if (skeletonGrid) {
+                skeletonGrid.classList.remove('hidden');
+                skeletonGrid.style.display = 'grid';
+            }
+            if (productListGrid) {
+                productListGrid.classList.add('hidden');
+                productListGrid.style.display = 'none';
+            }
 
             const headers = {};
             if (!isGuest && accessToken) {
@@ -4000,24 +4586,31 @@
 
                 if (response.ok) {
                     const products = await response.json();
-                    window._cachedBuyerProducts = products;
+                    window._cachedBuyerProducts = Array.isArray(products) ? products : [];
 
                     // Render dynamic category pills based on actual product categories
-                    renderCategoryPills(products);
+                    renderCategoryPills(window._cachedBuyerProducts);
 
                     // Filter & render cards
                     filterAndRenderBuyerProducts(isGuest);
                 } else {
                     console.error("Failed to load products, status:", response.status);
-                    if (emptyState) emptyState.style.display = 'block';
+                    window._cachedBuyerProducts = [];
+                    filterAndRenderBuyerProducts(isGuest);
                 }
             } catch (err) {
                 console.error("Failed to load buyer marketplace:", err);
-                if (emptyState) emptyState.style.display = 'block';
+                window._cachedBuyerProducts = [];
+                filterAndRenderBuyerProducts(isGuest);
             } finally {
+                isBuyerLoading = false;
                 // Hide skeleton and reveal product grid
-                if (skeletonGrid) skeletonGrid.style.display = 'none';
+                if (skeletonGrid) {
+                    skeletonGrid.classList.add('hidden');
+                    skeletonGrid.style.display = 'none';
+                }
                 if (productListGrid) {
+                    productListGrid.classList.remove('hidden');
                     productListGrid.style.display = 'grid';
                 }
             }
