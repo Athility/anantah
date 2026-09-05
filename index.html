@@ -10,9 +10,9 @@
     <!-- Premium Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;600;700;800&family=Inter:wght@400;500;600;700&family=Playfair+Display:ital,wght@0,400..900;1,400..900&family=Poppins:ital,wght@0,100..900;1,100..900&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&family=Instrument+Serif:ital@0;1&family=Inter:wght@400;500;600;700&family=Playfair+Display:ital,wght@0,400..900;1,400..900&family=Poppins:ital,wght@0,100..900;1,100..900&display=swap" rel="stylesheet">
     <!-- Main Style -->
-    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="style.css?v=4">
     <!-- Sentry Error Monitoring & PostHog Analytics SDKs (Placeholders) -->
     <script src="https://browser.sentry-cdn.com/7.100.0/bundle.min.js" crossorigin="anonymous"></script>
     <script>
@@ -390,119 +390,217 @@
 
             <!-- Tab 2: Make New Listing View -->
             <div id="artisan-view-create" class="artisan-tab-view" style="display: none;">
-                <div class="refiner-card" style="max-width: 680px; margin: 0 auto; box-shadow: var(--shadow-button);">
-                    <h3 class="refiner-card-title">Create New Listing</h3>
-                    
-                    <!-- Side-by-side Before/After Viewer -->
-                    <div class="preview-container">
-                        <div class="preview-grid">
-                            <!-- Before box -->
-                            <div class="preview-box" id="box-before">
-                                <span class="preview-badge">Before</span>
-                                <div id="preview-before-placeholder" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; display: flex; flex-direction: column; justify-content: center; align-items: center; padding: 10px; color: var(--text-light);">
-                                    <svg width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><rect width="18" height="18" x="3" y="3" rx="2" ry="2"/><circle cx="9" cy="9" r="2"/><path d="m21 15-3.086-3.086a2 2 0 0 0-2.828 0L6 21"/></svg>
-                                    <span style="font-size: 11px; margin-top: 6px;">Original Photo</span>
-                                </div>
-                                <img src="" alt="Before" class="preview-image" id="img-before" style="display: none;">
+                <div class="refiner-card">
+                    <!-- Studio Header -->
+                    <div class="studio-header">
+                        <div class="studio-header-badge">
+                            <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="m12 3-1.912 5.886L4.2 9l5.887 1.912L12 21l1.912-5.888L19.8 15l-5.888-1.912Z"/></svg>
+                            <span>AI Product Studio</span>
+                        </div>
+                        <h3 class="refiner-card-title">Create New Listing</h3>
+                        <p class="studio-subtitle">Upload your product photo, refine it with AI enhancements, and add details to publish your listing.</p>
+                        
+                        <!-- Visual Workflow Indicator -->
+                        <div class="studio-workflow-steps" aria-hidden="true">
+                            <div class="studio-step active">
+                                <span class="step-num">01</span>
+                                <span class="step-label">Upload Photo</span>
                             </div>
-
-                            <!-- Arrow divider -->
-                            <div class="arrow-divider">
-                                <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+                            <div class="step-divider">
+                                <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
                             </div>
-
-                            <!-- After box -->
-                            <div class="preview-box" id="box-after">
-                                <span class="preview-badge" style="background-color: var(--accent-gold); color: #22162B;">After</span>
-                                <div id="preview-after-placeholder" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; display: flex; flex-direction: column; justify-content: center; align-items: center; padding: 10px; color: var(--text-light);">
-                                    <svg width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="m12 3-1.912 5.886L4.2 9l5.887 1.912L12 21l1.912-5.888L19.8 15l-5.888-1.912Z"/></svg>
-                                    <span style="font-size: 11px; margin-top: 6px;">Refined Output</span>
-                                </div>
-                                <img src="" alt="After" class="preview-image" id="img-after" style="display: none;">
-                                
-                                <!-- Loading overlay -->
-                                <div class="loading-overlay" id="refiner-loading-overlay" style="display: none;">
-                                    <div class="spinner"></div>
-                                    <div class="loading-text">Enhancing Craft...</div>
-                                </div>
+                            <div class="studio-step">
+                                <span class="step-num">02</span>
+                                <span class="step-label">AI Refine</span>
+                            </div>
+                            <div class="step-divider">
+                                <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+                            </div>
+                            <div class="studio-step">
+                                <span class="step-num">03</span>
+                                <span class="step-label">Details</span>
+                            </div>
+                            <div class="step-divider">
+                                <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+                            </div>
+                            <div class="studio-step">
+                                <span class="step-num">04</span>
+                                <span class="step-label">Save & Publish</span>
                             </div>
                         </div>
                     </div>
 
-                    <!-- Enhancement Tools UI Mock -->
-                    <div class="tools-box">
-                        <div class="tools-title">Enhancement Tools</div>
-                        <div class="tools-grid">
-                            <div class="tool-btn" id="tool-auto-enhance">
-                                <svg class="tool-icon" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M6.34 17.66l-1.41 1.41M19.07 4.93l-1.41 1.41"/></svg>
-                                <span class="tool-label">Auto Enhance</span>
-                            </div>
-                            <div class="tool-btn" id="tool-bg-removal">
-                                <svg class="tool-icon" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M3 7V5a2 2 0 0 1 2-2h2m10 0h2a2 2 0 0 1 2 2v2m0 10v2a2 2 0 0 1-2 2h-2M7 21H5a2 2 0 0 1-2-2v-2m4-5h10M12 7v10"/></svg>
-                                <span class="tool-label">Bg Removal</span>
-                            </div>
-                            <div class="tool-btn" id="tool-lighting-fix">
-                                <svg class="tool-icon" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M15 14c.2-1 .7-1.7 1.5-2.5 1-.9 1.5-2.2 1.5-3.5A6 6 0 0 0 6 8c0 1 .5 2.2 1.5 3.5.7.7 1.3 1.5 1.5 2.5m1.5 4h3m-4.5-2h6"/></svg>
-                                <span class="tool-label">Lighting Fix</span>
-                            </div>
-                            <div class="tool-btn" id="tool-sharpness">
-                                <svg class="tool-icon" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="m12 3 10 18H2L12 3z"/><circle cx="12" cy="13" r="2"/></svg>
-                                <span class="tool-label">Sharpness</span>
-                            </div>
-                            <div class="tool-btn" id="tool-color">
-                                <svg class="tool-icon" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><path d="m9 13.5 6 4M15 6.5l-6 4"/></svg>
-                                <span class="tool-label">Color Bal</span>
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- Upload Form -->
+                    <!-- Upload & Product Studio Form -->
                     <form id="form-product-upload">
-                        <div class="form-group" id="group-upload-image" style="margin-bottom: 15px;">
-                            <label class="form-label">Upload Product Photo</label>
-                            <div class="custom-pill-upload-container" id="pill-upload-container">
-                                <div class="upload-left-side" id="pill-upload-left">
-                                    <!-- Paperclip Icon -->
-                                    <svg class="paperclip-icon" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
-                                        <path d="m21.44 11.05-9.19 9.19a6 6 0 0 1-8.49-8.49l9.19-9.19a4 4 0 0 1 5.66 5.66l-9.2 9.19a2 2 0 0 1-2.83-2.83l8.49-8.48"/>
-                                    </svg>
-                                    <span class="upload-filename-text" id="pill-upload-filename">Choose product photo...</span>
+                        <!-- Step 1: Upload Product Photo -->
+                        <div class="studio-step-section" id="studio-section-upload">
+                            <div class="studio-section-header">
+                                <div class="studio-step-indicator">1</div>
+                                <div>
+                                    <h4 class="studio-section-title">Upload Product Photo</h4>
+                                    <p class="studio-section-sub">Select a high-quality photo of your craft to begin refinement</p>
                                 </div>
-                                <div class="pill-upload-btn-wrapper">
-                                    <button type="button" class="pill-upload-btn" id="pill-upload-btn">
-                                        <span class="btn-text-state state-normal active">Upload</span>
-                                        <span class="btn-text-state state-uploading">Uploading...</span>
-                                        <span class="btn-text-state state-completed">
-                                            <svg class="checkmark-icon" width="14" height="14" fill="none" stroke="currentColor" stroke-width="3" viewBox="0 0 24 24">
-                                                <polyline points="20 6 9 17 4 12"/>
-                                            </svg>
-                                            Completed
-                                        </span>
-                                        <!-- Thin progress bar inside button -->
-                                        <div class="upload-progress-bar" id="pill-upload-progress"></div>
-                                    </button>
-                                </div>
-                                <!-- Hidden actual file input -->
-                                <input type="file" id="upload-image" accept="image/*" style="display: none;" required>
                             </div>
-                            <div class="error-message">Please select a photo.</div>
+                            
+                            <div class="form-group" id="group-upload-image" style="margin-bottom: 0;">
+                                <div class="custom-pill-upload-container" id="pill-upload-container">
+                                    <div class="upload-left-side" id="pill-upload-left">
+                                        <!-- Paperclip Icon -->
+                                        <svg class="paperclip-icon" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                                            <path d="m21.44 11.05-9.19 9.19a6 6 0 0 1-8.49-8.49l9.19-9.19a4 4 0 0 1 5.66 5.66l-9.2 9.19a2 2 0 0 1-2.83-2.83l8.49-8.48"/>
+                                        </svg>
+                                        <span class="upload-filename-text" id="pill-upload-filename">Choose product photo...</span>
+                                    </div>
+                                    <div class="pill-upload-btn-wrapper">
+                                        <button type="button" class="pill-upload-btn" id="pill-upload-btn">
+                                            <span class="btn-text-state state-normal active">Upload</span>
+                                            <span class="btn-text-state state-uploading">Uploading...</span>
+                                            <span class="btn-text-state state-completed">
+                                                <svg class="checkmark-icon" width="14" height="14" fill="none" stroke="currentColor" stroke-width="3" viewBox="0 0 24 24">
+                                                    <polyline points="20 6 9 17 4 12"/>
+                                                </svg>
+                                                Completed
+                                            </span>
+                                            <!-- Thin progress bar inside button -->
+                                            <div class="upload-progress-bar" id="pill-upload-progress"></div>
+                                        </button>
+                                    </div>
+                                    <!-- Hidden actual file input -->
+                                    <input type="file" id="upload-image" accept="image/*" style="display: none;" required>
+                                </div>
+                                <div class="error-message">Please select a photo.</div>
+                            </div>
                         </div>
 
-                        <div class="form-group" id="group-upload-title" style="margin-bottom: 15px;">
-                            <label class="form-label" for="upload-title">Product Title (English)</label>
-                            <input class="form-input" type="text" id="upload-title" placeholder="e.g. Handmade Terracotta Vase" required>
-                            <div class="error-message">This field is required.</div>
+                        <!-- Step 2: AI Photo Studio Workspace -->
+                        <div class="studio-step-section" id="studio-section-refiner">
+                            <div class="studio-section-header">
+                                <div class="studio-step-indicator">2</div>
+                                <div>
+                                    <h4 class="studio-section-title">AI Enhancement Studio</h4>
+                                    <p class="studio-section-sub">Compare original against refined output, and select AI tools to apply</p>
+                                </div>
+                            </div>
+
+                            <!-- Side-by-side Before/After Viewer -->
+                            <div class="preview-container">
+                                <div class="preview-grid">
+                                    <!-- Before box -->
+                                    <div class="preview-box" id="box-before">
+                                        <span class="preview-badge">Original</span>
+                                        <div id="preview-before-placeholder" class="preview-placeholder">
+                                            <div class="placeholder-icon-wrap">
+                                                <svg width="28" height="28" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><rect width="18" height="18" x="3" y="3" rx="2" ry="2"/><circle cx="9" cy="9" r="2"/><path d="m21 15-3.086-3.086a2 2 0 0 0-2.828 0L6 21"/></svg>
+                                            </div>
+                                            <span class="placeholder-title">Original Photo</span>
+                                            <span class="placeholder-hint">Select a photo above</span>
+                                        </div>
+                                        <img src="" alt="Original Photo" class="preview-image" id="img-before" style="display: none;">
+                                    </div>
+
+                                    <!-- Arrow divider / Transformation Hub -->
+                                    <div class="arrow-divider" title="AI Transformation">
+                                        <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+                                    </div>
+
+                                    <!-- After box -->
+                                    <div class="preview-box" id="box-after">
+                                        <span class="preview-badge preview-badge-after">Refined Output</span>
+                                        <div id="preview-after-placeholder" class="preview-placeholder">
+                                            <div class="placeholder-icon-wrap accent-gold-bg">
+                                                <svg width="28" height="28" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><path d="m12 3-1.912 5.886L4.2 9l5.887 1.912L12 21l1.912-5.888L19.8 15l-5.888-1.912Z"/></svg>
+                                            </div>
+                                            <span class="placeholder-title">Refined Output</span>
+                                            <span class="placeholder-hint">Enhanced result displays here</span>
+                                        </div>
+                                        <img src="" alt="Refined Output" class="preview-image" id="img-after" style="display: none;">
+                                        
+                                        <!-- Loading overlay -->
+                                        <div class="loading-overlay" id="refiner-loading-overlay" style="display: none;">
+                                            <div class="spinner"></div>
+                                            <div class="loading-text">Enhancing Craft...</div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- Enhancement Tools UI Mock -->
+                                <div class="tools-box">
+                                    <div class="tools-header-row">
+                                        <div class="tools-title">
+                                            <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="m12 3-1.912 5.886L4.2 9l5.887 1.912L12 21l1.912-5.888L19.8 15l-5.888-1.912Z"/></svg>
+                                            <span>Enhancement Tools</span>
+                                        </div>
+                                        <span class="tools-note">Click to toggle tools on or off</span>
+                                    </div>
+                                    <div class="tools-grid">
+                                        <div class="tool-btn" id="tool-auto-enhance" role="button" tabindex="0" title="Auto Enhance">
+                                            <div class="tool-icon-wrap">
+                                                <svg class="tool-icon" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M6.34 17.66l-1.41 1.41M19.07 4.93l-1.41 1.41"/></svg>
+                                            </div>
+                                            <span class="tool-label">Auto Enhance</span>
+                                        </div>
+                                        <div class="tool-btn" id="tool-bg-removal" role="button" tabindex="0" title="Background Removal">
+                                            <div class="tool-icon-wrap">
+                                                <svg class="tool-icon" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M3 7V5a2 2 0 0 1 2-2h2m10 0h2a2 2 0 0 1 2 2v2m0 10v2a2 2 0 0 1-2 2h-2M7 21H5a2 2 0 0 1-2-2v-2m4-5h10M12 7v10"/></svg>
+                                            </div>
+                                            <span class="tool-label">Bg Removal</span>
+                                        </div>
+                                        <div class="tool-btn" id="tool-lighting-fix" role="button" tabindex="0" title="Lighting Fix">
+                                            <div class="tool-icon-wrap">
+                                                <svg class="tool-icon" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M15 14c.2-1 .7-1.7 1.5-2.5 1-.9 1.5-2.2 1.5-3.5A6 6 0 0 0 6 8c0 1 .5 2.2 1.5 3.5.7.7 1.3 1.5 1.5 2.5m1.5 4h3m-4.5-2h6"/></svg>
+                                            </div>
+                                            <span class="tool-label">Lighting Fix</span>
+                                        </div>
+                                        <div class="tool-btn" id="tool-sharpness" role="button" tabindex="0" title="Sharpness">
+                                            <div class="tool-icon-wrap">
+                                                <svg class="tool-icon" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="m12 3 10 18H2L12 3z"/><circle cx="12" cy="13" r="2"/></svg>
+                                            </div>
+                                            <span class="tool-label">Sharpness</span>
+                                        </div>
+                                        <div class="tool-btn" id="tool-color" role="button" tabindex="0" title="Color Balance">
+                                            <div class="tool-icon-wrap">
+                                                <svg class="tool-icon" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><path d="m9 13.5 6 4M15 6.5l-6 4"/></svg>
+                                            </div>
+                                            <span class="tool-label">Color Bal</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
                         </div>
 
-                        <div class="form-group" id="group-upload-price" style="margin-bottom: 20px;">
-                            <label class="form-label" for="upload-price">Price (₹ INR)</label>
-                            <input class="form-input" type="number" step="0.01" id="upload-price" placeholder="e.g. 750" required>
-                            <div class="error-message">Please provide a valid price.</div>
+                        <!-- Step 3: Product Details -->
+                        <div class="studio-step-section" id="studio-section-details">
+                            <div class="studio-section-header">
+                                <div class="studio-step-indicator">3</div>
+                                <div>
+                                    <h4 class="studio-section-title">Product Details</h4>
+                                    <p class="studio-section-sub">Enter the essential information buyers see in the marketplace</p>
+                                </div>
+                            </div>
+
+                            <div class="product-details-grid">
+                                <div class="form-group" id="group-upload-title" style="margin-bottom: 0;">
+                                    <label class="form-label" for="upload-title">Product Title (English) <span class="required-asterisk">*</span></label>
+                                    <input class="form-input" type="text" id="upload-title" placeholder="e.g. Handmade Terracotta Vase" required>
+                                    <div class="error-message">This field is required.</div>
+                                </div>
+
+                                <div class="form-group" id="group-upload-price" style="margin-bottom: 0;">
+                                    <label class="form-label" for="upload-price">Price (₹ INR) <span class="required-asterisk">*</span></label>
+                                    <div class="input-currency-wrapper">
+                                        <span class="currency-symbol">₹</span>
+                                        <input class="form-input currency-input" type="number" step="0.01" id="upload-price" placeholder="750" required>
+                                    </div>
+                                    <div class="error-message">Please provide a valid price.</div>
+                                </div>
+                            </div>
                         </div>
 
-                        <div id="upload-general-error" style="color: var(--danger-color); font-size: 14px; text-align: center; margin-bottom: 15px; display: none;"></div>
-
-                        <button class="btn btn-primary" type="submit" id="btn-upload-submit">Apply & Save</button>
+                        <!-- Step 4: Save & Apply Action -->
+                        <div class="studio-submit-wrap">
+                            <div id="upload-general-error" style="color: var(--danger-color); font-size: 14px; text-align: center; margin-bottom: 15px; display: none;"></div>
+                            <button class="btn btn-primary btn-studio-submit" type="submit" id="btn-upload-submit">Apply & Save</button>
+                        </div>
                     </form>
 
                     <!-- ============================================================
@@ -734,28 +832,145 @@
         <section id="screen-buyer-dashboard" class="screen" style="padding-top: 24px;">
             <!-- TAB: Shop -->
             <div id="buyer-view-shop">
-                <!-- Wishlist Reminder Section (surface 2-4 items if saved) -->
-                <div id="home-wishlist-reminder" style="display: none; margin-bottom: 28px; background: #FFFFFF; border: 1px solid var(--border-color); border-radius: 20px; padding: 20px; box-shadow: var(--shadow-sm);">
-                    <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 16px;">
-                        <div style="display: flex; align-items: center; gap: 8px;">
-                            <span style="color: #E53935; font-size: 18px;">❤️</span>
-                            <h4 style="font-size: 16px; font-weight: 700; color: var(--text-primary); margin: 0;">Saved for Later</h4>
-                            <span id="home-wishlist-count-badge" style="background: rgba(229,57,53,0.1); color: #E53935; font-size: 12px; font-weight: 700; padding: 2px 8px; border-radius: 12px;"></span>
-                        </div>
-                        <button type="button" onclick="switchRoleNavTab('wishlist')" style="background: none; border: none; color: var(--primary-color); font-size: 13px; font-weight: 700; cursor: pointer; display: flex; align-items: center; gap: 4px; padding: 0;">
-                            View All &rarr;
-                        </button>
-                    </div>
-                    <div id="home-wishlist-items-grid" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(130px, 1fr)); gap: 12px;">
-                        <!-- 2-4 compact wishlist tiles -->
+                <!-- 1. Editorial Hero & Discovery Section -->
+                <div class="buyer-hero" id="buyer-hero-section">
+                    <div class="buyer-hero-content">
+                        <h2 class="buyer-hero-title brand-font" id="hero-headline-text">Handcrafted Treasures, Rooted in Heritage</h2>
+                        <p class="buyer-hero-subtitle" id="hero-subtitle-text">Discover authentic pottery, handlooms, woodwork & jewelry crafted with centuries of living Indian tradition.</p>
                     </div>
                 </div>
 
-                <h3 class="brand-font" style="font-size: 22px; color: var(--primary-color); margin-bottom: 20px;">Popular Crafts</h3>
-                <div id="buyer-product-list" class="product-grid">
-                    <div style="grid-column: 1/-1; text-align: center; color: var(--text-secondary); padding: 40px;" id="buyer-empty-state">
-                        No products listed in the marketplace yet.
+                <!-- 2. Feed Header & Active Filter Status -->
+                <div class="buyer-feed-meta-row">
+                    <div class="feed-section-heading">
+                        <h3 id="buyer-feed-title" class="brand-font">Explore Crafts</h3>
+                        <span id="buyer-product-count-badge" class="product-count-badge">Loading crafts...</span>
                     </div>
+                    <div id="buyer-active-filter-indicator" class="active-filter-tag" style="display: none;">
+                        <span id="active-filter-text"></span>
+                        <button type="button" onclick="clearBuyerFilters()" class="clear-filter-btn" title="Clear filter" aria-label="Clear filter">✕</button>
+                    </div>
+                </div>
+
+                <!-- Category Navigation Pills -->
+                <div class="buyer-category-scroll-container" style="margin-bottom: 24px;">
+                    <div id="buyer-category-pills" class="buyer-category-pills" role="tablist" aria-label="Filter crafts by category">
+                        <button type="button" class="category-pill active" data-category="all">All Crafts</button>
+                    </div>
+                </div>
+
+                <!-- 3. Skeleton Loading State -->
+                <div id="buyer-product-skeleton" class="product-grid" style="display: none;">
+                    <div class="product-skeleton-card">
+                        <div class="skeleton-image-box"></div>
+                        <div class="skeleton-info">
+                            <div class="skeleton-line" style="width: 40%; height: 12px; margin-bottom: 8px;"></div>
+                            <div class="skeleton-line" style="width: 80%; height: 16px; margin-bottom: 12px;"></div>
+                            <div style="display: flex; justify-content: space-between; align-items: center; margin-top: auto;">
+                                <div class="skeleton-line" style="width: 30%; height: 18px;"></div>
+                                <div class="skeleton-line" style="width: 45%; height: 32px; border-radius: 20px;"></div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="product-skeleton-card">
+                        <div class="skeleton-image-box"></div>
+                        <div class="skeleton-info">
+                            <div class="skeleton-line" style="width: 45%; height: 12px; margin-bottom: 8px;"></div>
+                            <div class="skeleton-line" style="width: 75%; height: 16px; margin-bottom: 12px;"></div>
+                            <div style="display: flex; justify-content: space-between; align-items: center; margin-top: auto;">
+                                <div class="skeleton-line" style="width: 35%; height: 18px;"></div>
+                                <div class="skeleton-line" style="width: 45%; height: 32px; border-radius: 20px;"></div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="product-skeleton-card">
+                        <div class="skeleton-image-box"></div>
+                        <div class="skeleton-info">
+                            <div class="skeleton-line" style="width: 35%; height: 12px; margin-bottom: 8px;"></div>
+                            <div class="skeleton-line" style="width: 85%; height: 16px; margin-bottom: 12px;"></div>
+                            <div style="display: flex; justify-content: space-between; align-items: center; margin-top: auto;">
+                                <div class="skeleton-line" style="width: 25%; height: 18px;"></div>
+                                <div class="skeleton-line" style="width: 45%; height: 32px; border-radius: 20px;"></div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="product-skeleton-card">
+                        <div class="skeleton-image-box"></div>
+                        <div class="skeleton-info">
+                            <div class="skeleton-line" style="width: 50%; height: 12px; margin-bottom: 8px;"></div>
+                            <div class="skeleton-line" style="width: 70%; height: 16px; margin-bottom: 12px;"></div>
+                            <div style="display: flex; justify-content: space-between; align-items: center; margin-top: auto;">
+                                <div class="skeleton-line" style="width: 30%; height: 18px;"></div>
+                                <div class="skeleton-line" style="width: 45%; height: 32px; border-radius: 20px;"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 4. Real Product List Grid -->
+                <div id="buyer-product-list" class="product-grid">
+                    <div style="grid-column: 1/-1; text-align: center; color: var(--text-secondary); padding: 80px 20px;" id="buyer-empty-state">
+                        <div style="font-size: 48px; margin-bottom: 16px; opacity: 0.8;">🏺</div>
+                        <h4 style="font-family: var(--font-serif); font-size: 28px; font-weight: 400; color: var(--primary-color); margin-bottom: 8px;">No handcrafted treasures found</h4>
+                        <p id="buyer-empty-desc" style="font-size: 15px; color: var(--text-secondary); max-width: 420px; margin: 0 auto 24px auto;">There are no products listed in the marketplace matching your criteria at this moment.</p>
+                        <button type="button" id="buyer-empty-reset-btn" onclick="clearBuyerFilters()" class="btn btn-secondary" style="display: none; padding: 10px 24px; font-size: 14px; font-weight: 600; border-radius: 999px; background: transparent; border: 1px solid var(--primary-color); color: var(--primary-color); margin: 0 auto; transition: transform var(--transition-snappy);">Reset Filters</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- TAB: Dedicated Search View -->
+            <div id="buyer-view-search" class="search-view-container" style="display: none;">
+                <!-- Search Experience Header -->
+                <div class="search-experience-header">
+                    <div class="search-experience-eyebrow">
+                        <span class="eyebrow-sparkle">✦</span> Search Marketplace
+                    </div>
+                    
+                    <div class="search-input-wrapper-dedicated">
+                        <div class="search-input-box-dedicated">
+                            <svg class="search-icon-dedicated" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <circle cx="11" cy="11" r="8"></circle>
+                                <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+                            </svg>
+                            <input type="text" id="dedicated-search-input" placeholder="Search crafts, artisans, materials, pottery..." aria-label="Search crafts and artisans" autocomplete="off">
+                            <button type="button" id="dedicated-search-clear" class="search-clear-btn" aria-label="Clear search" style="display: none;" title="Clear query">✕</button>
+                        </div>
+                        <button type="button" id="dedicated-search-close-btn" class="search-close-btn" title="Close search" aria-label="Close search">
+                            <span>Cancel</span>
+                        </button>
+                    </div>
+
+                    <!-- Category Pills in Search -->
+                    <div class="search-category-scroll-container">
+                        <div id="search-category-pills" class="buyer-category-pills" role="tablist" aria-label="Filter search results by category">
+                            <button type="button" class="category-pill active" data-category="all">All Crafts</button>
+                        </div>
+                    </div>
+
+                    <!-- Search Meta Status Row -->
+                    <div class="search-results-meta-row">
+                        <div class="search-results-label">
+                            <h3 class="brand-font" id="search-results-title">Search Results</h3>
+                            <span id="search-product-count-badge" class="product-count-badge">0 items</span>
+                        </div>
+                        <div id="search-active-filter-indicator" class="active-filter-tag" style="display: none;">
+                            <span id="search-active-filter-text"></span>
+                            <button type="button" onclick="clearDedicatedSearchFilters()" class="clear-filter-btn" title="Clear filter" aria-label="Clear filter">✕</button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Empty State for Search -->
+                <div id="search-empty-state" class="search-empty-card" style="display: none;">
+                    <div class="search-empty-icon">🔍</div>
+                    <h4 class="brand-font search-empty-title">No crafts found</h4>
+                    <p id="search-empty-desc" class="search-empty-desc">We couldn't find any crafts matching your search. Try another craft, artisan, or category.</p>
+                    <button type="button" class="btn btn-secondary" onclick="clearDedicatedSearchFilters()" style="margin: 0 auto; border-radius: 999px; padding: 10px 24px; font-weight: 600;">View All Crafts</button>
+                </div>
+
+                <!-- Masonry Grid for Search Results -->
+                <div id="search-product-list" class="product-grid">
+                    <!-- Masonry cards rendered dynamically -->
                 </div>
             </div>
 
@@ -1144,6 +1359,10 @@
                         switchBuyerTab(e.state.tab);
                     }
                 }
+            } else if (!e.state && location.hash === '#search') {
+                if (currentUser && currentUser.role === 'buyer') {
+                    switchBuyerTab('search');
+                }
             } else if (!e.state && location.hash.startsWith('#product-')) {
                 // If direct link or back to product route
                 const pId = location.hash.replace('#product-', '');
@@ -1193,7 +1412,7 @@
                 {
                     id: 'communities',
                     label: 'Communities',
-                    icon: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>`,
+                    icon: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>`,
                     targetView: 'artisan-view-communities'
                 },
                 {
@@ -1219,12 +1438,12 @@
                     targetView: 'buyer-view-reels'
                 },
                 {
-                    id: 'listings',
-                    label: 'Listings',
+                    id: 'search',
+                    label: 'Search',
                     isCenter: true,
-                    icon: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 2 3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"/><line x1="3" y1="6" x2="21" y2="6"/><path d="M16 10a4 4 0 0 1-8 0"/></svg>`,
-                    targetView: 'buyer-view-shop',
-                    targetBuyerTab: 'shop'
+                    icon: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>`,
+                    targetView: 'buyer-view-search',
+                    targetBuyerTab: 'search'
                 },
                 {
                     id: 'discover',
@@ -1333,6 +1552,26 @@
                                 </div>
                             </div>
                         `;
+                    } else if (item.id === 'search' && role === 'buyer') {
+                        li.className = 'desktop-nav-search-wrapper';
+                        li.setAttribute('data-tab-id', 'search');
+                        li.innerHTML = `
+                            <button type="button" class="desktop-search-affordance ${activeRoleNavTab === 'search' ? 'active' : ''}" id="desktop-search-trigger" aria-label="Search marketplace (Press ⌘K or / to search)">
+                                <svg class="affordance-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                    <circle cx="11" cy="11" r="8"></circle>
+                                    <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+                                </svg>
+                                <span class="affordance-label">Search crafts...</span>
+                                <span class="affordance-kbd"><kbd>⌘K</kbd></span>
+                            </button>
+                        `;
+                        const triggerBtn = li.querySelector('#desktop-search-trigger');
+                        if (triggerBtn) {
+                            triggerBtn.onclick = (e) => {
+                                e.preventDefault();
+                                switchRoleNavTab('search');
+                            };
+                        }
                     } else {
                         li.className = `desktop-nav-item ${activeRoleNavTab === item.id ? 'active' : ''}`;
                         li.setAttribute('data-tab-id', item.id);
@@ -1387,6 +1626,12 @@
             const container = document.querySelector('.desktop-nav-container');
             if (!indicator || !container) return;
 
+            // When search is active on desktop, the search affordance has its own custom active state
+            if (activeRoleNavTab === 'search') {
+                indicator.style.opacity = '0';
+                return;
+            }
+
             const activeItem = container.querySelector('.desktop-nav-item.active') ||
                                container.querySelector('#desktop-account-trigger.active') ||
                                container.querySelector(`.desktop-nav-item[data-tab-id="${activeRoleNavTab}"]`);
@@ -1436,6 +1681,8 @@
 
             wrapper.addEventListener('mouseenter', openDropdown);
             wrapper.addEventListener('mouseleave', closeDropdown);
+            dropdown.addEventListener('mouseenter', openDropdown);
+            dropdown.addEventListener('mouseleave', closeDropdown);
             if (trigger) {
                 trigger.addEventListener('click', (e) => {
                     e.stopPropagation();
@@ -1448,8 +1695,10 @@
         }
 
         function switchRoleNavTab(tabId) {
+            // Guard: Prevent losing unsaved voice catalogue changes
             if (isRefinerFormDirty) {
-                if (!confirm("You have unsaved changes in your listing refiner. Are you sure you want to discard them and leave?")) {
+                const proceed = confirm("You have unsaved voice cataloging progress. Are you sure you want to navigate away? Unsaved changes will be discarded.");
+                if (!proceed) {
                     return;
                 }
                 isRefinerFormDirty = false;
@@ -1470,6 +1719,11 @@
                     el.classList.remove('active');
                 }
             });
+            const dSearchTrigger = document.getElementById('desktop-search-trigger');
+            if (dSearchTrigger) {
+                if (tabId === 'search') dSearchTrigger.classList.add('active');
+                else dSearchTrigger.classList.remove('active');
+            }
             document.querySelectorAll('.mobile-nav-item').forEach(el => {
                 if (el.getAttribute('data-tab-id') === tabId) {
                     el.classList.add('active');
@@ -1665,7 +1919,7 @@
                         loadArtisanProducts();
                     } else if (currentUser.role === 'buyer') {
                         navigateTo('buyerDashboard');
-                        const buyerValidTabs = ['shop', 'cart', 'orders', 'wishlist', 'reels', 'discover', 'account', 'productDetail'];
+                        const buyerValidTabs = ['shop', 'search', 'cart', 'orders', 'wishlist', 'reels', 'discover', 'account', 'productDetail'];
                         let targetTab = 'shop';
                         if (rawHash.startsWith('product-')) {
                             targetTab = 'shop';
@@ -2526,6 +2780,7 @@
             const file = fileInput.files[0];
             if (file) {
                 pillUploadFilename.textContent = file.name;
+                document.getElementById('group-upload-image')?.classList.remove('has-error');
                 
                 // Show raw image preview
                 const reader = new FileReader();
@@ -3210,8 +3465,526 @@
             }
         });
 
+        // =====================================================================
+        // Better-UI Buyer Feed & Discovery Logic
+        // =====================================================================
+        window._activeBuyerCategory = 'all';
+        window._buyerSearchQuery = '';
+        window._buyerIsGuest = false;
+
+        function updateBuyerHeroLanguage() {
+            const lang = localStorage.getItem('selected_language') || 'en';
+            const eyebrowEl = document.getElementById('hero-eyebrow-text');
+            const headlineEl = document.getElementById('hero-headline-text');
+            const subtitleEl = document.getElementById('hero-subtitle-text');
+            const searchInput = document.getElementById('buyer-search-input');
+            const feedTitle = document.getElementById('buyer-feed-title');
+
+            if (lang === 'hi') {
+                if (eyebrowEl) eyebrowEl.innerHTML = '<span class="eyebrow-sparkle">✦</span> भारतीय मास्टर कारीगरों से सीधे';
+                if (headlineEl) headlineEl.textContent = 'विरासत से जुड़े हस्तनिर्मित शिल्प';
+                if (subtitleEl) subtitleEl.textContent = 'शिल्पकारों द्वारा तैयार की गई प्रामाणिक मिट्टी के बर्तन, हथकरघा, काष्ठकला और आभूषण खोजें।';
+                if (searchInput) searchInput.placeholder = 'हस्तनिर्मित बर्तन, कपड़े, आभूषण या कारीगर खोजें...';
+                if (feedTitle) feedTitle.textContent = 'शिल्प संग्रह';
+            } else {
+                if (eyebrowEl) eyebrowEl.innerHTML = '<span class="eyebrow-sparkle">✦</span> Direct from Indian Master Artisans';
+                if (headlineEl) headlineEl.textContent = 'Handcrafted Treasures, Rooted in Heritage';
+                if (subtitleEl) subtitleEl.textContent = 'Discover authentic pottery, handlooms, woodwork & jewelry crafted with centuries of living Indian tradition.';
+                if (searchInput) searchInput.placeholder = 'Search handcrafted pottery, fabrics, jewelry, or artisans...';
+                if (feedTitle) feedTitle.textContent = 'Explore Crafts';
+            }
+        }
+
+        function renderCategoryPills(products) {
+            const pillsContainer = document.getElementById('buyer-category-pills');
+            if (!pillsContainer) return;
+
+            // Extract unique non-empty category names from current products
+            const uniqueCategories = [];
+            const seen = new Set();
+            (products || []).forEach(p => {
+                const cat = (p.category_name || '').trim();
+                if (cat && !seen.has(cat.toLowerCase())) {
+                    seen.add(cat.toLowerCase());
+                    uniqueCategories.push(cat);
+                }
+            });
+
+            let html = `<button type="button" class="category-pill ${(!window._activeBuyerCategory || window._activeBuyerCategory === 'all') ? 'active' : ''}" data-category="all">All Crafts</button>`;
+            
+            uniqueCategories.forEach(cat => {
+                const isActive = window._activeBuyerCategory && window._activeBuyerCategory.toLowerCase() === cat.toLowerCase();
+                html += `<button type="button" class="category-pill ${isActive ? 'active' : ''}" data-category="${cat}">${cat}</button>`;
+            });
+
+            pillsContainer.innerHTML = html;
+
+            pillsContainer.querySelectorAll('.category-pill').forEach(pill => {
+                pill.addEventListener('click', () => {
+                    pillsContainer.querySelectorAll('.category-pill').forEach(p => p.classList.remove('active'));
+                    pill.classList.add('active');
+                    window._activeBuyerCategory = pill.getAttribute('data-category');
+                    filterAndRenderBuyerProducts();
+                });
+            });
+        }
+
+        function clearBuyerFilters() {
+            window._activeBuyerCategory = 'all';
+            window._buyerSearchQuery = '';
+            const searchInput = document.getElementById('buyer-search-input');
+            const clearBtn = document.getElementById('buyer-search-clear');
+            if (searchInput) searchInput.value = '';
+            if (clearBtn) clearBtn.style.display = 'none';
+            
+            const pillsContainer = document.getElementById('buyer-category-pills');
+            if (pillsContainer) {
+                pillsContainer.querySelectorAll('.category-pill').forEach(pill => {
+                    if (pill.getAttribute('data-category') === 'all') pill.classList.add('active');
+                    else pill.classList.remove('active');
+                });
+            }
+            filterAndRenderBuyerProducts();
+        }
+
+        // ─── Reusable Product Card Factory ───────────────────────────────────────
+        function createProductCardElement(p, isGuestUser) {
+            const card = document.createElement('div');
+            card.className = 'product-card';
+            card.setAttribute('data-product-id', p.id);
+
+            const displayImage = getMediaUrl(p.refined_image_url || p.raw_image_url || 'anantah_logo.png');
+            const categoryName = p.category_name || 'Traditional Craft';
+            const artisanName = p.artisan_name || 'Master Artisan';
+            
+            // Bilingual title support
+            const currentLang = localStorage.getItem('selected_language') || 'en';
+            const title = (currentLang === 'hi' && p.title_hi) ? p.title_hi : p.title_en;
+
+            const addCartBtn = isGuestUser
+                ? `<button disabled class="btn-add-cart-minimal" aria-label="Login to Add">
+                      <span class="btn-label-desktop">Login to Add</span>
+                      <span class="btn-label-mobile">Login</span>
+                   </button>`
+                : `<button class="btn-add-cart-minimal" data-product-id="${p.id}" data-product-title="${p.title_en}" aria-label="Add ${title} to Cart">
+                      <span class="btn-label-desktop">Add to Cart</span>
+                      <span class="btn-label-mobile">Add</span>
+                      <span class="add-icon">+</span>
+                   </button>`;
+
+            const heartBtnHtml = (!isGuestUser && currentUser && currentUser.role === 'buyer') ? renderWishlistHeartBtn(p.id) : '';
+
+            card.innerHTML = `
+                <!-- Gallery Image Box -->
+                <div class="product-card-image-box" title="View craft details">
+                    <img class="product-card-image" src="${displayImage}" alt="${title}" loading="lazy" onerror="this.onerror=null; this.src='anantah_logo.png';">
+                    <div class="product-card-overlay">
+                        <div class="wishlist-action-zone">
+                            ${heartBtnHtml}
+                        </div>
+                    </div>
+                </div>
+                <!-- Meta Box -->
+                <div class="product-card-info">
+                    <div class="info-top-row">
+                        <div class="artisan-provenance" title="Crafted by ${artisanName}">
+                            <span class="artisan-name">✦ ${artisanName}</span>
+                        </div>
+                        <div class="category-inline-tag">${categoryName}</div>
+                    </div>
+                    <div class="info-main-row">
+                        <div class="title-price-group">
+                            <h4 class="product-card-title" title="${title}">${title}</h4>
+                            <div class="product-card-price">₹${parseFloat(p.price).toFixed(2)}</div>
+                        </div>
+                        <div class="cart-action-zone">
+                            ${addCartBtn}
+                        </div>
+                    </div>
+                </div>
+            `;
+
+            // Card interaction handlers
+            const imgBox = card.querySelector('.product-card-image-box');
+            if (imgBox) {
+                imgBox.addEventListener('click', (e) => {
+                    if (!e.target.closest('.btn-wishlist-heart') && !e.target.closest('.btn-add-cart-minimal')) {
+                        openProductDetailModal(p);
+                    }
+                });
+            }
+            const titleEl = card.querySelector('.product-card-title');
+            if (titleEl) {
+                titleEl.addEventListener('click', () => openProductDetailModal(p));
+            }
+
+            const heartBtn = card.querySelector('.btn-wishlist-heart');
+            if (heartBtn) {
+                heartBtn.addEventListener('click', (e) => {
+                    toggleWishlistHeart(p.id, heartBtn, e);
+                });
+            }
+
+            if (!isGuestUser) {
+                const cartBtn = card.querySelector('.btn-add-cart-minimal');
+                if (cartBtn) {
+                    cartBtn.addEventListener('click', async (e) => {
+                        const btn = e.currentTarget;
+                        const pid = btn.getAttribute('data-product-id');
+                        btn.disabled = true;
+
+                        btn.classList.add('added');
+                        const addIcon = btn.querySelector('.add-icon');
+                        const deskLabel = btn.querySelector('.btn-label-desktop');
+                        const mobLabel = btn.querySelector('.btn-label-mobile');
+                        if (addIcon) addIcon.textContent = '✓';
+                        if (deskLabel) deskLabel.textContent = 'Added';
+                        if (mobLabel) mobLabel.textContent = 'Added';
+
+                        await addToCart(pid, 1);
+
+                        setTimeout(() => {
+                            btn.disabled = false;
+                            btn.classList.remove('added');
+                            if (addIcon) addIcon.textContent = '+';
+                            if (deskLabel) deskLabel.textContent = 'Add to Cart';
+                            if (mobLabel) mobLabel.textContent = 'Add';
+                        }, 1500);
+                    });
+                }
+            }
+            return card;
+        }
+
+        function filterAndRenderBuyerProducts(isGuest = null) {
+            if (isGuest !== null) window._buyerIsGuest = isGuest;
+            const isGuestUser = window._buyerIsGuest;
+
+            const products = window._cachedBuyerProducts || [];
+            const container = document.getElementById('buyer-product-list');
+            const emptyState = document.getElementById('buyer-empty-state');
+            const emptyDesc = document.getElementById('buyer-empty-desc');
+            const emptyResetBtn = document.getElementById('buyer-empty-reset-btn');
+            const countBadge = document.getElementById('buyer-product-count-badge');
+            const filterIndicator = document.getElementById('buyer-active-filter-indicator');
+            const filterText = document.getElementById('active-filter-text');
+
+            // Filter products
+            const activeCategory = (window._activeBuyerCategory || 'all').toLowerCase();
+            const query = (window._buyerSearchQuery || '').trim().toLowerCase();
+
+            const filtered = products.filter(p => {
+                const matchCategory = (activeCategory === 'all') || ((p.category_name || '').toLowerCase() === activeCategory);
+                if (!matchCategory) return false;
+
+                if (!query) return true;
+                const titleEn = (p.title_en || '').toLowerCase();
+                const titleHi = (p.title_hi || '').toLowerCase();
+                const descEn = (p.description_en || '').toLowerCase();
+                const descHi = (p.description_hi || '').toLowerCase();
+                const artisan = (p.artisan_name || '').toLowerCase();
+                const catName = (p.category_name || '').toLowerCase();
+                return titleEn.includes(query) || titleHi.includes(query) || descEn.includes(query) || descHi.includes(query) || artisan.includes(query) || catName.includes(query);
+            });
+
+            // Update count badge
+            if (countBadge) {
+                countBadge.textContent = `${filtered.length} ${filtered.length === 1 ? 'item' : 'items'}`;
+            }
+
+            // Update active filter indicator tag
+            const hasFilter = (activeCategory !== 'all') || (query !== '');
+            if (filterIndicator && filterText) {
+                if (hasFilter) {
+                    const parts = [];
+                    if (activeCategory !== 'all') parts.push(`Category: ${window._activeBuyerCategory}`);
+                    if (query) parts.push(`"${query}"`);
+                    filterText.textContent = parts.join(' • ');
+                    filterIndicator.style.display = 'inline-flex';
+                } else {
+                    filterIndicator.style.display = 'none';
+                }
+            }
+
+            // Remove existing cards
+            if (container) {
+                container.querySelectorAll('.product-card').forEach(card => card.remove());
+                container.setAttribute('data-count', filtered.length);
+            }
+
+            if (filtered.length > 0) {
+                if (emptyState) emptyState.style.display = 'none';
+                filtered.forEach(p => {
+                    const card = createProductCardElement(p, isGuestUser);
+                    container.appendChild(card);
+                });
+            } else {
+                if (emptyState) {
+                    emptyState.style.display = 'block';
+                    if (emptyDesc) {
+                        if (hasFilter) {
+                            emptyDesc.textContent = `No crafts found matching "${query || activeCategory}". Try exploring other categories.`;
+                        } else {
+                            emptyDesc.textContent = "No handcrafted products have been listed in the marketplace yet.";
+                        }
+                    }
+                    if (emptyResetBtn) {
+                        emptyResetBtn.style.display = hasFilter ? 'inline-block' : 'none';
+                    }
+                }
+            }
+        }
+
+        // ─── Dedicated Search Experience Logic ────────────────────────────────────
+        window._dedicatedSearchQuery = '';
+        window._dedicatedSearchCategory = 'all';
+        window._isClosingSearch = false;
+
+        function closeDedicatedSearch() {
+            if (window._isClosingSearch) return;
+            const searchView = document.getElementById('buyer-view-search');
+            const prevTab = window._lastNonSearchBuyerTab || 'shop';
+            const prefersReducedMotion = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+            if (!searchView || prefersReducedMotion || searchView.style.display === 'none') {
+                switchBuyerTab(prevTab);
+                return;
+            }
+
+            window._isClosingSearch = true;
+            searchView.classList.remove('search-view-animate-in');
+            searchView.classList.add('search-view-closing');
+
+            const searchTrigger = document.getElementById('desktop-search-trigger');
+            if (searchTrigger) searchTrigger.classList.remove('active');
+
+            setTimeout(() => {
+                searchView.classList.remove('search-view-closing');
+                searchView.style.display = 'none';
+                window._isClosingSearch = false;
+                switchBuyerTab(prevTab);
+            }, 180);
+        }
+
+        function clearDedicatedSearchFilters() {
+            window._dedicatedSearchCategory = 'all';
+            window._dedicatedSearchQuery = '';
+            const sInput = document.getElementById('dedicated-search-input');
+            const clearBtn = document.getElementById('dedicated-search-clear');
+            if (sInput) sInput.value = '';
+            if (clearBtn) clearBtn.style.display = 'none';
+
+            const pillsContainer = document.getElementById('search-category-pills');
+            if (pillsContainer) {
+                pillsContainer.querySelectorAll('.category-pill').forEach(pill => {
+                    if (pill.getAttribute('data-category') === 'all') pill.classList.add('active');
+                    else pill.classList.remove('active');
+                });
+            }
+            filterAndRenderSearchProducts();
+            if (sInput) sInput.focus();
+        }
+
+        function renderDedicatedSearchCategories() {
+            const pillsContainer = document.getElementById('search-category-pills');
+            if (!pillsContainer) return;
+
+            const products = window._cachedBuyerProducts || [];
+            const uniqueCategories = [];
+            const seen = new Set();
+            products.forEach(p => {
+                const cat = (p.category_name || '').trim();
+                if (cat && !seen.has(cat.toLowerCase())) {
+                    seen.add(cat.toLowerCase());
+                    uniqueCategories.push(cat);
+                }
+            });
+
+            let html = `<button type="button" class="category-pill ${(!window._dedicatedSearchCategory || window._dedicatedSearchCategory === 'all') ? 'active' : ''}" data-category="all">All Crafts</button>`;
+            uniqueCategories.forEach(cat => {
+                const isActive = window._dedicatedSearchCategory && window._dedicatedSearchCategory.toLowerCase() === cat.toLowerCase();
+                html += `<button type="button" class="category-pill ${isActive ? 'active' : ''}" data-category="${cat}">${cat}</button>`;
+            });
+
+            pillsContainer.innerHTML = html;
+            pillsContainer.querySelectorAll('.category-pill').forEach(pill => {
+                pill.addEventListener('click', () => {
+                    pillsContainer.querySelectorAll('.category-pill').forEach(p => p.classList.remove('active'));
+                    pill.classList.add('active');
+                    window._dedicatedSearchCategory = pill.getAttribute('data-category');
+                    filterAndRenderSearchProducts();
+                });
+            });
+        }
+
+        function filterAndRenderSearchProducts() {
+            const isGuestUser = window._buyerIsGuest;
+            const products = window._cachedBuyerProducts || [];
+            const container = document.getElementById('search-product-list');
+            const emptyState = document.getElementById('search-empty-state');
+            const emptyDesc = document.getElementById('search-empty-desc');
+            const countBadge = document.getElementById('search-product-count-badge');
+            const filterIndicator = document.getElementById('search-active-filter-indicator');
+            const filterText = document.getElementById('search-active-filter-text');
+            const resultsTitle = document.getElementById('search-results-title');
+
+            if (!container) return;
+
+            const activeCategory = (window._dedicatedSearchCategory || 'all').toLowerCase();
+            const query = (window._dedicatedSearchQuery || '').trim().toLowerCase();
+
+            const filtered = products.filter(p => {
+                const matchCategory = (activeCategory === 'all') || ((p.category_name || '').toLowerCase() === activeCategory);
+                if (!matchCategory) return false;
+
+                if (!query) return true;
+                const titleEn = (p.title_en || '').toLowerCase();
+                const titleHi = (p.title_hi || '').toLowerCase();
+                const descEn = (p.description_en || '').toLowerCase();
+                const descHi = (p.description_hi || '').toLowerCase();
+                const artisan = (p.artisan_name || '').toLowerCase();
+                const catName = (p.category_name || '').toLowerCase();
+                return titleEn.includes(query) || titleHi.includes(query) || descEn.includes(query) || descHi.includes(query) || artisan.includes(query) || catName.includes(query);
+            });
+
+            if (countBadge) {
+                countBadge.textContent = `${filtered.length} ${filtered.length === 1 ? 'item' : 'items'}`;
+            }
+
+            if (resultsTitle) {
+                if (query) {
+                    resultsTitle.textContent = `Results for "${window._dedicatedSearchQuery}"`;
+                } else if (activeCategory !== 'all') {
+                    resultsTitle.textContent = `${window._dedicatedSearchCategory} Crafts`;
+                } else {
+                    resultsTitle.textContent = 'All Crafts';
+                }
+            }
+
+            const hasFilter = (activeCategory !== 'all') || (query !== '');
+            if (filterIndicator && filterText) {
+                if (hasFilter) {
+                    const parts = [];
+                    if (activeCategory !== 'all') parts.push(`Category: ${window._dedicatedSearchCategory}`);
+                    if (query) parts.push(`"${query}"`);
+                    filterText.textContent = parts.join(' • ');
+                    filterIndicator.style.display = 'inline-flex';
+                } else {
+                    filterIndicator.style.display = 'none';
+                }
+            }
+
+            container.innerHTML = '';
+            container.setAttribute('data-count', filtered.length);
+
+            if (filtered.length > 0) {
+                if (emptyState) emptyState.style.display = 'none';
+                filtered.forEach(p => {
+                    const card = createProductCardElement(p, isGuestUser);
+                    container.appendChild(card);
+                });
+            } else {
+                if (emptyState) {
+                    emptyState.style.display = 'block';
+                    if (emptyDesc) {
+                        if (hasFilter) {
+                            emptyDesc.textContent = `No crafts found matching "${window._dedicatedSearchQuery || window._dedicatedSearchCategory}". Try searching with different terms or category.`;
+                        } else {
+                            emptyDesc.textContent = "No handcrafted products have been listed in the marketplace yet.";
+                        }
+                    }
+                }
+            }
+        }
+
+        // Dedicated Search Input Listeners
+        let dedicatedSearchDebounce = null;
+        const dedicatedSearchInput = document.getElementById('dedicated-search-input');
+        const dedicatedSearchClear = document.getElementById('dedicated-search-clear');
+        const dedicatedSearchClose = document.getElementById('dedicated-search-close-btn');
+
+        if (dedicatedSearchInput) {
+            dedicatedSearchInput.addEventListener('input', (e) => {
+                const val = e.target.value;
+                if (dedicatedSearchClear) {
+                    dedicatedSearchClear.style.display = val.length > 0 ? 'flex' : 'none';
+                }
+                clearTimeout(dedicatedSearchDebounce);
+                dedicatedSearchDebounce = setTimeout(() => {
+                    window._dedicatedSearchQuery = val;
+                    filterAndRenderSearchProducts();
+                }, 160);
+            });
+
+            dedicatedSearchInput.addEventListener('keydown', (e) => {
+                if (e.key === 'Escape') {
+                    if (dedicatedSearchInput.value) {
+                        dedicatedSearchInput.value = '';
+                        if (dedicatedSearchClear) dedicatedSearchClear.style.display = 'none';
+                        window._dedicatedSearchQuery = '';
+                        filterAndRenderSearchProducts();
+                    } else {
+                        closeDedicatedSearch();
+                    }
+                }
+            });
+        }
+
+        if (dedicatedSearchClear) {
+            dedicatedSearchClear.addEventListener('click', () => {
+                if (dedicatedSearchInput) dedicatedSearchInput.value = '';
+                dedicatedSearchClear.style.display = 'none';
+                window._dedicatedSearchQuery = '';
+                filterAndRenderSearchProducts();
+                if (dedicatedSearchInput) dedicatedSearchInput.focus();
+            });
+        }
+
+        if (dedicatedSearchClose) {
+            dedicatedSearchClose.addEventListener('click', () => {
+                closeDedicatedSearch();
+            });
+        }
+
+        // Global search shortcuts: ⌘K / Ctrl+K / '/' to open search, Escape to close search
+        document.addEventListener('keydown', (e) => {
+            const searchView = document.getElementById('buyer-view-search');
+            const isSearchOpen = searchView && searchView.style.display !== 'none' && !window._isClosingSearch;
+
+            if (e.key === 'Escape' && isSearchOpen) {
+                e.preventDefault();
+                closeDedicatedSearch();
+                const affordanceBtn = document.getElementById('desktop-search-trigger');
+                if (affordanceBtn) affordanceBtn.focus();
+                return;
+            }
+
+            const activeEl = document.activeElement;
+            const isEditing = activeEl && (activeEl.tagName === 'INPUT' || activeEl.tagName === 'TEXTAREA' || activeEl.isContentEditable);
+            if (isEditing) return;
+
+            if ((e.key.toLowerCase() === 'k' && (e.metaKey || e.ctrlKey)) || (e.key === '/' && !e.shiftKey)) {
+                if (currentUser && currentUser.role === 'buyer') {
+                    e.preventDefault();
+                    switchRoleNavTab('search');
+                }
+            }
+        });
+
         // API interaction: Fetch and display buyer feed products
         async function loadBuyerProducts(isGuest = false) {
+            window._buyerIsGuest = isGuest;
+            const skeletonGrid = document.getElementById('buyer-product-skeleton');
+            const productListGrid = document.getElementById('buyer-product-list');
+            const emptyState = document.getElementById('buyer-empty-state');
+
+            // Apply bilingual hero strings
+            updateBuyerHeroLanguage();
+
+            // Show skeleton shimmer while loading
+            if (skeletonGrid) skeletonGrid.style.display = 'grid';
+            if (productListGrid) productListGrid.style.display = 'none';
+
             const headers = {};
             if (!isGuest && accessToken) {
                 headers['Authorization'] = `Bearer ${accessToken}`;
@@ -3228,85 +4001,55 @@
                 if (response.ok) {
                     const products = await response.json();
                     window._cachedBuyerProducts = products;
-                    const container = document.getElementById('buyer-product-list');
-                    const emptyState = document.getElementById('buyer-empty-state');
 
-                    if (products.length > 0) {
-                        emptyState.style.display = 'none';
-                        document.querySelectorAll('#buyer-product-list .product-card').forEach(card => card.remove());
+                    // Render dynamic category pills based on actual product categories
+                    renderCategoryPills(products);
 
-                        products.forEach(p => {
-                            const card = document.createElement('div');
-                            card.className = 'product-card';
-                            
-                            const displayImage = getMediaUrl(p.refined_image_url || p.raw_image_url);
-
-                            const addCartBtn = isGuest
-                                ? `<button disabled style="width:100%; margin-top:auto; background:#f0f0f0; border:none; border-radius:20px; padding:8px; font-size:13px; color:#aaa; cursor:not-allowed; font-family:var(--font-inter); font-weight:600;">Login to Add to Cart</button>`
-                                : `<button class="btn-add-cart-pill" data-product-id="${p.id}" data-product-title="${p.title_en}" style="margin-top:auto;">
-                                      <span class="add-icon">+</span> <span class="btn-label">Add to Cart</span>
-                                   </button>`;
-
-                            const heartBtnHtml = (!isGuest && currentUser && currentUser.role === 'buyer') ? renderWishlistHeartBtn(p.id) : '';
-
-                            card.innerHTML = `
-                                <div class="product-card-image-box" style="cursor: pointer;">
-                                    <img class="product-card-image" src="${displayImage}" alt="${p.title_en}" onerror="this.onerror=null; this.src='anantah_logo.png';">
-                                    ${heartBtnHtml}
-                                </div>
-                                <div class="product-card-info" style="padding:16px; display:flex; flex-direction:column; flex-grow:1;">
-                                    <h4 class="product-card-title" style="font-size:15px; font-weight:700; color:var(--text-primary); margin:0 0 4px 0; cursor: pointer; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;">${p.title_en}</h4>
-                                    <div class="product-card-price" style="font-size:16px; font-weight:800; color:var(--primary-color); margin-bottom:12px;">₹${parseFloat(p.price).toFixed(2)}</div>
-                                    ${addCartBtn}
-                                </div>
-                            `;
-                            container.appendChild(card);
-
-                            card.querySelector('.product-card-image-box').addEventListener('click', (e) => {
-                                if (!e.target.closest('.btn-wishlist-heart')) openProductDetailModal(p);
-                            });
-                            card.querySelector('.product-card-title').addEventListener('click', () => openProductDetailModal(p));
-
-                            const heartBtn = card.querySelector('.btn-wishlist-heart');
-                            if (heartBtn) {
-                                heartBtn.addEventListener('click', (e) => {
-                                    toggleWishlistHeart(p.id, heartBtn, e);
-                                });
-                            }
-
-                            if (!isGuest) {
-                                card.querySelector('.btn-add-cart-pill').addEventListener('click', async (e) => {
-                                    const btn = e.currentTarget;
-                                    const pid = btn.getAttribute('data-product-id');
-                                    btn.disabled = true;
-                                    
-                                    btn.classList.add('added');
-                                    btn.querySelector('.add-icon').textContent = '✓';
-                                    btn.querySelector('.btn-label').textContent = 'Added';
-                                    card.classList.add('card-flash');
-                                    
-                                    setTimeout(() => {
-                                        card.classList.remove('card-flash');
-                                    }, 400);
-
-                                    await addToCart(pid, 1);
-                                    
-                                    setTimeout(() => {
-                                        btn.disabled = false;
-                                        btn.classList.remove('added');
-                                        btn.querySelector('.add-icon').textContent = '+';
-                                        btn.querySelector('.btn-label').textContent = 'Add to Cart';
-                                    }, 2000);
-                                });
-                            }
-                        });
-                    } else {
-                        emptyState.style.display = 'block';
-                    }
+                    // Filter & render cards
+                    filterAndRenderBuyerProducts(isGuest);
+                } else {
+                    console.error("Failed to load products, status:", response.status);
+                    if (emptyState) emptyState.style.display = 'block';
                 }
             } catch (err) {
                 console.error("Failed to load buyer marketplace:", err);
+                if (emptyState) emptyState.style.display = 'block';
+            } finally {
+                // Hide skeleton and reveal product grid
+                if (skeletonGrid) skeletonGrid.style.display = 'none';
+                if (productListGrid) {
+                    productListGrid.style.display = 'grid';
+                }
             }
+        }
+
+        // Legacy search fallback (if buyer search input is ever present)
+        let buyerSearchDebounce = null;
+        const buyerSearchInput = document.getElementById('buyer-search-input');
+        const buyerSearchClear = document.getElementById('buyer-search-clear');
+
+        if (buyerSearchInput) {
+            buyerSearchInput.addEventListener('input', (e) => {
+                const val = e.target.value;
+                if (buyerSearchClear) {
+                    buyerSearchClear.style.display = val.length > 0 ? 'flex' : 'none';
+                }
+                clearTimeout(buyerSearchDebounce);
+                buyerSearchDebounce = setTimeout(() => {
+                    window._buyerSearchQuery = val;
+                    filterAndRenderBuyerProducts();
+                }, 180);
+            });
+        }
+
+        if (buyerSearchClear) {
+            buyerSearchClear.addEventListener('click', () => {
+                if (buyerSearchInput) buyerSearchInput.value = '';
+                buyerSearchClear.style.display = 'none';
+                window._buyerSearchQuery = '';
+                filterAndRenderBuyerProducts();
+                if (buyerSearchInput) buyerSearchInput.focus();
+            });
         }
 
 
@@ -3754,6 +4497,7 @@
         function switchBuyerTab(tab) {
             const views = {
                 shop: 'buyer-view-shop',
+                search: 'buyer-view-search',
                 cart: 'buyer-view-cart',
                 orders: 'buyer-view-orders',
                 reels: 'buyer-view-reels',
@@ -3769,17 +4513,68 @@
                 wishlist: 'buyer-tab-wishlist'
             };
 
-            activeRoleNavTab = tab;
+            const role = (currentUser && currentUser.role === 'artisan') ? 'artisan' : 'buyer';
+            const navItem = NAV_ITEMS_BY_ROLE[role]?.find(i => i.targetView === `buyer-view-${tab}` || i.targetBuyerTab === tab);
+            
+            if (tab === 'search') {
+                activeRoleNavTab = 'search';
+            } else if (tab === 'shop') {
+                activeRoleNavTab = 'home';
+            } else if (navItem && tab !== 'cart' && tab !== 'orders' && tab !== 'wishlist' && tab !== 'productDetail') {
+                activeRoleNavTab = navItem.id;
+            }
+
+            if (tab !== 'search') {
+                window._lastNonSearchBuyerTab = tab;
+            }
+
+            // Update the DOM navbar items to match the newly synchronized activeRoleNavTab
+            document.querySelectorAll('.desktop-nav-item, .mobile-nav-item').forEach(el => {
+                if (el.getAttribute('data-tab-id') === activeRoleNavTab || (activeRoleNavTab === 'account' && el.id === 'desktop-account-trigger')) {
+                    el.classList.add('active');
+                } else {
+                    el.classList.remove('active');
+                }
+            });
+            const dSearchTrigger = document.getElementById('desktop-search-trigger');
+            if (dSearchTrigger) {
+                if (activeRoleNavTab === 'search') dSearchTrigger.classList.add('active');
+                else dSearchTrigger.classList.remove('active');
+            }
+            updateDesktopNavIndicator();
             sessionStorage.setItem('anantah_active_tab', tab);
-            if (window.history && window.history.replaceState && currentUser) {
-                history.replaceState({ screen: 'buyerDashboard', tab: tab }, '', '#' + tab);
+            if (window.history && currentUser) {
+                if (tab === 'search') {
+                    if (window.location.hash !== '#search') {
+                        history.pushState({ screen: 'buyerDashboard', tab: 'search' }, '', '#search');
+                    }
+                } else {
+                    history.replaceState({ screen: 'buyerDashboard', tab: tab }, '', '#' + tab);
+                }
             }
 
             Object.keys(views).forEach(key => {
                 const view = document.getElementById(views[key]);
                 const btn  = document.getElementById(btns[key]);
                 if (key === tab) {
-                    if (view) view.style.display = 'block';
+                    if (view) {
+                        view.style.display = 'block';
+                        if (key === 'search') {
+                            view.classList.remove('search-view-closing');
+                            view.classList.remove('search-view-animate-in');
+                            void view.offsetWidth;
+                            view.classList.add('search-view-animate-in');
+                            renderDedicatedSearchCategories();
+                            filterAndRenderSearchProducts();
+                            setTimeout(() => {
+                                const sInput = document.getElementById('dedicated-search-input');
+                                if (sInput) {
+                                    sInput.focus({ preventScroll: true });
+                                    sInput.select();
+                                }
+                            }, 50);
+                        }
+                    }
                     if (btn) {
                         btn.style.color = 'var(--primary-color)';
                         btn.style.borderBottomColor = 'var(--primary-color)';
