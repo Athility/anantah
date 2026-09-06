@@ -1,7 +1,10 @@
 import hmac
 import hashlib
+import logging
 import razorpay
 from django.conf import settings
+
+logger = logging.getLogger(__name__)
 
 def get_razorpay_client():
     """
@@ -58,8 +61,9 @@ def verify_webhook_signature(request_body: bytes, received_signature: str) -> bo
     Independently verifies Razorpay's webhook signature using RAZORPAY_WEBHOOK_SECRET and HMAC-SHA256.
     Returns True if valid, False otherwise. Never raises an exception.
     """
-    webhook_secret = settings.RAZORPAY_WEBHOOK_SECRET
+    webhook_secret = getattr(settings, 'RAZORPAY_WEBHOOK_SECRET', '')
     if not webhook_secret:
+        logger.warning("RAZORPAY_WEBHOOK_SECRET is not configured; failing closed and rejecting webhook request.")
         return False
     try:
         # Compute signature using HMAC SHA256

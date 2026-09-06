@@ -3,6 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="backend-url" content="">
     <title>Anantah - AI Marketplace for Artisans</title>
     <!-- Favicon -->
     <link rel="icon" type="image/png" href="favicon.png">
@@ -12,7 +13,7 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&family=Instrument+Serif:ital@0;1&family=Inter:wght@400;500;600;700&family=Playfair+Display:ital,wght@0,400..900;1,400..900&family=Poppins:ital,wght@0,100..900;1,100..900&display=swap" rel="stylesheet">
     <!-- Main Style -->
-    <link rel="stylesheet" href="style.css?v=4">
+    <link rel="stylesheet" href="style.css?v=6">
     <!-- Sentry Error Monitoring & PostHog Analytics SDKs (Placeholders) -->
     <script src="https://browser.sentry-cdn.com/7.100.0/bundle.min.js" crossorigin="anonymous"></script>
     <script>
@@ -1476,7 +1477,7 @@
 
     <!-- Configuration and Javascript core -->
     <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
-    <script src="config.js"></script>
+    <script src="config.js?v=2"></script>
     <script>
         // Core State variables
         let selectedLanguage = localStorage.getItem('selected_language') || 'en';
@@ -1583,32 +1584,74 @@
             renderSiteFooter();
         }
 
+        // Centralized Route Maps for SPA Routing
+        const VALID_BUYER_ROUTES = ['shop', 'reels', 'discover', 'search', 'cart', 'wishlist', 'orders', 'account', 'productDetail'];
+        const VALID_ARTISAN_ROUTES = ['home', 'my-listings', 'new-listing', 'communities', 'account'];
+
         // SPA History popstate listener
         window.addEventListener('popstate', (e) => {
+            const rawHash = (location.hash || '').replace('#', '').trim();
+
             if (e.state && e.state.screen && screens[e.state.screen]) {
                 navigateTo(e.state.screen, false);
                 if (e.state.tab) {
                     if (e.state.screen === 'artisanDashboard') {
-                        switchRoleNavTab(e.state.tab);
-                    } else {
-                        switchBuyerTab(e.state.tab);
+                        if (currentUser && currentUser.role === 'artisan') {
+                            switchRoleNavTab(e.state.tab);
+                        }
+                    } else if (e.state.screen === 'buyerDashboard') {
+                        if (['cart', 'wishlist', 'orders'].includes(e.state.tab)) {
+                            switchRoleNavTab(e.state.tab);
+                        } else {
+                            switchBuyerTab(e.state.tab);
+                        }
                     }
                 }
-            } else if (!e.state && location.hash === '#about') {
+            } else if (rawHash === 'about') {
                 navigateTo('about', false);
-            } else if (!e.state && location.hash === '#search') {
-                if (currentUser && currentUser.role === 'buyer') {
-                    switchBuyerTab('search');
+            } else if (rawHash.startsWith('product-')) {
+                const pId = rawHash.replace('product-', '');
+                if (pId) {
+                    switchBuyerTab('productDetail');
+                    const foundProd = (window._cachedBuyerProducts || []).find(p => String(p.id) === String(pId));
+                    if (foundProd && typeof openProductDetailModal === 'function') {
+                        openProductDetailModal(foundProd, false);
+                    }
                 }
-            } else if (!e.state && location.hash.startsWith('#product-')) {
-                // If direct link or back to product route
-                const pId = location.hash.replace('#product-', '');
-                if (pId) switchBuyerTab('productDetail');
-            } else if (!e.state && currentUser) {
-                if (currentUser.role === 'artisan') {
+            } else if (currentUser && currentUser.role === 'artisan') {
+                navigateTo('artisanDashboard', false);
+                if (VALID_ARTISAN_ROUTES.includes(rawHash)) {
+                    switchRoleNavTab(rawHash);
+                } else {
                     switchRoleNavTab('home');
+                }
+            } else if (currentUser && (currentUser.role === 'buyer' || currentUser.isGuest)) {
+                navigateTo('buyerDashboard', false);
+                if (VALID_BUYER_ROUTES.includes(rawHash)) {
+                    if (['cart', 'wishlist', 'orders'].includes(rawHash)) {
+                        switchRoleNavTab(rawHash);
+                    } else {
+                        switchBuyerTab(rawHash);
+                    }
                 } else {
                     switchBuyerTab('shop');
+                }
+            } else {
+                // Anonymous guest direct hash entry
+                if (VALID_BUYER_ROUTES.includes(rawHash)) {
+                    currentUser = { username: 'Guest', role: 'buyer', isGuest: true };
+                    navigateTo('buyerDashboard', false);
+                    if (['cart', 'wishlist', 'orders'].includes(rawHash)) {
+                        switchRoleNavTab(rawHash);
+                    } else {
+                        switchBuyerTab(rawHash);
+                    }
+                    if (typeof loadBuyerProducts === 'function') {
+                        loadBuyerProducts(true);
+                    }
+                } else {
+                    const savedLang = localStorage.getItem('selected_language');
+                    navigateTo(savedLang ? 'onboarding' : 'language', false);
                 }
             }
         });
@@ -2258,6 +2301,16 @@
         }
 
         function switchRoleNavTab(tabId) {
+            if (window._searchCloseTimeoutId) {
+                clearTimeout(window._searchCloseTimeoutId);
+                window._searchCloseTimeoutId = null;
+                window._isClosingSearch = false;
+                const searchView = document.getElementById('buyer-view-search');
+                if (searchView) {
+                    searchView.classList.remove('search-view-closing');
+                    searchView.style.display = 'none';
+                }
+            }
             // Guard: Prevent losing unsaved voice catalogue changes
             if (isRefinerFormDirty) {
                 const proceed = confirm("You have unsaved voice cataloging progress. Are you sure you want to navigate away? Unsaved changes will be discarded.");
@@ -2447,17 +2500,27 @@
 
         // Core Helper: Check JWT token health and load user
         async function checkAuthState() {
+            const initialRawHash = (window.location.hash || '').replace('#', '').trim();
             accessToken = localStorage.getItem('access_token');
             refreshToken = localStorage.getItem('refresh_token');
 
             if (!accessToken && !refreshToken) {
-                const rawHash = (window.location.hash || '').replace('#', '').trim();
+                const rawHash = initialRawHash;
                 if (rawHash === 'about') {
-                    navigateTo('about');
+                    navigateTo('about', false);
+                } else if (VALID_BUYER_ROUTES.includes(rawHash)) {
+                    currentUser = { username: 'Guest', role: 'buyer', isGuest: true };
+                    navigateTo('buyerDashboard', false);
+                    if (['cart', 'wishlist', 'orders'].includes(rawHash)) {
+                        switchRoleNavTab(rawHash);
+                    } else {
+                        switchBuyerTab(rawHash);
+                    }
+                    loadBuyerProducts(true);
                 } else if (localStorage.getItem('selected_language')) {
-                    navigateTo('onboarding');
+                    navigateTo('onboarding', false);
                 } else {
-                    navigateTo('language');
+                    navigateTo('language', false);
                 }
                 renderSiteFooter();
                 return;
@@ -2475,18 +2538,18 @@
                     accessToken = localStorage.getItem('access_token');
                     refreshToken = localStorage.getItem('refresh_token');
 
-                    const rawHash = (window.location.hash || '').replace('#', '').trim();
+                    const rawHash = initialRawHash || (window.location.hash || '').replace('#', '').trim();
 
                     if (rawHash === 'about') {
-                        navigateTo('about');
+                        navigateTo('about', false);
                     } else if (currentUser.role === 'artisan') {
-                        navigateTo('artisanDashboard');
+                        navigateTo('artisanDashboard', false);
                         const artisanValidTabs = ['home', 'my-listings', 'new-listing', 'communities', 'account'];
                         const targetTab = (rawHash && artisanValidTabs.includes(rawHash)) ? rawHash : (sessionStorage.getItem('anantah_active_tab') || 'home');
                         switchRoleNavTab(targetTab);
                         loadArtisanProducts();
                     } else if (currentUser.role === 'buyer') {
-                        navigateTo('buyerDashboard');
+                        navigateTo('buyerDashboard', false);
                         const buyerValidTabs = ['shop', 'search', 'cart', 'orders', 'wishlist', 'reels', 'discover', 'account', 'productDetail'];
                         let targetTab = 'shop';
                         if (rawHash.startsWith('product-')) {
@@ -2512,7 +2575,7 @@
                         }
                         setTimeout(updateCartBadge, 500);
                     } else {
-                        navigateTo('buyerDashboard');
+                        navigateTo('buyerDashboard', false);
                         loadBuyerProducts();
                     }
                     renderSiteFooter();
@@ -3633,6 +3696,8 @@
             return `<button type="button" class="btn-wishlist-heart ${savedClass}" data-product-id="${productId}" title="${isWishlisted ? 'Remove from Wishlist' : 'Save to Wishlist'}">${svgIcon}</button>`;
         }
 
+        window._wishlistInFlight = window._wishlistInFlight || new Set();
+
         async function toggleWishlistHeart(productId, btnEl, event) {
             if (event) event.stopPropagation();
             if (!currentUser || currentUser.role !== 'buyer' || currentUser.isGuest || !accessToken) {
@@ -3641,6 +3706,15 @@
             }
 
             productId = parseInt(productId, 10);
+            if (window._wishlistInFlight.has(productId)) {
+                // Ignore subsequent rapid clicks while an operation is in flight for this product
+                return;
+            }
+            window._wishlistInFlight.add(productId);
+
+            const matchingBtns = document.querySelectorAll(`.btn-wishlist-heart[data-product-id="${productId}"]`);
+            matchingBtns.forEach(btn => { btn.style.pointerEvents = 'none'; });
+
             const currentlyWishlisted = Boolean(userWishlistMap[productId]);
             const existingItemId = userWishlistMap[productId];
 
@@ -3652,7 +3726,7 @@
             }
 
             // Synchronously update all heart buttons matching this productId on page
-            document.querySelectorAll(`.btn-wishlist-heart[data-product-id="${productId}"]`).forEach(btn => {
+            matchingBtns.forEach(btn => {
                 if (currentlyWishlisted) {
                     btn.classList.remove('saved');
                     btn.title = 'Save to Wishlist';
@@ -3685,6 +3759,7 @@
                         });
                         if (!res.ok) throw new Error('Delete failed');
                     }
+                    delete userWishlistMap[productId];
                     showToastAlert('Removed from wishlist.', 'info');
                 } else {
                     // Add request
@@ -3728,6 +3803,9 @@
                     }
                 });
                 showToastAlert('Could not update wishlist. Please try again.', 'error');
+            } finally {
+                window._wishlistInFlight.delete(productId);
+                matchingBtns.forEach(btn => { btn.style.pointerEvents = ''; });
             }
 
             // Refresh wishlist UI and home reminder
@@ -4135,12 +4213,10 @@
 
             const addCartBtn = isGuestUser
                 ? `<button disabled class="btn-add-cart-minimal" aria-label="Login to Add">
-                      <span class="btn-label-desktop">Login to Add</span>
-                      <span class="btn-label-mobile">Login</span>
+                      <span class="btn-label">Login to Add</span>
                    </button>`
                 : `<button class="btn-add-cart-minimal" data-product-id="${p.id}" data-product-title="${p.title_en}" aria-label="Add ${title} to Cart">
-                      <span class="btn-label-desktop">Add to Cart</span>
-                      <span class="btn-label-mobile">Add</span>
+                      <span class="btn-label">Add to Cart</span>
                       <span class="add-icon">+</span>
                    </button>`;
 
@@ -4201,27 +4277,45 @@
                 const cartBtn = card.querySelector('.btn-add-cart-minimal');
                 if (cartBtn) {
                     cartBtn.addEventListener('click', async (e) => {
+                        e.stopPropagation();
                         const btn = e.currentTarget;
+                        if (btn.disabled || btn._isAdding) return;
+
                         const pid = btn.getAttribute('data-product-id');
+                        btn._isAdding = true;
                         btn.disabled = true;
 
-                        btn.classList.add('added');
+                        if (btn._resetTimer) {
+                            clearTimeout(btn._resetTimer);
+                            btn._resetTimer = null;
+                        }
+
                         const addIcon = btn.querySelector('.add-icon');
-                        const deskLabel = btn.querySelector('.btn-label-desktop');
-                        const mobLabel = btn.querySelector('.btn-label-mobile');
-                        if (addIcon) addIcon.textContent = '✓';
-                        if (deskLabel) deskLabel.textContent = 'Added';
-                        if (mobLabel) mobLabel.textContent = 'Added';
+                        const btnLabel = btn.querySelector('.btn-label');
 
-                        await addToCart(pid, 1);
+                        try {
+                            btn.classList.add('added');
+                            if (addIcon) addIcon.textContent = '✓';
+                            if (btnLabel) btnLabel.textContent = 'Added';
 
-                        setTimeout(() => {
-                            btn.disabled = false;
+                            await addToCart(pid, 1);
+
+                            btn._resetTimer = setTimeout(() => {
+                                btn.classList.remove('added');
+                                if (addIcon) addIcon.textContent = '+';
+                                if (btnLabel) btnLabel.textContent = 'Add to Cart';
+                                btn.disabled = false;
+                                btn._isAdding = false;
+                                btn._resetTimer = null;
+                            }, 1500);
+                        } catch (err) {
+                            console.error("Failed to add to cart:", err);
                             btn.classList.remove('added');
                             if (addIcon) addIcon.textContent = '+';
-                            if (deskLabel) deskLabel.textContent = 'Add to Cart';
-                            if (mobLabel) mobLabel.textContent = 'Add';
-                        }, 1500);
+                            if (btnLabel) btnLabel.textContent = 'Add to Cart';
+                            btn.disabled = false;
+                            btn._isAdding = false;
+                        }
                     });
                 }
             }
@@ -4315,14 +4409,19 @@
         window._dedicatedSearchQuery = '';
         window._dedicatedSearchCategory = 'all';
         window._isClosingSearch = false;
+        window._searchCloseTimeoutId = null;
 
         function closeDedicatedSearch() {
-            if (window._isClosingSearch) return;
+            if (window._searchCloseTimeoutId) {
+                clearTimeout(window._searchCloseTimeoutId);
+                window._searchCloseTimeoutId = null;
+            }
             const searchView = document.getElementById('buyer-view-search');
             const prevTab = window._lastNonSearchBuyerTab || 'shop';
             const prefersReducedMotion = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
             if (!searchView || prefersReducedMotion || searchView.style.display === 'none') {
+                window._isClosingSearch = false;
                 switchBuyerTab(prevTab);
                 return;
             }
@@ -4334,7 +4433,8 @@
             const searchTrigger = document.getElementById('desktop-search-trigger');
             if (searchTrigger) searchTrigger.classList.remove('active');
 
-            setTimeout(() => {
+            window._searchCloseTimeoutId = setTimeout(() => {
+                window._searchCloseTimeoutId = null;
                 searchView.classList.remove('search-view-closing');
                 searchView.style.display = 'none';
                 window._isClosingSearch = false;
@@ -4593,15 +4693,33 @@
 
                     // Filter & render cards
                     filterAndRenderBuyerProducts(isGuest);
+
+                    // If Search tab is currently active or visible, also synchronize search results
+                    const searchView = document.getElementById('buyer-view-search');
+                    const isSearchActive = activeRoleNavTab === 'search' || (searchView && searchView.style.display !== 'none');
+                    if (isSearchActive && typeof filterAndRenderSearchProducts === 'function') {
+                        if (typeof renderDedicatedSearchCategories === 'function') {
+                            renderDedicatedSearchCategories();
+                        }
+                        filterAndRenderSearchProducts();
+                    }
                 } else {
                     console.error("Failed to load products, status:", response.status);
                     window._cachedBuyerProducts = [];
                     filterAndRenderBuyerProducts(isGuest);
+                    const searchView = document.getElementById('buyer-view-search');
+                    if (activeRoleNavTab === 'search' || (searchView && searchView.style.display !== 'none')) {
+                        if (typeof filterAndRenderSearchProducts === 'function') filterAndRenderSearchProducts();
+                    }
                 }
             } catch (err) {
                 console.error("Failed to load buyer marketplace:", err);
                 window._cachedBuyerProducts = [];
                 filterAndRenderBuyerProducts(isGuest);
+                const searchView = document.getElementById('buyer-view-search');
+                if (activeRoleNavTab === 'search' || (searchView && searchView.style.display !== 'none')) {
+                    if (typeof filterAndRenderSearchProducts === 'function') filterAndRenderSearchProducts();
+                }
             } finally {
                 isBuyerLoading = false;
                 // Hide skeleton and reveal product grid
@@ -5088,6 +5206,16 @@
 
         // ─── Tab switcher ─────────────────────────────────────────────────────
         function switchBuyerTab(tab) {
+            if (tab !== 'search' && window._searchCloseTimeoutId) {
+                clearTimeout(window._searchCloseTimeoutId);
+                window._searchCloseTimeoutId = null;
+                window._isClosingSearch = false;
+                const searchView = document.getElementById('buyer-view-search');
+                if (searchView) {
+                    searchView.classList.remove('search-view-closing');
+                    searchView.style.display = 'none';
+                }
+            }
             const views = {
                 shop: 'buyer-view-shop',
                 search: 'buyer-view-search',
@@ -5137,12 +5265,8 @@
             updateDesktopNavIndicator();
             sessionStorage.setItem('anantah_active_tab', tab);
             if (window.history && currentUser) {
-                if (tab === 'search') {
-                    if (window.location.hash !== '#search') {
-                        history.pushState({ screen: 'buyerDashboard', tab: 'search' }, '', '#search');
-                    }
-                } else {
-                    history.replaceState({ screen: 'buyerDashboard', tab: tab }, '', '#' + tab);
+                if (window.location.hash !== '#' + tab) {
+                    history.pushState({ screen: 'buyerDashboard', tab: tab }, '', '#' + tab);
                 }
             }
 

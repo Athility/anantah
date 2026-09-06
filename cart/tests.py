@@ -20,7 +20,7 @@ class CheckoutTests(TestCase):
             artisan=self.artisan_profile,
             title_en='Test Product',
             price=100.0,
-            status='active'
+            status='live'
         )
         
         self.address = Address.objects.create(

@@ -13,11 +13,14 @@ from ai_services.voice_cataloger import (
 
 
 class ProductUploadView(APIView):
-    permission_classes = [permissions.IsAuthenticated]
+    def get_permissions(self):
+        if self.request.method == 'GET':
+            return [permissions.AllowAny()]
+        return [permissions.IsAuthenticated()]
 
     def get(self, request, *args, **kwargs):
         user = request.user
-        if user.role == 'artisan':
+        if user.is_authenticated and getattr(user, 'role', None) == 'artisan':
             # Artisans see all their own products
             try:
                 artisan_profile = user.artisan_profile
@@ -25,7 +28,7 @@ class ProductUploadView(APIView):
             except Exception:
                 products = Product.objects.none()
         else:
-            # Buyers and admins see all live products
+            # Unauthenticated guests, buyers, and admins see all live products
             products = Product.objects.filter(status='live').order_by('-created_at')
 
         serializer = ProductSerializer(products, many=True, context={'request': request})

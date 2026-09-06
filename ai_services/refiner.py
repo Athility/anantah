@@ -1,9 +1,12 @@
 import io
 import os
 import gc
+import logging
 import cv2
 import numpy as np
 from PIL import Image
+
+logger = logging.getLogger(__name__)
 
 # 1. Set environment variables to limit thread usage BEFORE importing rembg (ONNX Runtime)
 # For an 8GB RAM CPU-only system, 2 threads are optimal to prevent system freezes.
@@ -62,37 +65,40 @@ def refine_image(raw_image_file, enhancements=None):
         return output_io
 
     # ---- Background Removal ----
-    if do_bg and SESSION is not None:
-        MAX_REMBG_DIM = 800
-        if max(original_size) > MAX_REMBG_DIM:
-            ratio = MAX_REMBG_DIM / max(original_size)
-            downscaled_size = (int(original_size[0] * ratio), int(original_size[1] * ratio))
-            rembg_input = input_image.resize(downscaled_size, Image.Resampling.LANCZOS)
+    if do_bg:
+        if SESSION is not None:
+            MAX_REMBG_DIM = 800
+            if max(original_size) > MAX_REMBG_DIM:
+                ratio = MAX_REMBG_DIM / max(original_size)
+                downscaled_size = (int(original_size[0] * ratio), int(original_size[1] * ratio))
+                rembg_input = input_image.resize(downscaled_size, Image.Resampling.LANCZOS)
+            else:
+                rembg_input = input_image
+
+            rgba_downscaled = remove(rembg_input, session=SESSION).convert("RGBA")
+            if rembg_input is not input_image:
+                rembg_input.close()
+
+            if max(original_size) > MAX_REMBG_DIM:
+                alpha_mask = rgba_downscaled.split()[3]
+                alpha_mask_resized = alpha_mask.resize(original_size, Image.Resampling.BILINEAR)
+                rgba_img = input_image.convert("RGBA")
+                rgba_img.putalpha(alpha_mask_resized)
+                alpha_mask.close()
+                alpha_mask_resized.close()
+            else:
+                rgba_img = rgba_downscaled
+
+            white_bg = Image.new("RGBA", rgba_img.size, (255, 255, 255, 255))
+            white_bg.paste(rgba_img, (0, 0), rgba_img)
+            working = white_bg.convert("RGB")
+            rgba_img.close()
+            rgba_downscaled.close()
+            white_bg.close()
+            input_image.close()
+            input_image = working
         else:
-            rembg_input = input_image
-
-        rgba_downscaled = remove(rembg_input, session=SESSION).convert("RGBA")
-        if rembg_input is not input_image:
-            rembg_input.close()
-
-        if max(original_size) > MAX_REMBG_DIM:
-            alpha_mask = rgba_downscaled.split()[3]
-            alpha_mask_resized = alpha_mask.resize(original_size, Image.Resampling.BILINEAR)
-            rgba_img = input_image.convert("RGBA")
-            rgba_img.putalpha(alpha_mask_resized)
-            alpha_mask.close()
-            alpha_mask_resized.close()
-        else:
-            rgba_img = rgba_downscaled
-
-        white_bg = Image.new("RGBA", rgba_img.size, (255, 255, 255, 255))
-        white_bg.paste(rgba_img, (0, 0), rgba_img)
-        working = white_bg.convert("RGB")
-        rgba_img.close()
-        rgba_downscaled.close()
-        white_bg.close()
-        input_image.close()
-        input_image = working
+            logger.warning("Background removal requested, but rembg SESSION is not initialized; skipping bg_removal step.")
 
     # ---- OpenCV-based enhancements (lighting, sharpness, color) ----
     if do_light or do_sharp or do_color:

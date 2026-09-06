@@ -211,3 +211,82 @@ class UploadTests(TestCase):
         self.assertIn("Mode: DRY-RUN", output)
         self.assertIn("Migration Summary", output)
 
+
+class PublicCatalogAndGuestBrowsingTests(TestCase):
+    def setUp(self):
+        from accounts.models import ArtisanProfile, BuyerProfile
+        self.client = APIClient()
+        self.artisan_user = User.objects.create_user(username='artisan_seller', phone='1234567891', password='pass', role='artisan')
+        self.artisan_profile, _ = ArtisanProfile.objects.get_or_create(user=self.artisan_user)
+
+        self.buyer_user = User.objects.create_user(username='buyer_shopper', phone='1234567892', password='pass', role='buyer')
+        self.buyer_profile, _ = BuyerProfile.objects.get_or_create(user=self.buyer_user)
+
+        # Products with varying statuses
+        self.live_product = Product.objects.create(
+            artisan=self.artisan_profile,
+            title_en="Live Terracotta Pot",
+            price=350.0,
+            status="live"
+        )
+        self.draft_product = Product.objects.create(
+            artisan=self.artisan_profile,
+            title_en="Draft Clay Pot",
+            price=200.0,
+            status="draft"
+        )
+        self.flagged_product = Product.objects.create(
+            artisan=self.artisan_profile,
+            title_en="Flagged Item",
+            price=100.0,
+            status="flagged"
+        )
+
+    def test_anonymous_get_listings_success(self):
+        """Anonymous guest request to GET /api/listings/upload/ must succeed with 200."""
+        response = self.client.get('/api/listings/upload/')
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        data = response.json()
+        self.assertIsInstance(data, list)
+        self.assertEqual(len(data), 1)
+        self.assertEqual(data[0]['id'], self.live_product.id)
+
+    def test_anonymous_get_listings_excludes_draft_and_flagged(self):
+        """Anonymous guest request must only see live products, not draft or flagged."""
+        response = self.client.get('/api/listings/upload/')
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        returned_ids = [p['id'] for p in response.json()]
+        self.assertIn(self.live_product.id, returned_ids)
+        self.assertNotIn(self.draft_product.id, returned_ids)
+        self.assertNotIn(self.flagged_product.id, returned_ids)
+
+    def test_anonymous_post_listings_rejected(self):
+        """Anonymous guest request to POST /api/listings/upload/ must be rejected with 401."""
+        response = self.client.post('/api/listings/upload/', {'title_en': 'Unauthorized'}, format='json')
+        self.assertEqual(response.status_code, status.HTTP_401_UNAUTHORIZED)
+
+    def test_buyer_post_listings_forbidden(self):
+        """Authenticated buyer attempting to upload a product must receive 403 Forbidden."""
+        self.client.force_authenticate(user=self.buyer_user)
+        response = self.client.post('/api/listings/upload/', {'title_en': 'Buyer Trying Upload'}, format='json')
+        self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
+
+    def test_authenticated_buyer_get_listings(self):
+        """Authenticated buyer receives all live products."""
+        self.client.force_authenticate(user=self.buyer_user)
+        response = self.client.get('/api/listings/upload/')
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        returned_ids = [p['id'] for p in response.json()]
+        self.assertIn(self.live_product.id, returned_ids)
+        self.assertNotIn(self.draft_product.id, returned_ids)
+
+    def test_authenticated_artisan_get_listings(self):
+        """Authenticated artisan receives all their own products regardless of status."""
+        self.client.force_authenticate(user=self.artisan_user)
+        response = self.client.get('/api/listings/upload/')
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        returned_ids = [p['id'] for p in response.json()]
+        self.assertIn(self.live_product.id, returned_ids)
+        self.assertIn(self.draft_product.id, returned_ids)
+
+

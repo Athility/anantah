@@ -13,7 +13,13 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = config('SECRET_KEY')
 DEBUG = config('DEBUG', default=False, cast=bool)
 
-ALLOWED_HOSTS = ['*']
+ALLOWED_HOSTS_CONFIG = config('ALLOWED_HOSTS', default='')
+if ALLOWED_HOSTS_CONFIG:
+    ALLOWED_HOSTS = [h.strip() for h in ALLOWED_HOSTS_CONFIG.split(',') if h.strip()]
+elif DEBUG:
+    ALLOWED_HOSTS = ['*']
+else:
+    ALLOWED_HOSTS = ['localhost', '127.0.0.1', '.onrender.com', '.vercel.app']
 
 # Optional Sentry Monitoring Integration
 SENTRY_DSN = config('SENTRY_DSN', default='')
@@ -240,15 +246,36 @@ SIMPLE_JWT = {
 }
 
 # CORS Configuration
-CORS_ALLOW_ALL_ORIGINS = True  # Allowed for local PWA frontend development
+CORS_ALLOWED_ORIGINS_CONFIG = config('CORS_ALLOWED_ORIGINS', default='')
+if CORS_ALLOWED_ORIGINS_CONFIG:
+    CORS_ALLOWED_ORIGINS = [o.strip() for o in CORS_ALLOWED_ORIGINS_CONFIG.split(',') if o.strip()]
+    CORS_ALLOW_ALL_ORIGINS = False
+elif DEBUG:
+    CORS_ALLOW_ALL_ORIGINS = True
+else:
+    CORS_ALLOW_ALL_ORIGINS = False
+    CORS_ALLOWED_ORIGINS = [
+        'http://localhost:3000',
+        'http://127.0.0.1:3000',
+        'https://anantah.vercel.app',
+    ]
 
 # Django Caching Framework (for temporary OTP verification status)
-CACHES = {
-    'default': {
-        'BACKEND': 'django.core.cache.backends.locmem.LocMemCache',
-        'LOCATION': 'anantah-otp-cache',
+REDIS_URL = config('REDIS_URL', default=None)
+if REDIS_URL and 'test' not in sys.argv:
+    CACHES = {
+        'default': {
+            'BACKEND': 'django.core.cache.backends.redis.RedisCache',
+            'LOCATION': REDIS_URL,
+        }
     }
-}
+else:
+    CACHES = {
+        'default': {
+            'BACKEND': 'django.core.cache.backends.locmem.LocMemCache',
+            'LOCATION': 'anantah-otp-cache',
+        }
+    }
 
 DEFAULT_AUTO_FIELD = 'django.db.models.AutoField'
 
