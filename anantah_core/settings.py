@@ -192,8 +192,8 @@ if CLOUDINARY_CONFIGURED and 'test' not in sys.argv:
             "BACKEND": "cloudinary_storage.storage.MediaCloudinaryStorage",
         },
         "staticfiles": {
-            "BACKEND": "whitenoise.storage.CompressedStaticFilesStorage",
-        },
+    "BACKEND": "django.contrib.staticfiles.storage.StaticFilesStorage",
+},
         "audio": {
             "BACKEND": "cloudinary_storage.storage.VideoMediaCloudinaryStorage",
         },
@@ -204,8 +204,8 @@ else:
             "BACKEND": "django.core.files.storage.FileSystemStorage",
         },
         "staticfiles": {
-            "BACKEND": "whitenoise.storage.CompressedStaticFilesStorage",
-        },
+        "BACKEND": "django.contrib.staticfiles.storage.StaticFilesStorage",
+},
         "audio": {
             "BACKEND": "django.core.files.storage.FileSystemStorage",
         },
