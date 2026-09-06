@@ -4322,6 +4322,88 @@
             return card;
         }
 
+        // --- Client-Side Typo-Tolerant ("Fuzzy") Search Matching ---
+        function calculateFuzzySimilarity(s1, s2) {
+            if (!s1 || !s2) return 0;
+            if (s1 === s2) return 100;
+            if (s2.includes(s1) || s1.includes(s2)) return 100;
+
+            const len1 = s1.length;
+            const len2 = s2.length;
+            const track = Array(len2 + 1).fill(null).map(() => Array(len1 + 1).fill(null));
+            for (let i = 0; i <= len1; i += 1) track[0][i] = i;
+            for (let j = 0; j <= len2; j += 1) track[j][0] = j;
+
+            for (let j = 1; j <= len2; j += 1) {
+                for (let i = 1; i <= len1; i += 1) {
+                    const indicator = s1[i - 1] === s2[j - 1] ? 0 : 1;
+                    track[j][i] = Math.min(
+                        track[j][i - 1] + 1,
+                        track[j - 1][i] + 1,
+                        track[j - 1][i - 1] + indicator
+                    );
+                }
+            }
+            const dist = track[len2][len1];
+            const maxLen = Math.max(len1, len2);
+            return Math.round(((maxLen - dist) / maxLen) * 100);
+        }
+
+        const SEARCH_STOPWORDS = new Set(['a', 'an', 'the', 'for', 'in', 'on', 'of', 'and', 'or', 'to', 'with', 'at', 'by', 'from', 'is', 'it']);
+
+        function matchProductFuzzy(product, query, threshold = 68) {
+            if (!query) return { isMatch: true, score: 100 };
+
+            const titleEn = (product.title_en || '').toLowerCase();
+            const titleHi = (product.title_hi || '').toLowerCase();
+            const descEn = (product.description_en || '').toLowerCase();
+            const descHi = (product.description_hi || '').toLowerCase();
+            const artisan = (product.artisan_name || '').toLowerCase();
+            const catName = (product.category_name || '').toLowerCase();
+
+            // Stage 1: Fast Exact substring match in any field
+            const exactMatch = titleEn.includes(query) || 
+                               titleHi.includes(query) || 
+                               descEn.includes(query) || 
+                               descHi.includes(query) || 
+                               artisan.includes(query) || 
+                               catName.includes(query);
+            if (exactMatch) {
+                return { isMatch: true, score: 100 };
+            }
+
+            // Stage 2: Typo-tolerant multi-word fuzzy matching
+            const fullText = `${titleEn} ${titleHi} ${catName} ${artisan} ${descEn} ${descHi}`;
+            const docTokens = fullText.match(/[\w\u0900-\u097F]+/g) || [];
+
+            const rawWords = (query.match(/[\w\u0900-\u097F]+/g) || []).map(w => w.toLowerCase());
+            let sigWords = rawWords.filter(w => !SEARCH_STOPWORDS.has(w) && w.length >= 2);
+            if (sigWords.length === 0) sigWords = rawWords;
+            if (sigWords.length === 0) return { isMatch: false, score: 0 };
+
+            let totalScore = 0;
+            for (const word of sigWords) {
+                let bestWordScore = 0;
+                if (fullText.includes(word)) {
+                    bestWordScore = 100;
+                } else {
+                    for (const token of docTokens) {
+                        if (token.length < 2) continue;
+                        const sim = calculateFuzzySimilarity(word, token);
+                        if (sim > bestWordScore) bestWordScore = sim;
+                        if (bestWordScore === 100) break;
+                    }
+                }
+                totalScore += bestWordScore;
+            }
+
+            const avgScore = totalScore / sigWords.length;
+            return {
+                isMatch: avgScore >= threshold,
+                score: avgScore
+            };
+        }
+
         function filterAndRenderBuyerProducts(isGuest = null) {
             if (isGuest !== null) window._buyerIsGuest = isGuest;
             const isGuestUser = window._buyerIsGuest;
@@ -4339,19 +4421,26 @@
             const activeCategory = (window._activeBuyerCategory || 'all').toLowerCase();
             const query = (window._buyerSearchQuery || '').trim().toLowerCase();
 
-            const filtered = products.filter(p => {
+            const matchedList = [];
+            products.forEach(p => {
                 const matchCategory = (activeCategory === 'all') || ((p.category_name || '').toLowerCase() === activeCategory);
-                if (!matchCategory) return false;
+                if (!matchCategory) return;
 
-                if (!query) return true;
-                const titleEn = (p.title_en || '').toLowerCase();
-                const titleHi = (p.title_hi || '').toLowerCase();
-                const descEn = (p.description_en || '').toLowerCase();
-                const descHi = (p.description_hi || '').toLowerCase();
-                const artisan = (p.artisan_name || '').toLowerCase();
-                const catName = (p.category_name || '').toLowerCase();
-                return titleEn.includes(query) || titleHi.includes(query) || descEn.includes(query) || descHi.includes(query) || artisan.includes(query) || catName.includes(query);
+                if (!query) {
+                    matchedList.push({ product: p, score: 100 });
+                    return;
+                }
+
+                const res = matchProductFuzzy(p, query, 68);
+                if (res.isMatch) {
+                    matchedList.push({ product: p, score: res.score });
+                }
             });
+
+            if (query) {
+                matchedList.sort((a, b) => b.score - a.score);
+            }
+            const filtered = matchedList.map(item => item.product);
 
             // Update count badge
             if (countBadge) {
@@ -4509,19 +4598,26 @@
             const activeCategory = (window._dedicatedSearchCategory || 'all').toLowerCase();
             const query = (window._dedicatedSearchQuery || '').trim().toLowerCase();
 
-            const filtered = products.filter(p => {
+            const matchedList = [];
+            products.forEach(p => {
                 const matchCategory = (activeCategory === 'all') || ((p.category_name || '').toLowerCase() === activeCategory);
-                if (!matchCategory) return false;
+                if (!matchCategory) return;
 
-                if (!query) return true;
-                const titleEn = (p.title_en || '').toLowerCase();
-                const titleHi = (p.title_hi || '').toLowerCase();
-                const descEn = (p.description_en || '').toLowerCase();
-                const descHi = (p.description_hi || '').toLowerCase();
-                const artisan = (p.artisan_name || '').toLowerCase();
-                const catName = (p.category_name || '').toLowerCase();
-                return titleEn.includes(query) || titleHi.includes(query) || descEn.includes(query) || descHi.includes(query) || artisan.includes(query) || catName.includes(query);
+                if (!query) {
+                    matchedList.push({ product: p, score: 100 });
+                    return;
+                }
+
+                const res = matchProductFuzzy(p, query, 68);
+                if (res.isMatch) {
+                    matchedList.push({ product: p, score: res.score });
+                }
             });
+
+            if (query) {
+                matchedList.sort((a, b) => b.score - a.score);
+            }
+            const filtered = matchedList.map(item => item.product);
 
             if (countBadge) {
                 countBadge.textContent = `${filtered.length} ${filtered.length === 1 ? 'item' : 'items'}`;
