@@ -62,8 +62,9 @@ INSTALLED_APPS = [
 ]
 
 MIDDLEWARE = [
-    'corsheaders.middleware.CorsMiddleware',  # Put CorsMiddleware at the top
+    'corsheaders.middleware.CorsMiddleware',
     'django.middleware.security.SecurityMiddleware',
+    'whitenoise.middleware.WhiteNoiseMiddleware',   # ADD THIS LINE
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
@@ -107,6 +108,7 @@ DATABASES = {
         'OPTIONS': {
             'init_command': "SET sql_mode='STRICT_TRANS_TABLES'",
             'charset': 'utf8mb4',
+            'ssl': {'ca': str(BASE_DIR / 'certs' / 'aiven-ca.pem')},
         }
     }
 }
@@ -163,6 +165,7 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/6.1/howto/static-files/
 
 STATIC_URL = 'static/'
+STATIC_ROOT = BASE_DIR / 'staticfiles'
 
 # Media files setup (for raw and refined artisan images)
 MEDIA_URL = '/media/'
@@ -189,8 +192,8 @@ if CLOUDINARY_CONFIGURED and 'test' not in sys.argv:
             "BACKEND": "cloudinary_storage.storage.MediaCloudinaryStorage",
         },
         "staticfiles": {
-            "BACKEND": "django.contrib.staticfiles.storage.StaticFilesStorage",
-        },
+    "BACKEND": "whitenoise.storage.CompressedManifestStaticFilesStorage",
+},
         "audio": {
             "BACKEND": "cloudinary_storage.storage.VideoMediaCloudinaryStorage",
         },
@@ -201,7 +204,7 @@ else:
             "BACKEND": "django.core.files.storage.FileSystemStorage",
         },
         "staticfiles": {
-            "BACKEND": "django.contrib.staticfiles.storage.StaticFilesStorage",
+            "BACKEND": "whitenoise.storage.CompressedManifestStaticFilesStorage",
         },
         "audio": {
             "BACKEND": "django.core.files.storage.FileSystemStorage",
