@@ -1,3 +1,5 @@
+from django.core.validators import MinValueValidator
+from decimal import Decimal
 from django.db import models
 from django.core.files.storage import storages
 
@@ -38,7 +40,7 @@ class Product(models.Model):
     title_hi = models.CharField(max_length=200, default='')
     description_en = models.TextField(null=True, blank=True)
     description_hi = models.TextField(null=True, blank=True)
-    price = models.DecimalField(max_digits=10, decimal_places=2)
+    price = models.DecimalField(max_digits=10, decimal_places=2, validators=[MinValueValidator(Decimal('0.01'))])
     raw_image = models.ImageField(upload_to='products/raw/', max_length=255)
     refined_image = models.ImageField(upload_to='products/refined/', max_length=255, null=True, blank=True)
     raw_audio = models.FileField(upload_to='products/audio/', storage=get_audio_storage, max_length=255, null=True, blank=True)
@@ -139,5 +141,6 @@ def ensure_media_on_cloudinary(sender, instance, **kwargs):
             Product.objects.filter(pk=instance.pk).update(**updates)
     except Exception as e:
         logger.error(f"Error in ensure_media_on_cloudinary signal: {e}")
+
 
 

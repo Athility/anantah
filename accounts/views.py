@@ -10,6 +10,12 @@ from django.contrib.auth import get_user_model
 from django.core.cache import cache
 from django.db import transaction
 from .otp_service import generate_and_send_otp, verify_otp
+from rest_framework_simplejwt.token_blacklist.models import OutstandingToken, BlacklistedToken
+
+def revoke_all_user_tokens(user):
+    tokens = OutstandingToken.objects.filter(user=user)
+    for token in tokens:
+        BlacklistedToken.objects.get_or_create(token=token)
 
 User = get_user_model()
 
@@ -40,6 +46,8 @@ class SendOTPView(APIView):
 
 class VerifyOTPView(APIView):
     permission_classes = [AllowAny]
+    throttle_classes = [ScopedRateThrottle]
+    throttle_scope = 'otp_verify'
 
     def post(self, request, *args, **kwargs):
         phone = (request.data.get('phone') or '').strip()
@@ -113,6 +121,8 @@ class PasswordResetSendOTPView(APIView):
 
 class PasswordResetConfirmView(APIView):
     permission_classes = [AllowAny]
+    throttle_classes = [ScopedRateThrottle]
+    throttle_scope = 'otp_verify'
 
     def post(self, request, *args, **kwargs):
         phone = (request.data.get('phone') or '').strip()
@@ -134,8 +144,23 @@ class PasswordResetConfirmView(APIView):
 
         user.set_password(new_password)
         user.save()
+        revoke_all_user_tokens(user)
         return Response({'success': True, 'message': 'Password reset successfully. You can now log in.'}, status=status.HTTP_200_OK)
 
+class LogoutView(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def post(self, request, *args, **kwargs):
+        try:
+            refresh_token = request.data.get('refresh')
+            if not refresh_token:
+                return Response({'detail': 'Refresh token is required.'}, status=status.HTTP_400_BAD_REQUEST)
+            
+            token = RefreshToken(refresh_token)
+            token.blacklist()
+            return Response({'detail': 'Successfully logged out.'}, status=status.HTTP_200_OK)
+        except Exception:
+            return Response({'detail': 'Invalid or expired token.'}, status=status.HTTP_400_BAD_REQUEST)
 
 class DeleteAccountView(APIView):
     permission_classes = [IsAuthenticated]
@@ -143,6 +168,7 @@ class DeleteAccountView(APIView):
     def delete(self, request, *args, **kwargs):
         user = request.user
         with transaction.atomic():
+            revoke_all_user_tokens(user)
             user.delete()
         return Response({'detail': 'Account deleted successfully.'}, status=status.HTTP_200_OK)
 

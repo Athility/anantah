@@ -1,5 +1,6 @@
 import os
 from rest_framework import status, permissions
+from rest_framework.throttling import ScopedRateThrottle
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from django.core.files.base import ContentFile
@@ -12,8 +13,26 @@ from ai_services.voice_cataloger import (
 )
 
 
+class ProductUploadThrottle(ScopedRateThrottle):
+    scope = 'product_upload'
+
+    def allow_request(self, request, view):
+        if request.method != 'POST':
+            return True
+        return super().allow_request(request, view)
+
+
 class ProductUploadView(APIView):
+<<<<<<< Updated upstream
     permission_classes = [permissions.IsAuthenticated]
+=======
+    throttle_classes = [ProductUploadThrottle]
+
+    def get_permissions(self):
+        if self.request.method == 'GET':
+            return [permissions.AllowAny()]
+        return [permissions.IsAuthenticated()]
+>>>>>>> Stashed changes
 
     def get(self, request, *args, **kwargs):
         user = request.user
@@ -67,6 +86,11 @@ class ProductUploadView(APIView):
 
         try:
             price_val = float(price)
+            if price_val < 0.01:
+                return Response(
+                    {"price": ["Price must be at least 0.01."]},
+                    status=status.HTTP_400_BAD_REQUEST
+                )
         except ValueError:
             return Response(
                 {"price": ["Must be a valid decimal number."]},
@@ -154,6 +178,8 @@ class VoiceCatalogView(APIView):
         { "stage": "transcription"|"generation", "detail": "<user-friendly message>" }
     """
     permission_classes = [permissions.IsAuthenticated]
+    throttle_classes = [ScopedRateThrottle]
+    throttle_scope = 'voice_catalog'
 
     def post(self, request, product_id, *args, **kwargs):
         user = request.user
@@ -190,7 +216,43 @@ class VoiceCatalogView(APIView):
                 status=status.HTTP_400_BAD_REQUEST
             )
 
+        # BUG-8: 1. Size Validation (Limit to 5MB for voice notes)
+        if audio_file.size > 5 * 1024 * 1024:
+            return Response({"detail": "Audio file too large. Maximum size is 5MB."}, status=status.HTTP_400_BAD_REQUEST)
+
+        # BUG-8: 2. Extension Validation
+        import os
+        ext = os.path.splitext(audio_file.name)[1].lower()
+        allowed_exts = {'.webm', '.wav', '.mp3', '.m4a', '.ogg', '.flac'}
+        if ext not in allowed_exts:
+            return Response({"detail": "Unsupported audio extension."}, status=status.HTTP_400_BAD_REQUEST)
+
+        # BUG-8: 3. Content Validation (Magic bytes / signatures)
+        # Avoid external dependencies by checking known audio container headers.
+        audio_file.seek(0)
+        header = audio_file.read(12)
+        audio_file.seek(0)
+
+        is_valid_audio = False
+        if header.startswith(b'\x1a\x45\xdf\xa3'):
+            is_valid_audio = True # WebM
+        elif header.startswith(b'RIFF') and header[8:12] == b'WAVE':
+            is_valid_audio = True # WAV
+        elif header.startswith(b'ID3') or (len(header) >= 2 and header[:2] in (b'\xff\xfb', b'\xff\xf3', b'\xff\xf2')):
+            is_valid_audio = True # MP3
+        elif len(header) >= 8 and header[4:8] == b'ftyp':
+            is_valid_audio = True # MP4/M4A variants
+        elif header.startswith(b'OggS'):
+            is_valid_audio = True # OGG
+        elif header.startswith(b'fLaC'):
+            is_valid_audio = True # FLAC
+            
+        if not is_valid_audio:
+            return Response({"detail": "File content does not match a supported audio format."}, status=status.HTTP_400_BAD_REQUEST)
+
         source_language = request.data.get('source_language', 'hi').strip().lower()
+
+        old_audio_name = product.raw_audio.name if product.raw_audio else None
 
         # --- Always save raw audio first (before pipeline runs) ---
         # This ensures the artisan's audio is preserved even if processing fails.
@@ -201,6 +263,14 @@ class VoiceCatalogView(APIView):
             ContentFile(audio_bytes),
             save=True
         )
+
+        # BUG-7: Delete the previous orphaned audio file securely from storage
+        if old_audio_name and old_audio_name != product.raw_audio.name:
+            try:
+                product.raw_audio.storage.delete(old_audio_name)
+            except Exception as e:
+                import logging
+                logging.getLogger(__name__).warning(f"Failed to cleanup old audio {old_audio_name}: {e}")
 
         # --- STAGE 1: Transcription + Translation (Groq Whisper → HF fallback) ---
         try:

@@ -44,6 +44,7 @@ INSTALLED_APPS = [
     
     # Third-party apps
     'rest_framework',
+    'rest_framework_simplejwt.token_blacklist',
     'corsheaders',
     
     # Custom apps
@@ -223,15 +224,18 @@ REST_FRAMEWORK = {
         'payments_create': '10/minute',
         'payments_verify': '10/minute',
         'otp_request': '15/hour',
+        'otp_verify': '5/minute',
+        'product_upload': '20/minute',
+        'voice_catalog': '20/minute',
     }
 }
 
 # JWT SimpleJWT Configuration
 SIMPLE_JWT = {
-    'ACCESS_TOKEN_LIFETIME': timedelta(days=1),
+    'ACCESS_TOKEN_LIFETIME': timedelta(minutes=15),
     'REFRESH_TOKEN_LIFETIME': timedelta(days=7),
-    'ROTATE_REFRESH_TOKENS': False,
-    'BLACKLIST_AFTER_ROTATION': False,
+    'ROTATE_REFRESH_TOKENS': True,
+    'BLACKLIST_AFTER_ROTATION': True,
     'ALGORITHM': 'HS256',
     'SIGNING_KEY': SECRET_KEY,
     'AUTH_HEADER_TYPES': ('Bearer',),
