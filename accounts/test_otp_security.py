@@ -20,13 +20,15 @@ class OTPBruteForceSecurityTests(TestCase):
         self.assertEqual(res.status_code, status.HTTP_200_OK)
         dev_otp = res.data.get('dev_otp')
 
-        # 2. Try incorrect OTP 5 times
-        for _ in range(5):
-            res_verify = self.client.post(self.verify_url, {'phone': self.phone, 'otp': '0000'})
+        # 2. Try incorrect OTP 5 times (rotating IP to bypass DRF and test our custom logic)
+        for i in range(5):
+            client = APIClient(REMOTE_ADDR=f"10.0.0.{i}")
+            res_verify = client.post(self.verify_url, {'phone': self.phone, 'otp': '0000'})
             self.assertEqual(res_verify.status_code, status.HTTP_400_BAD_REQUEST)
 
         # 3. 6th attempt with CORRECT OTP should fail because it's locked out! (D. correct OTP cannot succeed after the challenge is locked)
-        res_locked = self.client.post(self.verify_url, {'phone': self.phone, 'otp': dev_otp})
+        client_locked = APIClient(REMOTE_ADDR="10.0.0.99")
+        res_locked = client_locked.post(self.verify_url, {'phone': self.phone, 'otp': dev_otp})
         self.assertEqual(res_locked.status_code, status.HTTP_400_BAD_REQUEST)
 
     def test_changing_ip_does_not_reset_counter(self):
@@ -81,15 +83,18 @@ class OTPBruteForceSecurityTests(TestCase):
         res2 = self.client.post(self.send_url, {'phone': self.phone2})
         dev_otp2 = res2.data.get('dev_otp')
 
-        # Fail 5 times on phone1
-        for _ in range(5):
-            self.client.post(self.verify_url, {'phone': self.phone, 'otp': '0000'})
+        # Fail 5 times on phone1 (rotate IP to bypass DRF throttle for custom logic test)
+        for i in range(5):
+            client = APIClient(REMOTE_ADDR=f"10.1.1.{i}")
+            client.post(self.verify_url, {'phone': self.phone, 'otp': '0000'})
 
-        # phone1 is locked out
-        self.assertEqual(self.client.post(self.verify_url, {'phone': self.phone, 'otp': dev_otp1}).status_code, status.HTTP_400_BAD_REQUEST)
+        # phone1 is locked out (6th attempt)
+        client_locked = APIClient(REMOTE_ADDR="10.1.1.99")
+        self.assertEqual(client_locked.post(self.verify_url, {'phone': self.phone, 'otp': dev_otp1}).status_code, status.HTTP_400_BAD_REQUEST)
 
         # phone2 is not affected
-        res_verify2 = self.client.post(self.verify_url, {'phone': self.phone2, 'otp': dev_otp2})
+        client2 = APIClient(REMOTE_ADDR="10.1.2.1")
+        res_verify2 = client2.post(self.verify_url, {'phone': self.phone2, 'otp': dev_otp2})
         self.assertEqual(res_verify2.status_code, status.HTTP_200_OK)
 
     def test_otp_send_throttling_intact(self):
