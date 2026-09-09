@@ -80,9 +80,9 @@ def delete_product_files(sender, instance, **kwargs):
                 try:
                     field.storage.delete(field.name)
                 except Exception as e:
-                    logger.warning(f"Failed to delete remote product file {field.name} from storage: {e}")
+                    logger.debug(f"Remote storage delete skipped or failed for {field.name}: {e}")
         except (OSError, PermissionError) as e:
-            logger.warning(f"Failed to delete product file {field.name}: {e}")
+            logger.debug(f"Local file cleanup skipped for {field.name}: {e}")
 
 
 @receiver(post_save, sender=Product)

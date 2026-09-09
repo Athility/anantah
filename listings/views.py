@@ -1,9 +1,12 @@
-import os
+import re
+import logging
 from rest_framework import status, permissions
 from rest_framework.throttling import ScopedRateThrottle
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from django.core.files.base import ContentFile
+from django.db.models import Q
+from rapidfuzz import fuzz
 from .models import Product
 from .serializers import ProductSerializer
 from ai_services.refiner import refine_image
@@ -11,6 +14,134 @@ from ai_services.voice_cataloger import (
     transcribe_and_translate,
     generate_catalog_entry,
 )
+
+logger = logging.getLogger(__name__)
+
+STOPWORDS = {
+    'a', 'an', 'the', 'for', 'in', 'on', 'of', 'and', 'or', 'to',
+    'with', 'at', 'by', 'from', 'is', 'it', 'as', 'into', 'about'
+}
+
+
+def perform_product_search(query_str, base_queryset=None, threshold=72.0, min_exact_count=3, max_candidates=500):
+    """
+    Two-stage typo-tolerant product search:
+    Stage 1: Fast exact / icontains database filter across title, description, category, and artisan name.
+    Stage 2: If fewer than `min_exact_count` matches, run a rapidfuzz fuzzy fallback over up to `max_candidates`
+             live products, scoring multi-word queries with stopword filtering.
+    """
+    if base_queryset is None:
+        base_queryset = Product.objects.filter(status='live')
+
+    query = (query_str or '').strip()
+    if not query:
+        return base_queryset.order_by('-created_at')
+
+    # Stage 1: Fast Substring / icontains search
+    exact_q = (
+        Q(title_en__icontains=query) |
+        Q(title_hi__icontains=query) |
+        Q(description_en__icontains=query) |
+        Q(description_hi__icontains=query) |
+        Q(category__name__icontains=query) |
+        Q(artisan__user__first_name__icontains=query) |
+        Q(artisan__user__last_name__icontains=query) |
+        Q(artisan__user__username__icontains=query)
+    )
+    exact_matches = list(
+        base_queryset.filter(exact_q)
+        .select_related('category', 'artisan__user')
+        .order_by('-created_at')
+    )
+
+    # If exact pass found enough results, return immediately (fast path)
+    if len(exact_matches) >= min_exact_count:
+        logger.info(
+            "[Search] Exact match for '%s' returned %d results; skipping fuzzy fallback.",
+            query, len(exact_matches)
+        )
+        return exact_matches
+
+    # Stage 2: Typo-tolerant fuzzy fallback
+    logger.info(
+        "[Search] Exact match for '%s' returned %d (< %d) results; triggering fuzzy fallback.",
+        query, len(exact_matches), min_exact_count
+    )
+
+    exact_ids = {p.id for p in exact_matches}
+
+    # Fetch candidate pool (capped for performance)
+    candidates = list(
+        base_queryset.exclude(id__in=exact_ids)
+        .select_related('category', 'artisan__user')
+        .order_by('-created_at')[:max_candidates]
+    )
+
+    # Multi-word tokenization and stopword removal
+    raw_tokens = [w.lower() for w in re.findall(r'[\w]+', query) if w]
+    sig_words = [w for w in raw_tokens if w not in STOPWORDS and len(w) >= 2]
+    if not sig_words:
+        sig_words = raw_tokens if raw_tokens else [query.lower()]
+
+    fuzzy_scored_products = []
+
+    for product in candidates:
+        t_en = (product.title_en or '').lower()
+        t_hi = (product.title_hi or '').lower()
+        cat = (product.category.name if product.category else '').lower()
+        d_en = (product.description_en or '').lower()
+
+        artisan_user = product.artisan.user if (product.artisan and getattr(product.artisan, 'user', None)) else None
+        artisan_name = (
+            f"{artisan_user.first_name} {artisan_user.last_name}".strip()
+            if artisan_user else ''
+        ).lower()
+
+        full_text = f"{t_en} {t_hi} {cat} {artisan_name} {d_en}"
+        doc_tokens = [t for t in re.findall(r'[\w]+', full_text) if len(t) >= 2]
+        fields = [t_en, t_hi, cat, artisan_name, d_en]
+
+        # Multi-word scoring
+        word_scores = []
+        for word in sig_words:
+            if any(word in f for f in fields if f):
+                word_scores.append(100.0)
+                continue
+
+            token_ratios = [fuzz.ratio(word, dt) for dt in doc_tokens] if doc_tokens else [0.0]
+            max_token_ratio = max(token_ratios) if token_ratios else 0.0
+
+            field_partials = [fuzz.partial_ratio(word, f) for f in fields if f]
+            max_field_partial = max(field_partials) if field_partials else 0.0
+
+            best_word_score = max(max_token_ratio, max_field_partial)
+            word_scores.append(best_word_score)
+
+        if not word_scores:
+            continue
+
+        avg_score = sum(word_scores) / len(word_scores)
+
+        phrase_score = max(
+            fuzz.partial_ratio(query.lower(), full_text),
+            fuzz.token_set_ratio(query.lower(), full_text)
+        )
+
+        overall_score = max(avg_score, phrase_score)
+
+        if overall_score >= threshold:
+            fuzzy_scored_products.append((product, overall_score))
+
+    # Sort fuzzy matches by similarity score descending (best matches first)
+    fuzzy_scored_products.sort(key=lambda item: item[1], reverse=True)
+    fuzzy_results = [p for p, _ in fuzzy_scored_products]
+
+    logger.info(
+        "[Search] Fuzzy fallback for '%s' completed. Found %d fuzzy matches.",
+        query, len(fuzzy_results)
+    )
+
+    return exact_matches + fuzzy_results
 
 
 class ProductUploadThrottle(ScopedRateThrottle):
@@ -32,16 +163,27 @@ class ProductUploadView(APIView):
 
     def get(self, request, *args, **kwargs):
         user = request.user
-        if user.role == 'artisan':
-            # Artisans see all their own products
+        search_query = request.query_params.get('search') or request.query_params.get('q')
+
+        if user.is_authenticated and getattr(user, 'role', None) == 'artisan':
+            # Artisans see their own products
             try:
                 artisan_profile = user.artisan_profile
-                products = Product.objects.filter(artisan=artisan_profile).order_by('-created_at')
+                base_qs = Product.objects.filter(artisan=artisan_profile)
             except Exception:
-                products = Product.objects.none()
+                base_qs = Product.objects.none()
+
+            if search_query:
+                products = perform_product_search(search_query, base_queryset=base_qs)
+            else:
+                products = base_qs.order_by('-created_at')
         else:
-            # Buyers and admins see all live products
-            products = Product.objects.filter(status='live').order_by('-created_at')
+            # Unauthenticated guests, buyers, and admins see all live products
+            base_qs = Product.objects.filter(status='live')
+            if search_query:
+                products = perform_product_search(search_query, base_queryset=base_qs)
+            else:
+                products = base_qs.order_by('-created_at')
 
         serializer = ProductSerializer(products, many=True, context={'request': request})
         return Response(serializer.data, status=status.HTTP_200_OK)

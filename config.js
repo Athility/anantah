@@ -1,12 +1,22 @@
 const getBackendBaseUrl = () => {
-    if (typeof window !== 'undefined' && window.location) {
+    if (typeof window !== 'undefined') {
+        // 1. Explicit global runtime override (e.g. injected by environment)
+        if (window.__BACKEND_URL__ && typeof window.__BACKEND_URL__ === 'string' && window.__BACKEND_URL__.trim()) {
+            return window.__BACKEND_URL__.trim().replace(/\/+$/, '');
+        }
+        // 2. HTML meta tag configuration (e.g. set at deployment)
+        if (typeof document !== 'undefined') {
+            const metaTag = document.querySelector('meta[name="backend-url"]');
+            if (metaTag && metaTag.content && metaTag.content.trim()) {
+                return metaTag.content.trim().replace(/\/+$/, '');
+            }
+        }
+        // 3. Localhost development: Django typically runs on port 8000
         const hostname = window.location.hostname;
-        // Localhost development: Django typically runs on port 8000
         if (hostname === 'localhost' || hostname === '127.0.0.1' || window.location.protocol === 'file:') {
             return 'http://127.0.0.1:8000';
         }
-        // Hosted production (e.g. Vercel, custom domain):
-        // Frontend and backend are served on the same origin (routing defined in vercel.json)
+        // 4. Hosted production fallback (same-origin or proxy deployment)
         return window.location.origin;
     }
     return 'http://127.0.0.1:8000';
@@ -59,8 +69,14 @@ function onRefreshed(token) {
     refreshSubscribers = [];
 }
 
-function onRefreshError(error) {
-    refreshSubscribers.forEach(({ reject }) => reject(error));
+function onRefreshError(errorOrResponse) {
+    refreshSubscribers.forEach(({ resolve, reject }) => {
+        if (errorOrResponse && typeof errorOrResponse.status === 'number') {
+            resolve(errorOrResponse);
+        } else {
+            reject(errorOrResponse || new Error('Token refresh failed'));
+        }
+    });
     refreshSubscribers = [];
 }
 
@@ -122,8 +138,7 @@ async function customFetch(url, options = {}) {
                     return fetch(url, options);
                 } else {
                     isRefreshingToken = false;
-                    const err = new Error('Token refresh failed');
-                    onRefreshError(err);
+                    onRefreshError(response);
                     if (typeof clearAuth === 'function') clearAuth();
                     return response;
                 }

@@ -3,6 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="backend-url" content="">
     <title>Anantah - AI Marketplace for Artisans</title>
     <!-- Favicon -->
     <link rel="icon" type="image/png" href="favicon.png">
@@ -12,7 +13,7 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&family=Instrument+Serif:ital@0;1&family=Inter:wght@400;500;600;700&family=Playfair+Display:ital,wght@0,400..900;1,400..900&family=Poppins:ital,wght@0,100..900;1,100..900&display=swap" rel="stylesheet">
     <!-- Main Style -->
-    <link rel="stylesheet" href="style.css?v=4">
+    <link rel="stylesheet" href="style.css?v=6">
     <!-- Sentry Error Monitoring & PostHog Analytics SDKs (Placeholders) -->
     <script src="https://browser.sentry-cdn.com/7.100.0/bundle.min.js" crossorigin="anonymous"></script>
     <script>
@@ -1231,6 +1232,8 @@
                 <div id="payment-modal-order-count" style="background:var(--primary-light); border-radius:12px; padding:12px 16px; font-size:13px; color:var(--primary-color); font-weight:700; margin-bottom:24px;"></div>
                 <button onclick="closePaymentModal()" style="width:100%; background: linear-gradient(135deg,#482E83,#D96A3D); color:#fff; border:none; border-radius:14px; padding:14px; font-size:15px; font-weight:800; cursor:pointer; font-family:var(--font-inter);">View My Orders</button>
             </div>
+        </div>
+
         <!-- PRODUCT DETAIL MODAL -->
         <div class="modal-overlay" id="modal-product-detail" onclick="closeProductDetailModal(event)" style="display: none; position: fixed; inset: 0; z-index: 2500; background: rgba(0,0,0,0.55); backdrop-filter: blur(6px); align-items: center; justify-content: center;">
             <div class="product-detail-card" id="product-detail-card" onclick="event.stopPropagation()">
@@ -1241,11 +1244,240 @@
             </div>
         </div>
 
+        <!-- 9. ABOUT ANANTAH SCREEN -->
+        <section id="screen-about" class="screen">
+            <div class="about-screen-wrapper">
+                <div class="about-breadcrumb-bar">
+                    <button type="button" class="about-back-btn" onclick="handleAboutBackNavigation()">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="19" y1="12" x2="5" y2="12"></line><polyline points="12 19 5 12 12 5"></polyline></svg>
+                        <span>Back</span>
+                    </button>
+                    <div style="font-size: 13px; color: var(--text-secondary);">
+                        <span style="color: var(--primary-color); font-weight: 600;">Anantah</span> &nbsp;/&nbsp; About &amp; Mission
+                    </div>
+                </div>
+
+                <!-- Hero Section -->
+                <div class="about-hero-card">
+                    <div class="about-pill-badge">
+                        <span>✦</span> Preserving Living Indian Heritage with AI
+                    </div>
+                    <h1 class="about-main-title">Empowering India's Master Artisans, <span>Directly</span></h1>
+                    <p class="about-hero-subtitle">
+                        Anantah unites centuries-old indigenous craftsmanship with state-of-the-art AI technology — bridging rural craft clusters with conscious buyers worldwide.
+                    </p>
+                    <div style="display: flex; align-items: center; justify-content: center; gap: 14px; flex-wrap: wrap;">
+                        <a href="#about-mission" class="btn btn-primary" style="display: inline-flex; width: auto; padding: 12px 28px; font-size: 14px;" onclick="navigateToAboutSection('mission'); return false;">Read Our Mission</a>
+                        <button type="button" class="btn btn-secondary" style="display: inline-flex; width: auto; padding: 12px 28px; font-size: 14px;" onclick="handleAboutCtaAction()">Explore Craft Marketplace</button>
+                    </div>
+                </div>
+
+                <!-- Mission Section -->
+                <div id="about-mission" class="about-mission-quote-box">
+                    <div class="about-mission-header">
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+                        <span>Our Core Mission</span>
+                    </div>
+                    <div class="about-mission-quote">
+                        "Anantah exists to give marginalized and rural Indian artisans a direct, AI-powered path to buyers — removing the middlemen who traditionally undercut them, using AI to help with photography, cataloging, and storytelling barriers that keep skilled artisans invisible online — and to carry India's traditional craft heritage to a global audience, not just a local one."
+                    </div>
+                    <p class="about-mission-caption">
+                        Every listing on Anantah represents living cultural heritage. By enabling zero-middleman commerce and multilingual voice cataloging, we ensure that the artisan earns the true value of their masterwork.
+                    </p>
+                </div>
+
+                <!-- Why Anantah / 3 Pillars -->
+                <div class="about-section-heading-row">
+                    <h2 class="about-section-title">Why Anantah Matters</h2>
+                    <p class="about-section-sub">Solving three fundamental barriers facing traditional Indian artisans today</p>
+                </div>
+
+                <div class="about-pillars-grid">
+                    <div class="about-pillar-card">
+                        <div class="about-pillar-icon-box">🤝</div>
+                        <h3 class="about-pillar-title">Direct Fair Trade</h3>
+                        <p class="about-pillar-desc">
+                            Traditional supply chains take up to 70% of craft revenues in middleman cuts. Anantah connects buyers directly to craftspeople, ensuring 100% fair artisan compensation.
+                        </p>
+                    </div>
+                    <div class="about-pillar-card">
+                        <div class="about-pillar-icon-box">🎙️</div>
+                        <h3 class="about-pillar-title">Multilingual Voice AI</h3>
+                        <p class="about-pillar-desc">
+                            Artisans simply describe their craft by speaking in their mother tongue (Hindi, Marathi, Gujarati, Tamil). Our AI transcribes, translates, and drafts rich SEO-ready listings instantly.
+                        </p>
+                    </div>
+                    <div class="about-pillar-card">
+                        <div class="about-pillar-icon-box">✨</div>
+                        <h3 class="about-pillar-title">Studio AI Refinement</h3>
+                        <p class="about-pillar-desc">
+                            Raw workshop photos taken on basic smartphones are automatically transformed into crisp, studio-lit catalog imagery with pristine backgrounds and true-to-life colors.
+                        </p>
+                    </div>
+                </div>
+
+                <!-- Impact Numbers -->
+                <div class="about-stats-strip">
+                    <div class="about-stat-box">
+                        <div class="about-stat-val">100%</div>
+                        <div class="about-stat-tag">Direct Payouts</div>
+                    </div>
+                    <div class="about-stat-box">
+                        <div class="about-stat-val">5+</div>
+                        <div class="about-stat-tag">Regional Languages</div>
+                    </div>
+                    <div class="about-stat-box">
+                        <div class="about-stat-val">0%</div>
+                        <div class="about-stat-tag">Middleman Markups</div>
+                    </div>
+                    <div class="about-stat-box">
+                        <div class="about-stat-val">∞</div>
+                        <div class="about-stat-tag">Heritage Preserved</div>
+                    </div>
+                </div>
+
+                <!-- CTA Banner -->
+                <div class="about-cta-banner">
+                    <h3 class="about-cta-title">Join India's Living Heritage Movement</h3>
+                    <p class="about-cta-desc">
+                        Whether you are an artisan with timeless crafts or a buyer looking for authentic handmade treasures, Anantah is your home.
+                    </p>
+                    <div class="about-cta-buttons" id="about-cta-buttons-container">
+                        <!-- Populated dynamically based on authentication state -->
+                    </div>
+                </div>
+            </div>
+        </section>
+
+    </div>
+
+    <!-- ==========================================================================
+         Desktop-Only Site Footer (Amazon-Inspired Layout, Anantah Design System)
+         ========================================================================== -->
+    <footer id="app-footer" class="desktop-site-footer" role="contentinfo">
+        <!-- Part 1: Back to Top Strip -->
+        <div class="footer-back-to-top" id="footer-back-to-top" onclick="window.scrollTo({ top: 0, behavior: 'smooth' });" title="Scroll back to the top of the page">
+            <button type="button" class="footer-back-to-top-btn" aria-label="Back to top">
+                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="m18 15-6-6-6 6"/></svg>
+                <span>Back to top</span>
+            </button>
+        </div>
+
+        <!-- Part 2: 4-Column Responsive Grid -->
+        <div class="footer-main-container">
+            <!-- Column 1: Get to Know Us -->
+            <div class="footer-column">
+                <h4 class="footer-col-title">Get to Know Us</h4>
+                <ul class="footer-links-list">
+                    <li class="footer-link-item">
+                        <a href="#about" class="footer-link" onclick="navigateTo('about'); return false;">About Anantah</a>
+                    </li>
+                    <li class="footer-link-item">
+                        <a href="#about-mission" class="footer-link" onclick="navigateToAboutSection('mission'); return false;">Our Mission</a>
+                    </li>
+                </ul>
+            </div>
+
+            <!-- Column 2: Connect with Us -->
+            <div class="footer-column">
+                <h4 class="footer-col-title">Connect with Us</h4>
+                <ul class="footer-links-list">
+                    <li class="footer-link-item">
+                        <a href="https://mail.google.com/mail/?view=cm&fs=1&to=anantahsupport@gmail.com" class="footer-link" target="_blank" rel="noopener noreferrer">
+                            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="20" height="16" x="2" y="4" rx="2"/><path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7"/></svg>
+                            <span>Email Us <span class="footer-subtext">(anantahsupport@gmail.com)</span></span>
+                        </a>
+                    </li>
+                    <li class="footer-link-item">
+                        <a href="https://www.instagram.com/anantah_ig/" class="footer-link" target="_blank" rel="noopener noreferrer">
+                            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="20" height="20" x="2" y="2" rx="5" ry="5"/><path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"/><line x1="17.5" x2="17.51" y1="6.5" y2="6.5"/></svg>
+                            <span>Instagram <span class="footer-subtext">(@anantah_ig)</span></span>
+                        </a>
+                    </li>
+                </ul>
+            </div>
+
+            <!-- Column 3: Role-Specific Column -->
+            <div class="footer-column" id="footer-role-column">
+                <!-- Dynamically populated based on logged-in role (Artisan, Buyer, or Logged Out) -->
+            </div>
+
+            <!-- Column 4: Let Us Help You -->
+            <div class="footer-column">
+                <h4 class="footer-col-title">Let Us Help You</h4>
+                <ul class="footer-links-list">
+                    <li class="footer-link-item">
+                        <a href="#" class="footer-link" onclick="openHelpFaqModal(); return false;">
+                            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+                            <span>Help &amp; FAQ</span>
+                        </a>
+                    </li>
+                    <li class="footer-link-item">
+                        <a href="https://mail.google.com/mail/?view=cm&fs=1&to=anantahsupport@gmail.com" class="footer-link" target="_blank" rel="noopener noreferrer">
+                            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"/></svg>
+                            <span>Contact Support</span>
+                        </a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+
+        <!-- Part 3: Logo + Locale Bar -->
+        <div class="footer-middle-bar">
+            <div class="footer-middle-container">
+                <div class="footer-brand-lockup" onclick="handleFooterBrandClick();">
+                    <img src="anantah_logo.png" alt="Anantah Logo" class="footer-brand-logo-img">
+                    <div class="footer-brand-text">
+                        <span class="footer-brand-title">Anantah</span>
+                        <span class="footer-brand-sub">Infinite Heritage</span>
+                    </div>
+                </div>
+
+                <div class="footer-locale-picker" title="Select platform language">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg>
+                    <select id="footer-language-select" class="footer-locale-select" onchange="changeFooterLanguage(this.value)" aria-label="Change Language">
+                        <option value="en">English (India)</option>
+                        <option value="hi">हिंदी (Hindi)</option>
+                        <option value="mr">मराठी (Marathi)</option>
+                        <option value="gu">ગુજરાતી (Gujarati)</option>
+                        <option value="ta">தமிழ் (Tamil)</option>
+                    </select>
+                </div>
+            </div>
+        </div>
+
+        <!-- Part 4: Bottom Legal Bar -->
+        <div class="footer-bottom-legal-bar">
+            <div class="footer-bottom-container">
+                <span class="footer-copyright">&copy; 2026 Anantah. All rights reserved. Empowering Indian Master Artisans with AI.</span>
+                <ul class="footer-legal-links">
+                    <li><a href="#" class="footer-legal-link" onclick="openLegalModal('terms'); return false;">Terms of Use</a></li>
+                    <li><a href="#" class="footer-legal-link" onclick="openLegalModal('privacy'); return false;">Privacy Notice</a></li>
+                    <li><a href="#" class="footer-legal-link" onclick="openLegalModal('trust'); return false;">Artisan Trust &amp; Safety</a></li>
+                </ul>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Global Legal / Help Modals -->
+    <div id="anantah-modal-overlay" class="anantah-modal-overlay" onclick="closeAnantahModal(event)">
+        <div class="anantah-modal-card" onclick="event.stopPropagation()">
+            <div class="anantah-modal-header">
+                <h3 class="anantah-modal-title" id="anantah-modal-title">Modal Title</h3>
+                <button type="button" class="anantah-modal-close-btn" onclick="closeAnantahModal()">&times;</button>
+            </div>
+            <div class="anantah-modal-body" id="anantah-modal-body">
+                <!-- Injected dynamically -->
+            </div>
+            <div class="anantah-modal-footer">
+                <button type="button" class="btn btn-primary" style="width: auto; padding: 10px 24px;" onclick="closeAnantahModal()">Close</button>
+            </div>
+        </div>
     </div>
 
     <!-- Configuration and Javascript core -->
     <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
-    <script src="config.js"></script>
+    <script src="config.js?v=2"></script>
     <script>
         function escapeHTML(str) {
             if (!str) return '';
@@ -1293,7 +1525,8 @@
             resetPassword: document.getElementById('screen-reset-password'),
             register: document.getElementById('screen-register'),
             artisanDashboard: document.getElementById('screen-artisan-dashboard'),
-            buyerDashboard: document.getElementById('screen-buyer-dashboard')
+            buyerDashboard: document.getElementById('screen-buyer-dashboard'),
+            about: document.getElementById('screen-about')
         };
 
         const navbar = document.getElementById('app-navbar');
@@ -1356,32 +1589,79 @@
                 }
             });
             window.scrollTo(0, 0);
+
+            // Always synchronize site footer content with current user & language state
+            renderSiteFooter();
         }
+
+        // Centralized Route Maps for SPA Routing
+        const VALID_BUYER_ROUTES = ['shop', 'reels', 'discover', 'search', 'cart', 'wishlist', 'orders', 'account', 'productDetail'];
+        const VALID_ARTISAN_ROUTES = ['home', 'my-listings', 'new-listing', 'communities', 'account'];
 
         // SPA History popstate listener
         window.addEventListener('popstate', (e) => {
+            const rawHash = (location.hash || '').replace('#', '').trim();
+
             if (e.state && e.state.screen && screens[e.state.screen]) {
                 navigateTo(e.state.screen, false);
                 if (e.state.tab) {
                     if (e.state.screen === 'artisanDashboard') {
-                        switchRoleNavTab(e.state.tab);
-                    } else {
-                        switchBuyerTab(e.state.tab);
+                        if (currentUser && currentUser.role === 'artisan') {
+                            switchRoleNavTab(e.state.tab);
+                        }
+                    } else if (e.state.screen === 'buyerDashboard') {
+                        if (['cart', 'wishlist', 'orders'].includes(e.state.tab)) {
+                            switchRoleNavTab(e.state.tab);
+                        } else {
+                            switchBuyerTab(e.state.tab);
+                        }
                     }
                 }
-            } else if (!e.state && location.hash === '#search') {
-                if (currentUser && currentUser.role === 'buyer') {
-                    switchBuyerTab('search');
+            } else if (rawHash === 'about') {
+                navigateTo('about', false);
+            } else if (rawHash.startsWith('product-')) {
+                const pId = rawHash.replace('product-', '');
+                if (pId) {
+                    switchBuyerTab('productDetail');
+                    const foundProd = (window._cachedBuyerProducts || []).find(p => String(p.id) === String(pId));
+                    if (foundProd && typeof openProductDetailModal === 'function') {
+                        openProductDetailModal(foundProd, false);
+                    }
                 }
-            } else if (!e.state && location.hash.startsWith('#product-')) {
-                // If direct link or back to product route
-                const pId = location.hash.replace('#product-', '');
-                if (pId) switchBuyerTab('productDetail');
-            } else if (!e.state && currentUser) {
-                if (currentUser.role === 'artisan') {
+            } else if (currentUser && currentUser.role === 'artisan') {
+                navigateTo('artisanDashboard', false);
+                if (VALID_ARTISAN_ROUTES.includes(rawHash)) {
+                    switchRoleNavTab(rawHash);
+                } else {
                     switchRoleNavTab('home');
+                }
+            } else if (currentUser && (currentUser.role === 'buyer' || currentUser.isGuest)) {
+                navigateTo('buyerDashboard', false);
+                if (VALID_BUYER_ROUTES.includes(rawHash)) {
+                    if (['cart', 'wishlist', 'orders'].includes(rawHash)) {
+                        switchRoleNavTab(rawHash);
+                    } else {
+                        switchBuyerTab(rawHash);
+                    }
                 } else {
                     switchBuyerTab('shop');
+                }
+            } else {
+                // Anonymous guest direct hash entry
+                if (VALID_BUYER_ROUTES.includes(rawHash)) {
+                    currentUser = { username: 'Guest', role: 'buyer', isGuest: true };
+                    navigateTo('buyerDashboard', false);
+                    if (['cart', 'wishlist', 'orders'].includes(rawHash)) {
+                        switchRoleNavTab(rawHash);
+                    } else {
+                        switchBuyerTab(rawHash);
+                    }
+                    if (typeof loadBuyerProducts === 'function') {
+                        loadBuyerProducts(true);
+                    }
+                } else {
+                    const savedLang = localStorage.getItem('selected_language');
+                    navigateTo(savedLang ? 'onboarding' : 'language', false);
                 }
             }
         });
@@ -1394,7 +1674,7 @@
             }
         });
 
-        //  Desktop Site Footer & About Screen Management ──────────────────────
+        // ─── Desktop Site Footer & About Screen Management ──────────────────────
         function renderSiteFooter() {
             const roleCol = document.getElementById('footer-role-column');
             if (!roleCol) return;
@@ -1465,7 +1745,7 @@
                         <li class="footer-link-item">
                             <a href="#reels" class="footer-link" onclick="switchRoleNavTab('reels'); return false;">
                                 <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="23 7 16 12 23 17 23 7"/><rect x="1" y="5" width="15" height="14" rx="2" ry="2"/></svg>
-                                <span>Artisan Frames</span>
+                                <span>Artisan Reels</span>
                             </a>
                         </li>
                         <li class="footer-link-item">
@@ -1700,7 +1980,7 @@
                 <h4>How does Anantah help rural Indian artisans?</h4>
                 <p>Traditional artisans often lack professional cameras or English typing skills, making them invisible online. Anantah solves this with AI: artisans take a simple smartphone photo and speak about their craft in their mother tongue. Our AI enhances the photo to studio quality and drafts rich English & regional catalog listings.</p>
                 <h4>How do I buy handcrafted products?</h4>
-                <p>Explore the Marketplace feed, add items to your cart or wishlist, and proceed through our streamlined checkout. You can also watch artisan Frames to see the making process.</p>
+                <p>Explore the Marketplace feed, add items to your cart or wishlist, and proceed through our streamlined checkout. You can also watch artisan Reels to see the making process.</p>
                 <h4>What languages are supported?</h4>
                 <p>We support English, Hindi (हिंदी), Marathi (मराठी), Gujarati (ગુજરાતી), and Tamil (தமிழ்) across cataloging and browsing.</p>
                 <h4>Need more help?</h4>
@@ -2035,6 +2315,16 @@
         }
 
         function switchRoleNavTab(tabId) {
+            if (window._searchCloseTimeoutId) {
+                clearTimeout(window._searchCloseTimeoutId);
+                window._searchCloseTimeoutId = null;
+                window._isClosingSearch = false;
+                const searchView = document.getElementById('buyer-view-search');
+                if (searchView) {
+                    searchView.classList.remove('search-view-closing');
+                    searchView.style.display = 'none';
+                }
+            }
             // Guard: Prevent losing unsaved voice catalogue changes
             if (isRefinerFormDirty) {
                 const proceed = confirm("You have unsaved voice cataloging progress. Are you sure you want to navigate away? Unsaved changes will be discarded.");
@@ -2231,16 +2521,29 @@
 
         // Core Helper: Check JWT token health and load user
         async function checkAuthState() {
+            const initialRawHash = (window.location.hash || '').replace('#', '').trim();
             accessToken = localStorage.getItem('access_token');
             refreshToken = localStorage.getItem('refresh_token');
 
             if (!accessToken && !refreshToken) {
-                // If not authenticated, check if language was already chosen
-                if (localStorage.getItem('selected_language')) {
-                    navigateTo('onboarding');
+                const rawHash = initialRawHash;
+                if (rawHash === 'about') {
+                    navigateTo('about', false);
+                } else if (VALID_BUYER_ROUTES.includes(rawHash)) {
+                    currentUser = { username: 'Guest', role: 'buyer', isGuest: true };
+                    navigateTo('buyerDashboard', false);
+                    if (['cart', 'wishlist', 'orders'].includes(rawHash)) {
+                        switchRoleNavTab(rawHash);
+                    } else {
+                        switchBuyerTab(rawHash);
+                    }
+                    loadBuyerProducts(true);
+                } else if (localStorage.getItem('selected_language')) {
+                    navigateTo('onboarding', false);
                 } else {
-                    navigateTo('language');
+                    navigateTo('language', false);
                 }
+                renderSiteFooter();
                 return;
             }
 
@@ -2256,16 +2559,18 @@
                     accessToken = localStorage.getItem('access_token');
                     refreshToken = localStorage.getItem('refresh_token');
 
-                    const rawHash = (window.location.hash || '').replace('#', '').trim();
+                    const rawHash = initialRawHash || (window.location.hash || '').replace('#', '').trim();
 
-                    if (currentUser.role === 'artisan') {
-                        navigateTo('artisanDashboard');
+                    if (rawHash === 'about') {
+                        navigateTo('about', false);
+                    } else if (currentUser.role === 'artisan') {
+                        navigateTo('artisanDashboard', false);
                         const artisanValidTabs = ['home', 'my-listings', 'new-listing', 'communities', 'account'];
                         const targetTab = (rawHash && artisanValidTabs.includes(rawHash)) ? rawHash : (sessionStorage.getItem('anantah_active_tab') || 'home');
                         switchRoleNavTab(targetTab);
                         loadArtisanProducts();
                     } else if (currentUser.role === 'buyer') {
-                        navigateTo('buyerDashboard');
+                        navigateTo('buyerDashboard', false);
                         const buyerValidTabs = ['shop', 'search', 'cart', 'orders', 'wishlist', 'reels', 'discover', 'account', 'productDetail'];
                         let targetTab = 'shop';
                         if (rawHash.startsWith('product-')) {
@@ -2291,9 +2596,10 @@
                         }
                         setTimeout(updateCartBadge, 500);
                     } else {
-                        navigateTo('buyerDashboard');
+                        navigateTo('buyerDashboard', false);
                         loadBuyerProducts();
                     }
+                    renderSiteFooter();
                 } else if (response.status === 401 || response.status === 403) {
                     clearAuth();
                 } else {
@@ -2301,6 +2607,7 @@
                     if (typeof showToastAlert === 'function') {
                         showToastAlert("Connecting to backend server...", "info");
                     }
+                    renderSiteFooter();
                 }
             } catch (err) {
                 console.error("Auth check failed:", err);
@@ -2308,6 +2615,7 @@
                 if (typeof showToastAlert === 'function') {
                     showToastAlert("Network issue while restoring session. Retrying...", "error");
                 }
+                renderSiteFooter();
             }
         }
 
@@ -2339,6 +2647,7 @@
             } else {
                 navigateTo('language');
             }
+            renderSiteFooter();
         }
 
         // Language onboarding events
@@ -3422,6 +3731,8 @@
             return `<button type="button" class="btn-wishlist-heart ${savedClass}" data-product-id="${productId}" title="${isWishlisted ? 'Remove from Wishlist' : 'Save to Wishlist'}">${svgIcon}</button>`;
         }
 
+        window._wishlistInFlight = window._wishlistInFlight || new Set();
+
         async function toggleWishlistHeart(productId, btnEl, event) {
             if (event) event.stopPropagation();
             if (!currentUser || currentUser.role !== 'buyer' || currentUser.isGuest || !accessToken) {
@@ -3430,6 +3741,15 @@
             }
 
             productId = parseInt(productId, 10);
+            if (window._wishlistInFlight.has(productId)) {
+                // Ignore subsequent rapid clicks while an operation is in flight for this product
+                return;
+            }
+            window._wishlistInFlight.add(productId);
+
+            const matchingBtns = document.querySelectorAll(`.btn-wishlist-heart[data-product-id="${productId}"]`);
+            matchingBtns.forEach(btn => { btn.style.pointerEvents = 'none'; });
+
             const currentlyWishlisted = Boolean(userWishlistMap[productId]);
             const existingItemId = userWishlistMap[productId];
 
@@ -3441,7 +3761,7 @@
             }
 
             // Synchronously update all heart buttons matching this productId on page
-            document.querySelectorAll(`.btn-wishlist-heart[data-product-id="${productId}"]`).forEach(btn => {
+            matchingBtns.forEach(btn => {
                 if (currentlyWishlisted) {
                     btn.classList.remove('saved');
                     btn.title = 'Save to Wishlist';
@@ -3474,6 +3794,7 @@
                         });
                         if (!res.ok) throw new Error('Delete failed');
                     }
+                    delete userWishlistMap[productId];
                     showToastAlert('Removed from wishlist.', 'info');
                 } else {
                     // Add request
@@ -3517,6 +3838,9 @@
                     }
                 });
                 showToastAlert('Could not update wishlist. Please try again.', 'error');
+            } finally {
+                window._wishlistInFlight.delete(productId);
+                matchingBtns.forEach(btn => { btn.style.pointerEvents = ''; });
             }
 
             // Refresh wishlist UI and home reminder
@@ -3925,8 +4249,7 @@
 
             const addCartBtn = isGuestUser
                 ? `<button disabled class="btn-add-cart-minimal" aria-label="Login to Add">
-                      <span class="btn-label-desktop">Login to Add</span>
-                      <span class="btn-label-mobile">Login</span>
+                      <span class="btn-label">Login to Add</span>
                    </button>`
                 : `<button class="btn-add-cart-minimal" data-product-id="${p.id}" data-product-title="${escapeHTML(p.title_en)}" aria-label="Add ${title} to Cart">
                       <span class="btn-label-desktop">Add to Cart</span>
@@ -3991,31 +4314,131 @@
                 const cartBtn = card.querySelector('.btn-add-cart-minimal');
                 if (cartBtn) {
                     cartBtn.addEventListener('click', async (e) => {
+                        e.stopPropagation();
                         const btn = e.currentTarget;
+                        if (btn.disabled || btn._isAdding) return;
+
                         const pid = btn.getAttribute('data-product-id');
+                        btn._isAdding = true;
                         btn.disabled = true;
 
-                        btn.classList.add('added');
+                        if (btn._resetTimer) {
+                            clearTimeout(btn._resetTimer);
+                            btn._resetTimer = null;
+                        }
+
                         const addIcon = btn.querySelector('.add-icon');
-                        const deskLabel = btn.querySelector('.btn-label-desktop');
-                        const mobLabel = btn.querySelector('.btn-label-mobile');
-                        if (addIcon) addIcon.textContent = '✓';
-                        if (deskLabel) deskLabel.textContent = 'Added';
-                        if (mobLabel) mobLabel.textContent = 'Added';
+                        const btnLabel = btn.querySelector('.btn-label');
 
-                        await addToCart(pid, 1);
+                        try {
+                            btn.classList.add('added');
+                            if (addIcon) addIcon.textContent = '✓';
+                            if (btnLabel) btnLabel.textContent = 'Added';
 
-                        setTimeout(() => {
-                            btn.disabled = false;
+                            await addToCart(pid, 1);
+
+                            btn._resetTimer = setTimeout(() => {
+                                btn.classList.remove('added');
+                                if (addIcon) addIcon.textContent = '+';
+                                if (btnLabel) btnLabel.textContent = 'Add to Cart';
+                                btn.disabled = false;
+                                btn._isAdding = false;
+                                btn._resetTimer = null;
+                            }, 1500);
+                        } catch (err) {
+                            console.error("Failed to add to cart:", err);
                             btn.classList.remove('added');
                             if (addIcon) addIcon.textContent = '+';
-                            if (deskLabel) deskLabel.textContent = 'Add to Cart';
-                            if (mobLabel) mobLabel.textContent = 'Add';
-                        }, 1500);
+                            if (btnLabel) btnLabel.textContent = 'Add to Cart';
+                            btn.disabled = false;
+                            btn._isAdding = false;
+                        }
                     });
                 }
             }
             return card;
+        }
+
+        // --- Client-Side Typo-Tolerant ("Fuzzy") Search Matching ---
+        function calculateFuzzySimilarity(s1, s2) {
+            if (!s1 || !s2) return 0;
+            if (s1 === s2) return 100;
+            if (s2.includes(s1) || s1.includes(s2)) return 100;
+
+            const len1 = s1.length;
+            const len2 = s2.length;
+            const track = Array(len2 + 1).fill(null).map(() => Array(len1 + 1).fill(null));
+            for (let i = 0; i <= len1; i += 1) track[0][i] = i;
+            for (let j = 0; j <= len2; j += 1) track[j][0] = j;
+
+            for (let j = 1; j <= len2; j += 1) {
+                for (let i = 1; i <= len1; i += 1) {
+                    const indicator = s1[i - 1] === s2[j - 1] ? 0 : 1;
+                    track[j][i] = Math.min(
+                        track[j][i - 1] + 1,
+                        track[j - 1][i] + 1,
+                        track[j - 1][i - 1] + indicator
+                    );
+                }
+            }
+            const dist = track[len2][len1];
+            const maxLen = Math.max(len1, len2);
+            return Math.round(((maxLen - dist) / maxLen) * 100);
+        }
+
+        const SEARCH_STOPWORDS = new Set(['a', 'an', 'the', 'for', 'in', 'on', 'of', 'and', 'or', 'to', 'with', 'at', 'by', 'from', 'is', 'it']);
+
+        function matchProductFuzzy(product, query, threshold = 68) {
+            if (!query) return { isMatch: true, score: 100 };
+
+            const titleEn = (product.title_en || '').toLowerCase();
+            const titleHi = (product.title_hi || '').toLowerCase();
+            const descEn = (product.description_en || '').toLowerCase();
+            const descHi = (product.description_hi || '').toLowerCase();
+            const artisan = (product.artisan_name || '').toLowerCase();
+            const catName = (product.category_name || '').toLowerCase();
+
+            // Stage 1: Fast Exact substring match in any field
+            const exactMatch = titleEn.includes(query) || 
+                               titleHi.includes(query) || 
+                               descEn.includes(query) || 
+                               descHi.includes(query) || 
+                               artisan.includes(query) || 
+                               catName.includes(query);
+            if (exactMatch) {
+                return { isMatch: true, score: 100 };
+            }
+
+            // Stage 2: Typo-tolerant multi-word fuzzy matching
+            const fullText = `${titleEn} ${titleHi} ${catName} ${artisan} ${descEn} ${descHi}`;
+            const docTokens = fullText.match(/[\w\u0900-\u097F]+/g) || [];
+
+            const rawWords = (query.match(/[\w\u0900-\u097F]+/g) || []).map(w => w.toLowerCase());
+            let sigWords = rawWords.filter(w => !SEARCH_STOPWORDS.has(w) && w.length >= 2);
+            if (sigWords.length === 0) sigWords = rawWords;
+            if (sigWords.length === 0) return { isMatch: false, score: 0 };
+
+            let totalScore = 0;
+            for (const word of sigWords) {
+                let bestWordScore = 0;
+                if (fullText.includes(word)) {
+                    bestWordScore = 100;
+                } else {
+                    for (const token of docTokens) {
+                        if (token.length < 2) continue;
+                        const sim = calculateFuzzySimilarity(word, token);
+                        if (sim > bestWordScore) bestWordScore = sim;
+                        if (bestWordScore === 100) break;
+                    }
+                }
+                totalScore += bestWordScore;
+            }
+
+            const avgScore = totalScore / sigWords.length;
+            return {
+                isMatch: avgScore >= threshold,
+                score: avgScore
+            };
         }
 
         function filterAndRenderBuyerProducts(isGuest = null) {
@@ -4035,23 +4458,34 @@
             const activeCategory = (window._activeBuyerCategory || 'all').toLowerCase();
             const query = (window._buyerSearchQuery || '').trim().toLowerCase();
 
-            const filtered = products.filter(p => {
+            const matchedList = [];
+            products.forEach(p => {
                 const matchCategory = (activeCategory === 'all') || ((p.category_name || '').toLowerCase() === activeCategory);
-                if (!matchCategory) return false;
+                if (!matchCategory) return;
 
-                if (!query) return true;
-                const titleEn = (p.title_en || '').toLowerCase();
-                const titleHi = (p.title_hi || '').toLowerCase();
-                const descEn = (p.description_en || '').toLowerCase();
-                const descHi = (p.description_hi || '').toLowerCase();
-                const artisan = (p.artisan_name || '').toLowerCase();
-                const catName = (p.category_name || '').toLowerCase();
-                return titleEn.includes(query) || titleHi.includes(query) || descEn.includes(query) || descHi.includes(query) || artisan.includes(query) || catName.includes(query);
+                if (!query) {
+                    matchedList.push({ product: p, score: 100 });
+                    return;
+                }
+
+                const res = matchProductFuzzy(p, query, 68);
+                if (res.isMatch) {
+                    matchedList.push({ product: p, score: res.score });
+                }
             });
+
+            if (query) {
+                matchedList.sort((a, b) => b.score - a.score);
+            }
+            const filtered = matchedList.map(item => item.product);
 
             // Update count badge
             if (countBadge) {
-                countBadge.textContent = `${filtered.length} ${filtered.length === 1 ? 'item' : 'items'}`;
+                if (isBuyerLoading) {
+                    countBadge.textContent = 'Loading crafts...';
+                } else {
+                    countBadge.textContent = `${filtered.length} ${filtered.length === 1 ? 'item' : 'items'}`;
+                }
             }
 
             // Update active filter indicator tag
@@ -4101,14 +4535,19 @@
         window._dedicatedSearchQuery = '';
         window._dedicatedSearchCategory = 'all';
         window._isClosingSearch = false;
+        window._searchCloseTimeoutId = null;
 
         function closeDedicatedSearch() {
-            if (window._isClosingSearch) return;
+            if (window._searchCloseTimeoutId) {
+                clearTimeout(window._searchCloseTimeoutId);
+                window._searchCloseTimeoutId = null;
+            }
             const searchView = document.getElementById('buyer-view-search');
             const prevTab = window._lastNonSearchBuyerTab || 'shop';
             const prefersReducedMotion = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
             if (!searchView || prefersReducedMotion || searchView.style.display === 'none') {
+                window._isClosingSearch = false;
                 switchBuyerTab(prevTab);
                 return;
             }
@@ -4120,7 +4559,8 @@
             const searchTrigger = document.getElementById('desktop-search-trigger');
             if (searchTrigger) searchTrigger.classList.remove('active');
 
-            setTimeout(() => {
+            window._searchCloseTimeoutId = setTimeout(() => {
+                window._searchCloseTimeoutId = null;
                 searchView.classList.remove('search-view-closing');
                 searchView.style.display = 'none';
                 window._isClosingSearch = false;
@@ -4195,19 +4635,26 @@
             const activeCategory = (window._dedicatedSearchCategory || 'all').toLowerCase();
             const query = (window._dedicatedSearchQuery || '').trim().toLowerCase();
 
-            const filtered = products.filter(p => {
+            const matchedList = [];
+            products.forEach(p => {
                 const matchCategory = (activeCategory === 'all') || ((p.category_name || '').toLowerCase() === activeCategory);
-                if (!matchCategory) return false;
+                if (!matchCategory) return;
 
-                if (!query) return true;
-                const titleEn = (p.title_en || '').toLowerCase();
-                const titleHi = (p.title_hi || '').toLowerCase();
-                const descEn = (p.description_en || '').toLowerCase();
-                const descHi = (p.description_hi || '').toLowerCase();
-                const artisan = (p.artisan_name || '').toLowerCase();
-                const catName = (p.category_name || '').toLowerCase();
-                return titleEn.includes(query) || titleHi.includes(query) || descEn.includes(query) || descHi.includes(query) || artisan.includes(query) || catName.includes(query);
+                if (!query) {
+                    matchedList.push({ product: p, score: 100 });
+                    return;
+                }
+
+                const res = matchProductFuzzy(p, query, 68);
+                if (res.isMatch) {
+                    matchedList.push({ product: p, score: res.score });
+                }
             });
+
+            if (query) {
+                matchedList.sort((a, b) => b.score - a.score);
+            }
+            const filtered = matchedList.map(item => item.product);
 
             if (countBadge) {
                 countBadge.textContent = `${filtered.length} ${filtered.length === 1 ? 'item' : 'items'}`;
@@ -4334,18 +4781,28 @@
         });
 
         // API interaction: Fetch and display buyer feed products
+        let isBuyerLoading = false;
         async function loadBuyerProducts(isGuest = false) {
             window._buyerIsGuest = isGuest;
+            isBuyerLoading = true;
             const skeletonGrid = document.getElementById('buyer-product-skeleton');
             const productListGrid = document.getElementById('buyer-product-list');
             const emptyState = document.getElementById('buyer-empty-state');
+            const countBadge = document.getElementById('buyer-product-count-badge');
 
             // Apply bilingual hero strings
             updateBuyerHeroLanguage();
 
             // Show skeleton shimmer while loading
-            if (skeletonGrid) skeletonGrid.style.display = 'grid';
-            if (productListGrid) productListGrid.style.display = 'none';
+            if (countBadge) countBadge.textContent = 'Loading crafts...';
+            if (skeletonGrid) {
+                skeletonGrid.classList.remove('hidden');
+                skeletonGrid.style.display = 'grid';
+            }
+            if (productListGrid) {
+                productListGrid.classList.add('hidden');
+                productListGrid.style.display = 'none';
+            }
 
             const headers = {};
             if (!isGuest && accessToken) {
@@ -4362,24 +4819,49 @@
 
                 if (response.ok) {
                     const products = await response.json();
-                    window._cachedBuyerProducts = products;
+                    window._cachedBuyerProducts = Array.isArray(products) ? products : [];
 
                     // Render dynamic category pills based on actual product categories
-                    renderCategoryPills(products);
+                    renderCategoryPills(window._cachedBuyerProducts);
 
                     // Filter & render cards
                     filterAndRenderBuyerProducts(isGuest);
+
+                    // If Search tab is currently active or visible, also synchronize search results
+                    const searchView = document.getElementById('buyer-view-search');
+                    const isSearchActive = activeRoleNavTab === 'search' || (searchView && searchView.style.display !== 'none');
+                    if (isSearchActive && typeof filterAndRenderSearchProducts === 'function') {
+                        if (typeof renderDedicatedSearchCategories === 'function') {
+                            renderDedicatedSearchCategories();
+                        }
+                        filterAndRenderSearchProducts();
+                    }
                 } else {
                     console.error("Failed to load products, status:", response.status);
-                    if (emptyState) emptyState.style.display = 'block';
+                    window._cachedBuyerProducts = [];
+                    filterAndRenderBuyerProducts(isGuest);
+                    const searchView = document.getElementById('buyer-view-search');
+                    if (activeRoleNavTab === 'search' || (searchView && searchView.style.display !== 'none')) {
+                        if (typeof filterAndRenderSearchProducts === 'function') filterAndRenderSearchProducts();
+                    }
                 }
             } catch (err) {
                 console.error("Failed to load buyer marketplace:", err);
-                if (emptyState) emptyState.style.display = 'block';
+                window._cachedBuyerProducts = [];
+                filterAndRenderBuyerProducts(isGuest);
+                const searchView = document.getElementById('buyer-view-search');
+                if (activeRoleNavTab === 'search' || (searchView && searchView.style.display !== 'none')) {
+                    if (typeof filterAndRenderSearchProducts === 'function') filterAndRenderSearchProducts();
+                }
             } finally {
+                isBuyerLoading = false;
                 // Hide skeleton and reveal product grid
-                if (skeletonGrid) skeletonGrid.style.display = 'none';
+                if (skeletonGrid) {
+                    skeletonGrid.classList.add('hidden');
+                    skeletonGrid.style.display = 'none';
+                }
                 if (productListGrid) {
+                    productListGrid.classList.remove('hidden');
                     productListGrid.style.display = 'grid';
                 }
             }
@@ -4857,6 +5339,16 @@
 
         // ─── Tab switcher ─────────────────────────────────────────────────────
         function switchBuyerTab(tab) {
+            if (tab !== 'search' && window._searchCloseTimeoutId) {
+                clearTimeout(window._searchCloseTimeoutId);
+                window._searchCloseTimeoutId = null;
+                window._isClosingSearch = false;
+                const searchView = document.getElementById('buyer-view-search');
+                if (searchView) {
+                    searchView.classList.remove('search-view-closing');
+                    searchView.style.display = 'none';
+                }
+            }
             const views = {
                 shop: 'buyer-view-shop',
                 search: 'buyer-view-search',
@@ -4906,12 +5398,8 @@
             updateDesktopNavIndicator();
             sessionStorage.setItem('anantah_active_tab', tab);
             if (window.history && currentUser) {
-                if (tab === 'search') {
-                    if (window.location.hash !== '#search') {
-                        history.pushState({ screen: 'buyerDashboard', tab: 'search' }, '', '#search');
-                    }
-                } else {
-                    history.replaceState({ screen: 'buyerDashboard', tab: tab }, '', '#' + tab);
+                if (window.location.hash !== '#' + tab) {
+                    history.pushState({ screen: 'buyerDashboard', tab: tab }, '', '#' + tab);
                 }
             }
 

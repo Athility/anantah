@@ -13,11 +13,13 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = config('SECRET_KEY')
 DEBUG = config('DEBUG', default=False, cast=bool)
 
-if DEBUG:
+ALLOWED_HOSTS_CONFIG = config('ALLOWED_HOSTS', default='')
+if ALLOWED_HOSTS_CONFIG:
+    ALLOWED_HOSTS = [h.strip() for h in ALLOWED_HOSTS_CONFIG.split(',') if h.strip()]
+elif DEBUG:
     ALLOWED_HOSTS = ['*']
 else:
-    raw_hosts = config('ALLOWED_HOSTS', default='anantah.com')
-    ALLOWED_HOSTS = [host.strip() for host in raw_hosts.split(',') if host.strip()]
+    ALLOWED_HOSTS = ['localhost', '127.0.0.1', '.onrender.com', '.vercel.app']
 
 # Optional Sentry Monitoring Integration
 SENTRY_DSN = config('SENTRY_DSN', default='')
@@ -61,8 +63,9 @@ INSTALLED_APPS = [
 ]
 
 MIDDLEWARE = [
-    'corsheaders.middleware.CorsMiddleware',  # Put CorsMiddleware at the top
+    'corsheaders.middleware.CorsMiddleware',
     'django.middleware.security.SecurityMiddleware',
+    'whitenoise.middleware.WhiteNoiseMiddleware',   # ADD THIS LINE
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
@@ -106,6 +109,7 @@ DATABASES = {
         'OPTIONS': {
             'init_command': "SET sql_mode='STRICT_TRANS_TABLES'",
             'charset': 'utf8mb4',
+            'ssl': {'ca': str(BASE_DIR / 'certs' / 'aiven-ca.pem')},
         }
     }
 }
@@ -162,6 +166,7 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/6.1/howto/static-files/
 
 STATIC_URL = 'static/'
+STATIC_ROOT = BASE_DIR / 'staticfiles'
 
 # Media files setup (for raw and refined artisan images)
 MEDIA_URL = '/media/'
@@ -188,8 +193,8 @@ if CLOUDINARY_CONFIGURED and 'test' not in sys.argv:
             "BACKEND": "cloudinary_storage.storage.MediaCloudinaryStorage",
         },
         "staticfiles": {
-            "BACKEND": "django.contrib.staticfiles.storage.StaticFilesStorage",
-        },
+    "BACKEND": "django.contrib.staticfiles.storage.StaticFilesStorage",
+},
         "audio": {
             "BACKEND": "cloudinary_storage.storage.VideoMediaCloudinaryStorage",
         },
@@ -200,8 +205,8 @@ else:
             "BACKEND": "django.core.files.storage.FileSystemStorage",
         },
         "staticfiles": {
-            "BACKEND": "django.contrib.staticfiles.storage.StaticFilesStorage",
-        },
+        "BACKEND": "django.contrib.staticfiles.storage.StaticFilesStorage",
+},
         "audio": {
             "BACKEND": "django.core.files.storage.FileSystemStorage",
         },
@@ -248,14 +253,21 @@ SIMPLE_JWT = {
 }
 
 # CORS Configuration
-if DEBUG:
-    CORS_ALLOW_ALL_ORIGINS = True  # Allowed for local PWA frontend development
+CORS_ALLOWED_ORIGINS_CONFIG = config('CORS_ALLOWED_ORIGINS', default='')
+if CORS_ALLOWED_ORIGINS_CONFIG:
+    CORS_ALLOWED_ORIGINS = [o.strip() for o in CORS_ALLOWED_ORIGINS_CONFIG.split(',') if o.strip()]
+    CORS_ALLOW_ALL_ORIGINS = False
+elif DEBUG:
+    CORS_ALLOW_ALL_ORIGINS = True
 else:
     CORS_ALLOW_ALL_ORIGINS = False
-    # Allow passing multiple origins via comma-separated string in env, fallback to anantah.com
-    raw_origins = config('CORS_ALLOWED_ORIGINS', default='https://anantah.com')
-    CORS_ALLOWED_ORIGINS = [origin.strip() for origin in raw_origins.split(',') if origin.strip()]
+    CORS_ALLOWED_ORIGINS = [
+        'http://localhost:3000',
+        'http://127.0.0.1:3000',
+        'https://anantah.vercel.app',
+    ]
 
+if not DEBUG:
     # Django Security Headers (Production)
     SECURE_SSL_REDIRECT = True
     SECURE_HSTS_SECONDS = 31536000
@@ -267,12 +279,21 @@ else:
     CSRF_COOKIE_SECURE = True
 
 # Django Caching Framework (for temporary OTP verification status)
-CACHES = {
-    'default': {
-        'BACKEND': 'django.core.cache.backends.locmem.LocMemCache',
-        'LOCATION': 'anantah-otp-cache',
+REDIS_URL = config('REDIS_URL', default=None)
+if REDIS_URL and 'test' not in sys.argv:
+    CACHES = {
+        'default': {
+            'BACKEND': 'django.core.cache.backends.redis.RedisCache',
+            'LOCATION': REDIS_URL,
+        }
     }
-}
+else:
+    CACHES = {
+        'default': {
+            'BACKEND': 'django.core.cache.backends.locmem.LocMemCache',
+            'LOCATION': 'anantah-otp-cache',
+        }
+    }
 
 DEFAULT_AUTO_FIELD = 'django.db.models.AutoField'
 

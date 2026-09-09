@@ -50,3 +50,5 @@ sentry-sdk==2.22.0
 cloudinary==1.46.2
 django-cloudinary-storage==0.3.0
 
+whitenoise
+rapidfuzz==3.14.6
