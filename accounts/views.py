@@ -10,6 +10,12 @@ from django.contrib.auth import get_user_model
 from django.core.cache import cache
 from django.db import transaction
 from .otp_service import generate_and_send_otp, verify_otp
+from rest_framework_simplejwt.token_blacklist.models import OutstandingToken, BlacklistedToken
+
+def revoke_all_user_tokens(user):
+    tokens = OutstandingToken.objects.filter(user=user)
+    for token in tokens:
+        BlacklistedToken.objects.get_or_create(token=token)
 
 User = get_user_model()
 
@@ -27,19 +33,19 @@ class SendOTPView(APIView):
         if not phone.isdigit() or len(phone) < 10 or len(phone) > 15:
             return Response({'phone': ['Please enter a valid phone number.']}, status=status.HTTP_400_BAD_REQUEST)
 
-        # Check if phone number is already taken
-        if User.objects.filter(phone=phone).exists():
-            return Response({'phone': ['A user with this phone number already exists.']}, status=status.HTTP_400_BAD_REQUEST)
-
+        # Do NOT check if the user already exists here to prevent user enumeration.
+        # If they already exist, they will authenticate via OTP but fail at signup.
         res = generate_and_send_otp(phone)
         if res['success']:
-            return Response({'message': res['message']}, status=status.HTTP_200_OK)
+            return Response({'message': res['message'], 'dev_otp': res.get('dev_otp')}, status=status.HTTP_200_OK)
         else:
             return Response({'non_field_errors': [res['message']]}, status=status.HTTP_400_BAD_REQUEST)
 
 
 class VerifyOTPView(APIView):
     permission_classes = [AllowAny]
+    throttle_classes = [ScopedRateThrottle]
+    throttle_scope = 'otp_verify'
 
     def post(self, request, *args, **kwargs):
         phone = (request.data.get('phone') or '').strip()
@@ -101,18 +107,24 @@ class PasswordResetSendOTPView(APIView):
             return Response({'identifier': ['Please provide your registered phone number or username.']}, status=status.HTTP_400_BAD_REQUEST)
 
         user = User.objects.filter(phone=identifier).first() or User.objects.filter(username=identifier).first()
+        
+        # To prevent user enumeration, we always return a success message
+        success_message = 'If an account exists, an OTP has been sent.'
+        
         if not user or not user.phone:
-            return Response({'identifier': ['No registered account found matching this identifier.']}, status=status.HTTP_404_NOT_FOUND)
+            return Response({'message': success_message}, status=status.HTTP_200_OK)
 
         res = generate_and_send_otp(user.phone)
         if res['success']:
-            return Response({'message': res['message'], 'phone': user.phone}, status=status.HTTP_200_OK)
+            return Response({'message': success_message, 'phone': user.phone, 'dev_otp': res.get('dev_otp')}, status=status.HTTP_200_OK)
         else:
             return Response({'non_field_errors': [res['message']]}, status=status.HTTP_400_BAD_REQUEST)
 
 
 class PasswordResetConfirmView(APIView):
     permission_classes = [AllowAny]
+    throttle_classes = [ScopedRateThrottle]
+    throttle_scope = 'otp_verify'
 
     def post(self, request, *args, **kwargs):
         phone = (request.data.get('phone') or '').strip()
@@ -134,8 +146,23 @@ class PasswordResetConfirmView(APIView):
 
         user.set_password(new_password)
         user.save()
+        revoke_all_user_tokens(user)
         return Response({'success': True, 'message': 'Password reset successfully. You can now log in.'}, status=status.HTTP_200_OK)
 
+class LogoutView(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def post(self, request, *args, **kwargs):
+        try:
+            refresh_token = request.data.get('refresh')
+            if not refresh_token:
+                return Response({'detail': 'Refresh token is required.'}, status=status.HTTP_400_BAD_REQUEST)
+            
+            token = RefreshToken(refresh_token)
+            token.blacklist()
+            return Response({'detail': 'Successfully logged out.'}, status=status.HTTP_200_OK)
+        except Exception:
+            return Response({'detail': 'Invalid or expired token.'}, status=status.HTTP_400_BAD_REQUEST)
 
 class DeleteAccountView(APIView):
     permission_classes = [IsAuthenticated]
@@ -143,6 +170,7 @@ class DeleteAccountView(APIView):
     def delete(self, request, *args, **kwargs):
         user = request.user
         with transaction.atomic():
+            revoke_all_user_tokens(user)
             user.delete()
         return Response({'detail': 'Account deleted successfully.'}, status=status.HTTP_200_OK)
 

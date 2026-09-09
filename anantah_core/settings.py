@@ -50,6 +50,7 @@ INSTALLED_APPS = [
     
     # Third-party apps
     'rest_framework',
+    'rest_framework_simplejwt.token_blacklist',
     'corsheaders',
     
     # Custom apps
@@ -232,15 +233,18 @@ REST_FRAMEWORK = {
         'payments_create': '10/minute',
         'payments_verify': '10/minute',
         'otp_request': '15/hour',
+        'otp_verify': '5/minute',
+        'product_upload': '20/minute',
+        'voice_catalog': '20/minute',
     }
 }
 
 # JWT SimpleJWT Configuration
 SIMPLE_JWT = {
-    'ACCESS_TOKEN_LIFETIME': timedelta(days=1),
+    'ACCESS_TOKEN_LIFETIME': timedelta(minutes=15),
     'REFRESH_TOKEN_LIFETIME': timedelta(days=7),
-    'ROTATE_REFRESH_TOKENS': False,
-    'BLACKLIST_AFTER_ROTATION': False,
+    'ROTATE_REFRESH_TOKENS': True,
+    'BLACKLIST_AFTER_ROTATION': True,
     'ALGORITHM': 'HS256',
     'SIGNING_KEY': SECRET_KEY,
     'AUTH_HEADER_TYPES': ('Bearer',),
@@ -262,6 +266,17 @@ else:
         'http://127.0.0.1:3000',
         'https://anantah.vercel.app',
     ]
+
+if not DEBUG:
+    # Django Security Headers (Production)
+    SECURE_SSL_REDIRECT = True
+    SECURE_HSTS_SECONDS = 31536000
+    SECURE_HSTS_INCLUDE_SUBDOMAINS = True
+    SECURE_HSTS_PRELOAD = True
+    SECURE_BROWSER_XSS_FILTER = True
+    SECURE_CONTENT_TYPE_NOSNIFF = True
+    SESSION_COOKIE_SECURE = True
+    CSRF_COOKIE_SECURE = True
 
 # Django Caching Framework (for temporary OTP verification status)
 REDIS_URL = config('REDIS_URL', default=None)

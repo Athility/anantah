@@ -91,12 +91,17 @@ class CartAddView(APIView):
 
     def post(self, request):
         product_id = request.data.get('product_id')
-        quantity = int(request.data.get('quantity', 1))
+        try:
+            quantity = int(request.data.get('quantity', 1))
+        except (ValueError, TypeError):
+            return Response({'detail': 'quantity must be a valid integer.'}, status=status.HTTP_400_BAD_REQUEST)
 
         if not product_id:
             return Response({'detail': 'product_id is required.'}, status=status.HTTP_400_BAD_REQUEST)
         if quantity < 1:
             return Response({'detail': 'quantity must be at least 1.'}, status=status.HTTP_400_BAD_REQUEST)
+        if quantity > 100:
+            return Response({'detail': 'quantity must not exceed 100.'}, status=status.HTTP_400_BAD_REQUEST)
 
         try:
             product = Product.objects.get(id=product_id, status='live')
@@ -109,7 +114,10 @@ class CartAddView(APIView):
             defaults={'quantity': quantity}
         )
         if not created:
-            item.quantity += quantity
+            new_qty = item.quantity + quantity
+            if new_qty > 100:
+                return Response({'detail': 'Total quantity for this item must not exceed 100.'}, status=status.HTTP_400_BAD_REQUEST)
+            item.quantity = new_qty
             item.save()
 
         serializer = CartItemSerializer(item, context={'request': request})
@@ -135,9 +143,14 @@ class CartItemDetailView(APIView):
         if quantity is None:
             return Response({'detail': 'quantity is required.'}, status=status.HTTP_400_BAD_REQUEST)
 
-        quantity = int(quantity)
+        try:
+            quantity = int(quantity)
+        except (ValueError, TypeError):
+            return Response({'detail': 'quantity must be a valid integer.'}, status=status.HTTP_400_BAD_REQUEST)
         if quantity < 1:
             return Response({'detail': 'quantity must be > 0.'}, status=status.HTTP_400_BAD_REQUEST)
+        if quantity > 100:
+            return Response({'detail': 'quantity must not exceed 100.'}, status=status.HTTP_400_BAD_REQUEST)
 
         item.quantity = quantity
         item.save()
@@ -188,6 +201,14 @@ class CheckoutSummaryView(APIView):
         if not items.exists():
             return Response({'detail': 'Your cart is empty.'}, status=status.HTTP_400_BAD_REQUEST)
 
+        unavailable_items = [item.product.title_en for item in items if item.product.status != 'live']
+        if unavailable_items:
+            titles = ', '.join(unavailable_items)
+            return Response(
+                {'detail': f'The following items are no longer available: {titles}. Please remove them from your cart to proceed.'},
+                status=status.HTTP_400_BAD_REQUEST
+            )
+
         costs = calculate_cart_costs(items)
         items_data = CartItemSerializer(items, many=True, context={'request': request}).data
 
@@ -223,57 +244,119 @@ class OrderCreateView(APIView):
         if not items.exists():
             return Response({'detail': 'Your cart is empty.'}, status=status.HTTP_400_BAD_REQUEST)
 
+        unavailable_items = [item.product.title_en for item in items if item.product.status != 'live']
+        if unavailable_items:
+            titles = ', '.join(unavailable_items)
+            return Response(
+                {'detail': f'The following items are no longer available: {titles}. Please remove them from your cart to proceed.'},
+                status=status.HTTP_400_BAD_REQUEST
+            )
+
         costs = calculate_cart_costs(items)
         items_list = list(items)  
         item_count = Decimal(len(items_list))
         
-        try:
-            with transaction.atomic():
-                created_orders = []
-                for item in items_list:
-                    product = item.product
-                    artisan_profile = product.artisan
-                    per_item_product_total = product.price * item.quantity
-                    per_item_shipping = (costs['shipping_cost'] / item_count).quantize(Decimal('0.01'))
-                    per_item_commission = (per_item_product_total * PLATFORM_COMMISSION_RATE).quantize(Decimal('0.01'))
-                    per_item_payable = per_item_product_total + per_item_shipping + per_item_commission
-
-                    order = Order.objects.create(
-                        buyer=request.user.buyer_profile,
-                        product=product,
-                        artisan=artisan_profile,
-                        shipping_address=address,
-                        quantity=item.quantity,
-                        total_amount=per_item_payable,
-                        currency='INR',
-                        status='created',
-                        product_total=per_item_product_total,
-                        shipping_cost=per_item_shipping,
-                        platform_commission=per_item_commission,
-                        total_payable=per_item_payable,
-                    )
-                    created_orders.append(order)
-
-                total_payable = sum(o.total_payable for o in created_orders)
-                receipt_id = f"cart_{uuid.uuid4().hex[:15]}"
-                rzp_order = create_razorpay_order(amount_rupees=float(total_payable), receipt_id=receipt_id)
-
-                for order in created_orders:
-                    order.razorpay_order_id = rzp_order['id']
-                    order.save()
-                    
-                serializer = OrderSerializer(created_orders, many=True, context={'request': request})
+        # BUG-10: Idempotency / Duplicate Check & Concurrency protection
+        # We need to lock cart items and check for mid-flight checkouts.
+        created_orders = []
+        with transaction.atomic():
+            # Lock the cart to prevent concurrent Pay Now clicks from creating multiple orders.
+            locked_items = list(CartItem.objects.filter(buyer=request.user.buyer_profile).select_for_update())
+            
+            existing_orders = list(Order.objects.filter(buyer=request.user.buyer_profile, status='created').select_for_update())
+            
+            # Check if existing orders perfectly match current cart + address
+            cart_sig = {(item.product.id, item.quantity, item.product.price, int(address_id)) for item in locked_items}
+            order_sig = {(o.product.id, o.quantity, o.product_total / o.quantity, o.shipping_address_id) for o in existing_orders}
+            
+            if existing_orders and cart_sig == order_sig:
+                if any(not o.razorpay_order_id for o in existing_orders):
+                    return Response({'detail': 'A checkout is already in progress. Please wait a moment.'}, status=status.HTTP_409_CONFLICT)
+                
+                # Match found with razorpay_order_id. Reuse it to prevent duplicates!
+                serializer = OrderSerializer(existing_orders, many=True, context={'request': request})
                 return Response({
                     'orders': serializer.data,
                     'summary': {k: float(v) for k, v in costs.items()},
-                    'razorpay_order_id': rzp_order['id'],
+                    'razorpay_order_id': existing_orders[0].razorpay_order_id,
                     'razorpay_key_id': getattr(settings, 'RAZORPAY_KEY_ID', 'test_key'),
-                    'amount': rzp_order['amount'],
+                    'amount': int(sum(o.total_payable for o in existing_orders) * 100),
                     'currency': 'INR',
-                    'message': 'Orders created successfully. Proceed to payment.',
+                    'message': 'Orders retrieved successfully. Proceed to payment.',
                 }, status=status.HTTP_201_CREATED)
+            
+            # Cancel mismatched existing orders
+            if existing_orders:
+                for o in existing_orders:
+                    o.status = 'cancelled'
+                    o.save(update_fields=['status'])
+
+            for item in locked_items:
+                product = item.product
+                artisan_profile = product.artisan
+                per_item_product_total = product.price * item.quantity
+                per_item_shipping = (costs['shipping_cost'] / item_count).quantize(Decimal('0.01'))
+                per_item_commission = (per_item_product_total * PLATFORM_COMMISSION_RATE).quantize(Decimal('0.01'))
+                per_item_payable = per_item_product_total + per_item_shipping + per_item_commission
+
+                order = Order.objects.create(
+                    buyer=request.user.buyer_profile,
+                    product=product,
+                    artisan=artisan_profile,
+                    shipping_address=address,
+                    quantity=item.quantity,
+                    total_amount=per_item_payable,
+                    currency='INR',
+                    status='created',
+                    product_total=per_item_product_total,
+                    shipping_cost=per_item_shipping,
+                    platform_commission=per_item_commission,
+                    total_payable=per_item_payable,
+                )
+                created_orders.append(order)
+
+        # BUG-9: Step 2: Outside transaction, call Razorpay
+        total_payable = sum(o.total_payable for o in created_orders)
+        receipt_id = f"cart_{uuid.uuid4().hex[:15]}"
+        try:
+            rzp_order = create_razorpay_order(amount_rupees=float(total_payable), receipt_id=receipt_id)
         except Exception as e:
-            return Response({'detail': f'Order creation failed: {str(e)}'}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+            # Step 3: Handle Razorpay failure gracefully by cancelling the pending orders
+            with transaction.atomic():
+                for o in created_orders:
+                    o.status = 'cancelled'
+                    o.save(update_fields=['status'])
+            return Response({'detail': f'Payment gateway failed to initialize. Please try again.'}, status=status.HTTP_502_BAD_GATEWAY)
+
+        # Step 4: Short follow-up transaction to attach Razorpay ID
+        with transaction.atomic():
+            # Lock the orders to ensure they haven't been cancelled concurrently
+            order_ids = [o.id for o in created_orders]
+            locked_orders = list(Order.objects.filter(id__in=order_ids).select_for_update())
+            
+            for order in locked_orders:
+                if order.status != 'created':
+                    # If any order was cancelled, we shouldn't attach the razorpay ID
+                    # We should probably abort and return an error.
+                    return Response({'detail': 'Order state changed during payment initialization.'}, status=status.HTTP_409_CONFLICT)
+            
+            for order in locked_orders:
+                order.razorpay_order_id = rzp_order['id']
+                order.save(update_fields=['razorpay_order_id'])
+                
+            # Update the created_orders list so the serializer has the latest data
+            created_orders = locked_orders
+                
+        serializer = OrderSerializer(created_orders, many=True, context={'request': request})
+        return Response({
+            'orders': serializer.data,
+            'summary': {k: float(v) for k, v in costs.items()},
+            'razorpay_order_id': rzp_order['id'],
+            'razorpay_key_id': getattr(settings, 'RAZORPAY_KEY_ID', 'test_key'),
+            'amount': rzp_order['amount'],
+            'currency': 'INR',
+            'message': 'Orders created successfully. Proceed to payment.',
+        }, status=status.HTTP_201_CREATED)
 
 
 class OrderListView(APIView):
@@ -284,5 +367,7 @@ class OrderListView(APIView):
         orders = Order.objects.filter(buyer=request.user.buyer_profile).select_related('product', 'shipping_address').order_by('-created_at')
         serializer = OrderSerializer(orders, many=True, context={'request': request})
         return Response(serializer.data)
+
+
 
 

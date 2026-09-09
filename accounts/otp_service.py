@@ -23,6 +23,7 @@ def generate_and_send_otp(phone_number):
 
     # 3. Store OTP in cache for 5 minutes (300 seconds)
     cache.set(f"otp:{phone_number}", otp_code, timeout=300)
+    cache.set(f"otp_attempts:{phone_number}", 0, timeout=300)
 
     # 4. Set resend lock for 30 seconds
     cache.set(f"resend_lock:{phone_number}", True, timeout=30)
@@ -107,13 +108,30 @@ def verify_otp(phone_number, submitted_code):
     """
     Verifies the submitted code against the cached OTP.
     Deletes the OTP cache entry on match.
+    Enforces a maximum of 5 attempts to prevent brute force.
     """
     if not submitted_code:
         return False
 
-    cached_otp = cache.get(f"otp:{phone_number}")
-    if cached_otp and str(cached_otp) == str(submitted_code).strip():
+    attempts_key = f"otp_attempts:{phone_number}"
+    try:
+        attempts = cache.incr(attempts_key)
+    except ValueError:
+        # Key missing or expired
+        cache.set(attempts_key, 1, timeout=300)
+        attempts = 1
+
+    if attempts > 5:
         cache.delete(f"otp:{phone_number}")
+        return False
+
+    cached_otp = cache.get(f"otp:{phone_number}")
+    if not cached_otp:
+        return False
+
+    if str(cached_otp) == str(submitted_code).strip():
+        cache.delete(f"otp:{phone_number}")
+        cache.delete(attempts_key)
         return True
 
     return False

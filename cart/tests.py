@@ -40,16 +40,19 @@ class CheckoutTests(TestCase):
 
     @mock.patch('cart.views.create_razorpay_order')
     def test_checkout_atomicity_rollback(self, mock_create):
-        p2 = Product.objects.create(artisan=self.artisan_profile, title_en='Product 2', price=50.0, status='active')
+        p2 = Product.objects.create(artisan=self.artisan_profile, title_en='Product 2', price=50.0, status='live')
         CartItem.objects.create(buyer=self.buyer_profile, product=self.product, quantity=1)
         CartItem.objects.create(buyer=self.buyer_profile, product=p2, quantity=1)
         
         mock_create.side_effect = Exception('Razorpay API down')
         
         response = self.client.post('/api/orders/create/', {'address_id': self.address.id}, format='json')
+        print("RESPONSE STATUS:", response.status_code)
+        print("RESPONSE DATA:", response.data)
         
-        self.assertEqual(response.status_code, status.HTTP_500_INTERNAL_SERVER_ERROR)
-        self.assertEqual(Order.objects.count(), 0)
+        self.assertEqual(response.status_code, status.HTTP_502_BAD_GATEWAY)
+        self.assertEqual(Order.objects.count(), 2)
+        self.assertTrue(all(o.status == 'cancelled' for o in Order.objects.all()))
         self.assertEqual(CartItem.objects.filter(buyer=self.buyer_profile).count(), 2)
 
     def test_order_cascade_protection(self):
@@ -72,3 +75,4 @@ class CheckoutTests(TestCase):
         order.refresh_from_db()
         self.assertIsNone(order.product)
         self.assertIsNotNone(order.buyer)
+

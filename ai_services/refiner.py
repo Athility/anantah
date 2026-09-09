@@ -52,7 +52,20 @@ def refine_image(raw_image_file, enhancements=None):
     do_color   = 'color_bal'    in enhancements
     # Reset stream pointer
     raw_image_file.seek(0)
-    input_image = Image.open(raw_image_file).convert("RGB")
+    
+    # Safely load the image and verify dimensions before full decompression to RGB
+    try:
+        input_image = Image.open(raw_image_file)
+        
+        MAX_SAFE_DIMENSION = 4096
+        if max(input_image.size) > MAX_SAFE_DIMENSION:
+            input_image.close()
+            raise ValueError(f"Image dimensions {input_image.size} exceed the safe limit of {MAX_SAFE_DIMENSION}px")
+            
+        input_image = input_image.convert("RGB")
+    except Image.DecompressionBombError as e:
+        raise ValueError("Image exceeds maximum allowed pixel count (Decompression Bomb protection)") from e
+        
     original_size = input_image.size  # (width, height)
 
     # --- If no enhancements selected, return raw image re-encoded as JPEG ---

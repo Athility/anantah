@@ -1007,13 +1007,13 @@
                 </div>
             </div>
 
-            <!-- TAB: Reels -->
+            <!-- TAB: Frames -->
             <div id="buyer-view-reels" style="display: none;">
                 <div style="background: var(--bg-card); border: 1px solid var(--border-color); border-radius: 24px; padding: 40px 24px; text-align: center; max-width: 600px; margin: 20px auto; box-shadow: var(--shadow-premium);">
                     <div style="width: 64px; height: 64px; border-radius: 20px; background: #FFE8E8; color: #D32F2F; display: flex; align-items: center; justify-content: center; margin: 0 auto 20px auto;">
                         <svg width="32" height="32" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><polygon points="23 7 16 12 23 17 23 7"/><rect x="1" y="5" width="15" height="14" rx="2" ry="2"/></svg>
                     </div>
-                    <h3 class="brand-font" style="font-size: 24px; color: var(--primary-color); margin-bottom: 8px;">Artisan Short Reels</h3>
+                    <h3 class="brand-font" style="font-size: 24px; color: var(--primary-color); margin-bottom: 8px;">Artisan Short Frames</h3>
                     <p style="color: var(--text-secondary); font-size: 14px; line-height: 1.6; margin-bottom: 20px;">Watch short behind-the-scenes videos of Indian master artisans creating handmade pottery, silk weaving, and brass casting in real-time.</p>
                     <span style="display: inline-block; background: var(--accent-gold); color: #22162B; font-weight: 700; font-size: 11px; padding: 6px 14px; border-radius: 20px; text-transform: uppercase; letter-spacing: 0.5px;">Coming Soon</span>
                 </div>
@@ -1090,8 +1090,8 @@
                 <div style="background: var(--bg-card); border: 1px solid var(--border-color); border-radius: 24px; padding: 32px; box-shadow: var(--shadow-premium); display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 36px; align-items: start;" id="product-detail-page-container">
                     <!-- Left Side: Main Image & Gallery -->
                     <div style="display: flex; flex-direction: column; gap: 16px;">
-                        <div style="position: relative; border-radius: 20px; overflow: hidden; background: #f9f6f0; box-shadow: var(--shadow-sm); border: 1px solid var(--border-color);">
-                            <img id="detail-page-img" src="" alt="" style="width: 100%; height: 420px; object-fit: cover; display: block; transition: var(--transition-smooth);">
+                        <div style="position: relative; border-radius: 20px; overflow: hidden; background: #f9f6f0; box-shadow: var(--shadow-sm); border: 1px solid var(--border-color); display: flex; justify-content: center; align-items: center; min-height: 300px;">
+                            <img id="detail-page-img" src="" alt="" style="width: 100%; max-height: 500px; object-fit: contain; display: block; transition: var(--transition-smooth);">
                             <div id="detail-page-heart-wrapper" style="position: absolute; top: 16px; right: 16px; z-index: 10;"></div>
                         </div>
                         <!-- Multi-Image Gallery Thumbnails -->
@@ -1479,6 +1479,16 @@
     <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
     <script src="config.js?v=2"></script>
     <script>
+        function escapeHTML(str) {
+            if (!str) return '';
+            return String(str)
+                .replace(/&/g, '&amp;')
+                .replace(/</g, '&lt;')
+                .replace(/>/g, '&gt;')
+                .replace(/"/g, '&quot;')
+                .replace(/'/g, '&#039;');
+        }
+
         // Core State variables
         let selectedLanguage = localStorage.getItem('selected_language') || 'en';
         let selectedRole = localStorage.getItem('selected_role') || 'artisan'; // 'artisan' or 'buyer'
@@ -2039,7 +2049,7 @@
                 },
                 {
                     id: 'reels',
-                    label: 'Reels',
+                    label: 'Frames',
                     icon: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="23 7 16 12 23 17 23 7"/><rect x="1" y="5" width="15" height="14" rx="2" ry="2"/></svg>`,
                     targetView: 'buyer-view-reels'
                 },
@@ -2149,6 +2159,10 @@
                                         <div class="dropdown-nav-link" onclick="openCheckout()">
                                             <svg width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
                                             Proceed to Checkout
+                                        </div>
+                                        <div class="dropdown-nav-link" onclick="alert('Artwork Verification requested. Our team will review your application soon.')">
+                                            <svg width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/><path d="M9 12l2 2 4-4"/></svg>
+                                            Verify My Artwork
                                         </div>
                                     ` : ''}
                                     <div class="dropdown-nav-link danger" onclick="clearAuth()">
@@ -2410,11 +2424,18 @@
             document.getElementById('sheet-user-role').textContent = `${currentUser.role} Account`;
 
             const cartSection = document.getElementById('sheet-cart-section');
+            const wishlistSection = document.getElementById('sheet-wishlist-item');
+            const verifyArtworkSection = document.getElementById('sheet-verify-artwork-item');
+            
             if (currentUser.role === 'buyer') {
                 cartSection.style.display = 'block';
+                if (wishlistSection) wishlistSection.style.display = 'flex';
+                if (verifyArtworkSection) verifyArtworkSection.style.display = 'flex';
                 fetchCartForNav();
             } else {
                 cartSection.style.display = 'none';
+                if (wishlistSection) wishlistSection.style.display = 'none';
+                if (verifyArtworkSection) verifyArtworkSection.style.display = 'none';
             }
 
             backdrop.classList.add('show');
@@ -2458,7 +2479,7 @@
                             row.innerHTML = `
                                 ${img ? `<img src="${img}" class="dropdown-cart-thumb">` : `<div class="dropdown-cart-thumb" style="display:flex;align-items:center;justify-content:center;font-size:16px;">🎨</div>`}
                                 <div style="flex:1; min-width:0;">
-                                    <div style="font-weight:600; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">${item.product.title_en}</div>
+                                    <div style="font-weight:600; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">${escapeHTML(item.product.title_en)}</div>
                                     <div style="color:var(--text-secondary); font-size:11px;">Qty: ${item.quantity} · ₹${item.subtotal.toFixed(2)}</div>
                                 </div>
                             `;
@@ -2487,7 +2508,7 @@
                             row.innerHTML = `
                                 ${img ? `<img src="${img}" class="sheet-cart-img">` : `<div class="sheet-cart-img" style="display:flex;align-items:center;justify-content:center;font-size:18px;">🎨</div>`}
                                 <div style="flex:1; min-width:0;">
-                                    <div style="font-size:13px; font-weight:700; color:var(--text-primary); white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">${item.product.title_en}</div>
+                                    <div style="font-size:13px; font-weight:700; color:var(--text-primary); white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">${escapeHTML(item.product.title_en)}</div>
                                     <div style="font-size:12px; color:var(--primary-color); font-weight:700;">Qty: ${item.quantity} · ₹${item.subtotal.toFixed(2)}</div>
                                 </div>
                             `;
@@ -2598,7 +2619,21 @@
             }
         }
 
-        function clearAuth() {
+        async function clearAuth() {
+            if (refreshToken) {
+                try {
+                    await fetch(`${CONFIG.API_BASE_URL}/accounts/logout/`, {
+                        method: 'POST',
+                        headers: {
+                            'Authorization': `Bearer ${accessToken}`,
+                            'Content-Type': 'application/json'
+                        },
+                        body: JSON.stringify({ refresh: refreshToken })
+                    });
+                } catch(e) {
+                    console.warn("Logout request failed", e);
+                }
+            }
             currentUser = null;
             accessToken = null;
             refreshToken = null;
@@ -3599,10 +3634,10 @@
 
                             card.innerHTML = `
                                 <div class="product-card-image-box">
-                                    <img class="product-card-image" src="${displayImage}" alt="${p.title_en}" onerror="this.onerror=null; this.src='anantah_logo.png';">
+                                    <img class="product-card-image" src="${displayImage}" alt="${escapeHTML(p.title_en)}" onerror="this.onerror=null; this.src='anantah_logo.png';">
                                 </div>
                                 <div class="product-card-info" style="padding: 16px; display: flex; flex-direction: column; flex-grow: 1;">
-                                    <h4 class="product-card-title" style="font-size: 15px; font-weight: 700; color: var(--text-primary); margin: 0 0 4px 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">${p.title_en}</h4>
+                                    <h4 class="product-card-title" style="font-size: 15px; font-weight: 700; color: var(--text-primary); margin: 0 0 4px 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">${escapeHTML(p.title_en)}</h4>
                                     <div class="product-card-price" style="font-size: 16px; font-weight: 800; color: var(--primary-color); margin-bottom: 12px;">₹${parseFloat(p.price).toFixed(2)}</div>
                                     <button class="btn-delete-listing" data-product-id="${p.id}" style="margin-top: auto; display: flex; align-items: center; gap: 6px; background: none; border: 1px solid #FFCDD2; border-radius: 8px; padding: 8px 12px; font-size: 12px; font-weight: 600; color: #C62828; cursor: pointer; transition: var(--transition-smooth); font-family: var(--font-inter); width: 100%; justify-content: center;">
                                         <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M3 6h18M8 6V4h8v2M19 6l-1 14H6L5 6"/></svg>
@@ -3858,14 +3893,14 @@
 
                         card.innerHTML = `
                             <div class="product-card-image-box" style="cursor: pointer;">
-                                <img class="product-card-image" src="${displayImage}" alt="${p.title_en}" onerror="this.onerror=null; this.src='anantah_logo.png';">
+                                <img class="product-card-image" src="${displayImage}" alt="${escapeHTML(p.title_en)}" onerror="this.onerror=null; this.src='anantah_logo.png';">
                                 ${renderWishlistHeartBtn(p.id)}
                             </div>
                             <div class="product-card-info" style="padding: 16px; display: flex; flex-direction: column; flex-grow: 1;">
                                 <span style="font-size: 11px; font-weight: 700; color: var(--text-secondary); text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 2px;">${artisanName}</span>
-                                <h4 class="product-card-title" style="font-size: 15px; font-weight: 700; color: var(--text-primary); margin: 0 0 6px 0; cursor: pointer; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">${p.title_en}</h4>
+                                <h4 class="product-card-title" style="font-size: 15px; font-weight: 700; color: var(--text-primary); margin: 0 0 6px 0; cursor: pointer; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">${escapeHTML(p.title_en)}</h4>
                                 <div class="product-card-price" style="font-size: 16px; font-weight: 800; color: var(--primary-color); margin-bottom: 12px;">₹${parseFloat(p.price).toFixed(2)}</div>
-                                <button class="btn-add-cart-pill" data-product-id="${p.id}" data-product-title="${p.title_en}">
+                                <button class="btn-add-cart-pill" data-product-id="${p.id}" data-product-title="${escapeHTML(p.title_en)}">
                                     <span class="add-icon">+</span> <span class="btn-label">Add to Cart</span>
                                 </button>
                             </div>
@@ -3942,8 +3977,8 @@
                         const tile = document.createElement('div');
                         tile.className = 'home-wishlist-item-tile';
                         tile.innerHTML = `
-                            <img class="home-wishlist-item-img" src="${displayImage}" alt="${p.title_en}" onerror="this.onerror=null; this.src='anantah_logo.png';">
-                            <span class="home-wishlist-item-title">${p.title_en}</span>
+                            <img class="home-wishlist-item-img" src="${displayImage}" alt="${escapeHTML(p.title_en)}" onerror="this.onerror=null; this.src='anantah_logo.png';">
+                            <span class="home-wishlist-item-title">${escapeHTML(p.title_en)}</span>
                         `;
                         tile.addEventListener('click', () => openProductDetailModal(p));
                         itemsGrid.appendChild(tile);
@@ -4204,19 +4239,21 @@
             card.setAttribute('data-product-id', p.id);
 
             const displayImage = getMediaUrl(p.refined_image_url || p.raw_image_url || 'anantah_logo.png');
-            const categoryName = p.category_name || 'Traditional Craft';
-            const artisanName = p.artisan_name || 'Master Artisan';
+            const categoryName = escapeHTML(p.category_name || 'Traditional Craft');
+            const artisanName = escapeHTML(p.artisan_name || 'Master Artisan');
             
             // Bilingual title support
             const currentLang = localStorage.getItem('selected_language') || 'en';
-            const title = (currentLang === 'hi' && p.title_hi) ? p.title_hi : p.title_en;
+            const rawTitle = (currentLang === 'hi' && p.title_hi) ? p.title_hi : p.title_en;
+            const title = escapeHTML(rawTitle);
 
             const addCartBtn = isGuestUser
                 ? `<button disabled class="btn-add-cart-minimal" aria-label="Login to Add">
                       <span class="btn-label">Login to Add</span>
                    </button>`
-                : `<button class="btn-add-cart-minimal" data-product-id="${p.id}" data-product-title="${p.title_en}" aria-label="Add ${title} to Cart">
-                      <span class="btn-label">Add to Cart</span>
+                : `<button class="btn-add-cart-minimal" data-product-id="${p.id}" data-product-title="${escapeHTML(p.title_en)}" aria-label="Add ${title} to Cart">
+                      <span class="btn-label-desktop">Add to Cart</span>
+                      <span class="btn-label-mobile">Add</span>
                       <span class="add-icon">+</span>
                    </button>`;
 
@@ -5448,7 +5485,7 @@
                     itemCard.innerHTML = `
                         ${imgUrl ? `<img src="${imgUrl}" onerror="this.onerror=null; this.src='anantah_logo.png';" style="width:48px; height:48px; border-radius:8px; object-fit:cover; flex-shrink:0;">` : `<div style="width:48px; height:48px; background:var(--primary-light); border-radius:8px; display:flex; align-items:center; justify-content:center; font-size:18px; flex-shrink:0;">🎨</div>`}
                         <div style="flex:1; min-width:0; line-height:1.3;">
-                            <div style="font-size:13px; font-weight:700; color:var(--text-primary); white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">${item.product.title_en}</div>
+                            <div style="font-size:13px; font-weight:700; color:var(--text-primary); white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">${escapeHTML(item.product.title_en)}</div>
                         </div>
                         <div style="font-size:13px; font-weight:800; color:#482E83;">₹${parseFloat(item.product.price).toFixed(2)}</div>
                     `;
@@ -5608,9 +5645,9 @@
                     card.style.cssText = 'background:#fff; border-radius:14px; padding:14px 16px; display:flex; align-items:center; gap:14px; box-shadow:0 2px 8px rgba(0,0,0,0.06); transition:var(--transition-smooth);';
                     const img = getMediaUrl(item.product ? (item.product.refined_image || item.product.refined_image_url || item.product.raw_image || '') : '');
                     card.innerHTML = `
-                        ${img ? `<img src="${img}" alt="${item.product.title_en}" onerror="this.onerror=null; this.src='anantah_logo.png';" style="width:68px; height:68px; border-radius:10px; object-fit:cover; flex-shrink:0;">` : `<div style="width:68px; height:68px; background:var(--primary-light); border-radius:10px; flex-shrink:0; display:flex; align-items:center; justify-content:center; font-size:24px;">🎨</div>`}
+                        ${img ? `<img src="${img}" alt="${escapeHTML(item.product.title_en)}" onerror="this.onerror=null; this.src='anantah_logo.png';" style="width:68px; height:68px; border-radius:10px; object-fit:cover; flex-shrink:0;">` : `<div style="width:68px; height:68px; background:var(--primary-light); border-radius:10px; flex-shrink:0; display:flex; align-items:center; justify-content:center; font-size:24px;">🎨</div>`}
                         <div style="flex:1; min-width:0;">
-                            <div style="font-size:14px; font-weight:700; color:var(--text-primary); white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">${item.product.title_en}</div>
+                            <div style="font-size:14px; font-weight:700; color:var(--text-primary); white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">${escapeHTML(item.product.title_en)}</div>
                             <div style="font-size:13px; color:var(--primary-color); font-weight:800; margin:3px 0;">₹${parseFloat(item.product.price).toFixed(2)}</div>
                             <div style="display:flex; align-items:center; gap:8px; margin-top:6px;">
                                 <button onclick="changeQty(${item.id}, ${item.quantity - 1})" style="width:26px; height:26px; border-radius:6px; border:1.5px solid var(--border-color); background:#fff; cursor:pointer; font-size:16px; font-weight:700; line-height:1;">−</button>
@@ -5678,7 +5715,7 @@
                 (data.items || []).forEach(item => {
                     const row = document.createElement('div');
                     row.style.cssText = 'display:flex; justify-content:space-between; align-items:center; padding:8px 0; border-bottom:1px solid var(--border-color); font-size:14px;';
-                    row.innerHTML = `<span style="color:var(--text-secondary); flex:1;">${item.product.title_en} × ${item.quantity}</span><span style="font-weight:700;">₹${item.subtotal.toFixed(2)}</span>`;
+                    row.innerHTML = `<span style="color:var(--text-secondary); flex:1;">${escapeHTML(item.product.title_en)} × ${item.quantity}</span><span style="font-weight:700;">₹${item.subtotal.toFixed(2)}</span>`;
                     preview.appendChild(row);
                 });
 
@@ -5718,9 +5755,9 @@
                     card.innerHTML = `
                         <div id="addr-radio-${addr.id}" style="width:18px; height:18px; border-radius:50%; border:2px solid var(--border-color); flex-shrink:0; margin-top:2px;"></div>
                         <div>
-                            <div style="font-size:13px; font-weight:700; color:var(--text-primary);">${addr.label || 'Address'} — ${addr.full_name}</div>
-                            <div style="font-size:12px; color:var(--text-secondary); margin-top:2px;">${addr.line1}${addr.line2 ? ', ' + addr.line2 : ''}, ${addr.city}, ${addr.state} — ${addr.postal_code}</div>
-                            <div style="font-size:12px; color:var(--text-secondary);">📱 ${addr.phone}</div>
+                            <div style="font-size:13px; font-weight:700; color:var(--text-primary);">${escapeHTML(addr.label || 'Address')} — ${escapeHTML(addr.full_name)}</div>
+                            <div style="font-size:12px; color:var(--text-secondary); margin-top:2px;">${escapeHTML(addr.line1)}${addr.line2 ? ', ' + escapeHTML(addr.line2) : ''}, ${escapeHTML(addr.city)}, ${escapeHTML(addr.state)} — ${escapeHTML(addr.postal_code)}</div>
+                            <div style="font-size:12px; color:var(--text-secondary);">📱 ${escapeHTML(addr.phone)}</div>
                         </div>
                     `;
                     card.addEventListener('click', () => {
@@ -5910,10 +5947,10 @@
                         <div style="display:flex; gap:14px; align-items:flex-start;">
                             ${img ? `<img src="${img}" onerror="this.onerror=null; this.src='anantah_logo.png';" style="width:62px; height:62px; border-radius:10px; object-fit:cover; flex-shrink:0;">` : `<div style="width:62px; height:62px; background:var(--primary-light); border-radius:10px; display:flex; align-items:center; justify-content:center; font-size:22px; flex-shrink:0;">🎨</div>`}
                             <div style="flex:1; min-width:0;">
-                                <div style="font-size:14px; font-weight:700; color:var(--text-primary); white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">${order.product ? order.product.title_en : 'Product'}</div>
+                                <div style="font-size:14px; font-weight:700; color:var(--text-primary); white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">${order.product ? escapeHTML(order.product.title_en) : 'Product'}</div>
                                 <div style="font-size:12px; color:var(--text-secondary); margin-top:2px;">Qty: ${order.quantity} &nbsp;·&nbsp; ${dateStr}</div>
                                 <div style="margin-top:8px; display:flex; align-items:center; justify-content:space-between;">
-                                    <span style="background:${statusColor}18; color:${statusColor}; font-size:11px; font-weight:700; padding:3px 10px; border-radius:20px; text-transform:capitalize;">${order.status.replace('_',' ')}</span>
+                                    <span style="background:${statusColor}18; color:${statusColor}; font-size:11px; font-weight:700; padding:3px 10px; border-radius:20px; text-transform:capitalize;">${escapeHTML(order.status.replace('_',' '))}</span>
                                     <span style="font-size:15px; font-weight:800; color:var(--primary-color);">₹${parseFloat(order.total_payable||order.total_amount).toFixed(2)}</span>
                                 </div>
                             </div>
@@ -6002,6 +6039,10 @@
                 <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>
                 <span>My Wishlist</span>
             </div>
+            <div class="sheet-action-item" id="sheet-verify-artwork-item" onclick="closeAccountSheet(); alert('Artwork Verification requested. Our team will review your application soon.');">
+                <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/><path d="M9 12l2 2 4-4"/></svg>
+                <span>Verify My Artwork</span>
+            </div>
             <div class="sheet-action-item" onclick="closeAccountSheet(); switchRoleNavTab('account');">
                 <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
                 <span>Profile Settings</span>
@@ -6030,4 +6071,5 @@
 
 </body>
 </html>
+
 
