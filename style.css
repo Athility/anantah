@@ -650,12 +650,20 @@ h1, h2, h3, h4, h5, h6, .brand-font {
     gap: 16px;
     align-items: center;
     position: relative;
+    width: 100%;
+    max-width: 100%;
+    min-width: 0;
+    box-sizing: border-box;
 }
 
-@media (max-width: 580px) {
+@media (max-width: 768px) {
     .preview-grid {
         grid-template-columns: 1fr;
-        gap: 14px;
+        gap: 12px;
+        width: 100%;
+        max-width: 100%;
+        min-width: 0;
+        box-sizing: border-box;
     }
 }
 
@@ -671,6 +679,22 @@ h1, h2, h3, h4, h5, h6, .brand-font {
     align-items: center;
     justify-content: center;
     transition: var(--transition-smooth);
+    width: 100%;
+    max-width: 100%;
+    min-width: 0;
+    box-sizing: border-box;
+}
+
+@media (max-width: 768px) {
+    .preview-box {
+        min-height: 0 !important;
+        width: 100%;
+        max-width: 100%;
+        min-width: 0;
+        aspect-ratio: 4 / 3;
+        box-sizing: border-box;
+        margin: 0 auto;
+    }
 }
 
 .preview-box:hover {
@@ -691,6 +715,7 @@ h1, h2, h3, h4, h5, h6, .brand-font {
     color: var(--text-light);
     text-align: center;
     pointer-events: none;
+    box-sizing: border-box;
 }
 
 .placeholder-icon-wrap {
@@ -767,13 +792,18 @@ h1, h2, h3, h4, h5, h6, .brand-font {
     font-size: 18px;
     box-shadow: 0 4px 10px rgba(75, 40, 109, 0.1);
     position: relative;
+    box-sizing: border-box;
 }
 
-@media (max-width: 580px) {
+@media (max-width: 768px) {
     .arrow-divider {
         transform: rotate(90deg);
         width: 34px;
         height: 34px;
+        margin: 2px auto;
+        justify-self: center;
+        align-self: center;
+        flex-shrink: 0;
     }
 }
 
@@ -5506,4 +5536,427 @@ h1, h2, h3, h4, h5, h6, .brand-font {
     padding: 16px 20px !important;
     margin: 0 !important;
     border-bottom: 1px solid rgba(0,0,0,0.04) !important;
+}
+
+/* ==========================================================================
+   AI Enhancement Studio & Listing Page — Mobile Responsiveness (< 768px)
+   ========================================================================== */
+@media (max-width: 768px) {
+    html,
+    body {
+        width: 100%;
+        max-width: 100%;
+        overflow-x: hidden;
+    }
+
+    *,
+    *::before,
+    *::after {
+        box-sizing: border-box;
+    }
+
+    /* Main container consistent padding */
+    .app-wrapper,
+    .main-container {
+        width: 100%;
+        max-width: 100%;
+        min-width: 0;
+        padding-left: 16px !important;
+        padding-right: 16px !important;
+        padding-bottom: 120px !important;
+        box-sizing: border-box;
+    }
+
+    /* Dashboard Header */
+    .dashboard-header {
+        margin-bottom: 14px;
+    }
+
+    .dashboard-title h2 {
+        font-size: 22px;
+    }
+
+    .dashboard-title p {
+        font-size: 13px;
+    }
+
+    /* Outer AI Enhancement Studio Card */
+    .refiner-card {
+        width: 100%;
+        max-width: 100%;
+        min-width: 0;
+        box-sizing: border-box;
+        padding: 20px 14px;
+        border-radius: 20px;
+        margin: 0 auto;
+    }
+
+    .studio-header {
+        text-align: center;
+        margin-bottom: 18px;
+        padding-bottom: 14px;
+    }
+
+    .refiner-card-title {
+        font-size: 20px;
+        margin-bottom: 6px;
+    }
+
+    .studio-subtitle {
+        font-size: 13px;
+        line-height: 1.45;
+        margin: 0 auto 12px auto;
+    }
+
+    /* Numbered Studio Step Sections */
+    .studio-step-section,
+    .enhancement-studio {
+        width: 100%;
+        max-width: 100%;
+        min-width: 0;
+        box-sizing: border-box;
+        padding: 16px 12px;
+        margin-bottom: 16px;
+        border-radius: 16px;
+    }
+
+    .studio-section-header {
+        display: flex;
+        align-items: flex-start;
+        gap: 10px;
+        margin-bottom: 14px;
+    }
+
+    .studio-step-indicator {
+        width: 26px;
+        height: 26px;
+        font-size: 13px;
+    }
+
+    .studio-section-title {
+        font-size: 15px;
+        margin-bottom: 2px;
+    }
+
+    .studio-section-sub {
+        font-size: 12px;
+        line-height: 1.35;
+    }
+
+    /* Step 1: Upload Pill Container */
+    .custom-pill-upload-container {
+        width: 100%;
+        max-width: 100%;
+        min-width: 0;
+        box-sizing: border-box;
+        padding: 4px;
+        padding-left: 14px;
+        height: 50px;
+    }
+
+    .upload-left-side {
+        width: 100%;
+        min-width: 0;
+        padding-right: 96px;
+        font-size: 13px;
+        gap: 8px;
+    }
+
+    .pill-upload-btn-wrapper {
+        right: 4px;
+        top: 4px;
+        bottom: 4px;
+        width: calc(100% - 8px);
+    }
+
+    .pill-upload-btn {
+        padding: 0 16px;
+        font-size: 13px;
+    }
+
+    /* Step 2: Before / After Viewer */
+    .preview-container {
+        width: 100%;
+        max-width: 100%;
+        min-width: 0;
+        box-sizing: border-box;
+        padding: 14px 12px;
+        border-radius: 16px;
+    }
+
+    .preview-grid {
+        display: grid;
+        grid-template-columns: 1fr;
+        gap: 12px;
+        width: 100%;
+        max-width: 100%;
+        min-width: 0;
+        box-sizing: border-box;
+        align-items: center;
+        justify-content: center;
+    }
+
+    .preview-box,
+    .original-card,
+    .refined-card,
+    .image-comparison-card {
+        width: 100%;
+        max-width: 100%;
+        min-width: 0;
+        min-height: 0 !important;
+        aspect-ratio: 4 / 3;
+        box-sizing: border-box;
+        border-radius: 14px;
+        margin: 0 auto;
+    }
+
+    .preview-placeholder {
+        padding: 12px;
+        box-sizing: border-box;
+    }
+
+    .placeholder-icon-wrap {
+        width: 44px;
+        height: 44px;
+        margin-bottom: 8px;
+    }
+
+    .placeholder-icon-wrap svg {
+        width: 24px;
+        height: 24px;
+    }
+
+    .placeholder-title {
+        font-size: 13px;
+        margin-bottom: 2px;
+    }
+
+    .placeholder-hint {
+        font-size: 11px;
+    }
+
+    .preview-badge {
+        top: 8px;
+        left: 8px;
+        padding: 3px 10px;
+        font-size: 10px;
+    }
+
+    /* Centered Transformation Arrow */
+    .arrow-divider {
+        transform: rotate(90deg);
+        width: 34px;
+        height: 34px;
+        margin: 2px auto;
+        justify-self: center;
+        align-self: center;
+        flex-shrink: 0;
+    }
+
+    /* Enhancement Tools Section */
+    .tools-box {
+        width: 100%;
+        max-width: 100%;
+        min-width: 0;
+        box-sizing: border-box;
+        padding: 12px 10px;
+        margin-top: 14px;
+        border-radius: 14px;
+    }
+
+    .tools-header-row {
+        display: flex;
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 3px;
+        margin-bottom: 10px;
+    }
+
+    .tools-title {
+        font-size: 11px;
+    }
+
+    .tools-note {
+        font-size: 10.5px;
+    }
+
+    .tools-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(80px, 1fr));
+        gap: 8px;
+        width: 100%;
+        max-width: 100%;
+        min-width: 0;
+        box-sizing: border-box;
+    }
+
+    .tool-btn {
+        width: 100%;
+        max-width: 100%;
+        min-width: 0;
+        box-sizing: border-box;
+        padding: 10px 4px;
+        border-radius: 12px;
+        gap: 4px;
+        overflow: hidden;
+    }
+
+    .tool-icon-wrap {
+        width: 28px;
+        height: 28px;
+        border-radius: 7px;
+    }
+
+    .tool-icon {
+        width: 16px;
+        height: 16px;
+    }
+
+    .tool-label {
+        font-size: 10.5px;
+        max-width: 100%;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+    }
+
+    /* Step 3: Product Details Grid */
+    .product-details-grid {
+        display: grid;
+        grid-template-columns: 1fr;
+        gap: 12px;
+        width: 100%;
+        max-width: 100%;
+        min-width: 0;
+        box-sizing: border-box;
+    }
+
+    /* Step 4: Submit CTA */
+    .studio-submit-wrap {
+        width: 100%;
+        box-sizing: border-box;
+        margin-top: 8px;
+    }
+
+    .btn-studio-submit {
+        width: 100%;
+        max-width: 100%;
+        box-sizing: border-box;
+        padding: 14px 20px;
+        font-size: 15px;
+    }
+
+    /* Mobile Floating Bottom Nav Containment */
+    .mobile-bottom-nav {
+        width: calc(100% - 32px);
+        max-width: 440px;
+        left: 50%;
+        transform: translateX(-50%);
+        box-sizing: border-box;
+    }
+}
+
+/* Extra-Narrow Mobile Viewports (<= 360px) */
+@media (max-width: 360px) {
+    .app-wrapper,
+    .main-container {
+        padding-left: 12px !important;
+        padding-right: 12px !important;
+    }
+
+    .refiner-card {
+        padding: 14px 10px;
+        border-radius: 16px;
+    }
+
+    .studio-step-section,
+    .enhancement-studio {
+        padding: 12px 8px;
+        border-radius: 12px;
+    }
+
+    .preview-container {
+        padding: 10px 8px;
+        border-radius: 12px;
+    }
+
+    .preview-placeholder {
+        padding: 8px;
+    }
+
+    .placeholder-icon-wrap {
+        width: 38px;
+        height: 38px;
+        margin-bottom: 6px;
+    }
+
+    .placeholder-icon-wrap svg {
+        width: 20px;
+        height: 20px;
+    }
+
+    .placeholder-title {
+        font-size: 12px;
+    }
+
+    .placeholder-hint {
+        font-size: 10px;
+    }
+
+    .tools-grid {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 6px;
+    }
+
+    .tool-btn {
+        padding: 8px 3px;
+    }
+
+    .tool-label {
+        font-size: 9.5px;
+    }
+
+    .custom-pill-upload-container {
+        padding-left: 10px;
+        height: 46px;
+    }
+
+    .upload-left-side {
+        padding-right: 80px;
+        font-size: 12px;
+        gap: 6px;
+    }
+
+    .pill-upload-btn {
+        padding: 0 12px;
+        font-size: 12px;
+    }
+
+    .mobile-bottom-nav {
+        width: calc(100% - 16px);
+        bottom: 10px;
+        height: 58px;
+        padding: 0 4px;
+    }
+
+    .mobile-nav-item {
+        font-size: 9px;
+    }
+
+    .mobile-nav-item svg {
+        width: 18px;
+        height: 18px;
+    }
+
+    .mobile-nav-item.nav-center-item {
+        width: 48px;
+        height: 48px;
+        flex: 0 0 48px;
+        top: -12px;
+    }
+
+    .mobile-nav-item.nav-center-item svg {
+        width: 20px;
+        height: 20px;
+    }
 }
