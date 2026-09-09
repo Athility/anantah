@@ -290,3 +290,226 @@ class PublicCatalogAndGuestBrowsingTests(TestCase):
         self.assertIn(self.draft_product.id, returned_ids)
 
 
+# ─────────────────────────────────────────────────────────────────────────────
+# Analytics Tests
+# ─────────────────────────────────────────────────────────────────────────────
+
+from decimal import Decimal
+from accounts.models import ArtisanProfile, BuyerProfile
+from cart.models import Order, Address
+
+
+def _make_address(user):
+    """Helper: create a minimal Address for Order creation."""
+    return Address.objects.create(
+        user=user,
+        full_name='Test Buyer',
+        phone='9999999999',
+        line1='1 Test Street',
+        city='Mumbai',
+        state='Maharashtra',
+        postal_code='400001',
+    )
+
+
+class AnalyticsTests(TestCase):
+    """
+    12 regression tests for GET /api/listings/analytics/ and
+    POST /api/listings/<id>/view/.
+
+    Covers: authentication, role enforcement, artisan isolation (IDOR),
+    revenue filtering by order status, view counting accuracy, empty states,
+    and absence of private buyer data in responses.
+    """
+
+    def setUp(self):
+        self.client = APIClient()
+
+        # ── Artisan A ────────────────────────────────────────────────────────
+        self.artisan_user = User.objects.create_user(
+            username='artisan_ana', phone='1010101010', password='pass', role='artisan'
+        )
+        self.artisan_profile = ArtisanProfile.objects.create(user=self.artisan_user)
+
+        # ── Artisan B (another artisan — used for isolation tests) ───────────
+        self.artisan_user_b = User.objects.create_user(
+            username='artisan_bob', phone='2020202020', password='pass', role='artisan'
+        )
+        self.artisan_profile_b = ArtisanProfile.objects.create(user=self.artisan_user_b)
+
+        # ── Buyer ────────────────────────────────────────────────────────────
+        self.buyer_user = User.objects.create_user(
+            username='buyer_bina', phone='3030303030', password='pass', role='buyer'
+        )
+        self.buyer_profile = BuyerProfile.objects.create(user=self.buyer_user)
+        self.address = _make_address(self.buyer_user)
+
+        # ── Artisan A's products ──────────────────────────────────────────────
+        self.product_a1 = Product.objects.create(
+            artisan=self.artisan_profile,
+            title_en='Vase A1',
+            price=Decimal('400.00'),
+            raw_image='products/raw/test.jpg',
+            status='live',
+            view_count=10,
+        )
+        self.product_a2 = Product.objects.create(
+            artisan=self.artisan_profile,
+            title_en='Basket A2',
+            price=Decimal('250.00'),
+            raw_image='products/raw/test2.jpg',
+            status='live',
+            view_count=5,
+        )
+
+        # ── Artisan B's product ───────────────────────────────────────────────
+        self.product_b1 = Product.objects.create(
+            artisan=self.artisan_profile_b,
+            title_en='Bowl B1',
+            price=Decimal('300.00'),
+            raw_image='products/raw/test3.jpg',
+            status='live',
+        )
+
+    def _make_order(self, artisan_profile, product, status_val, amount='400.00'):
+        return Order.objects.create(
+            buyer=self.buyer_profile,
+            product=product,
+            artisan=artisan_profile,
+            shipping_address=self.address,
+            quantity=1,
+            total_amount=Decimal(amount),
+            product_total=Decimal(amount),
+            status=status_val,
+        )
+
+    # ── Test 1 ───────────────────────────────────────────────────────────────
+    def test_1_authenticated_artisan_can_access_analytics(self):
+        """Artisan gets HTTP 200 and correct top-level keys."""
+        self.client.force_authenticate(user=self.artisan_user)
+        response = self.client.get('/api/listings/analytics/')
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        data = response.json()
+        self.assertIn('summary', data)
+        self.assertIn('products', data)
+        self.assertIn('recent_orders', data)
+
+    # ── Test 2 ───────────────────────────────────────────────────────────────
+    def test_2_buyer_cannot_access_analytics(self):
+        """Buyer receives HTTP 403."""
+        self.client.force_authenticate(user=self.buyer_user)
+        response = self.client.get('/api/listings/analytics/')
+        self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
+
+    # ── Test 3 ───────────────────────────────────────────────────────────────
+    def test_3_unauthenticated_cannot_access_analytics(self):
+        """Unauthenticated request receives HTTP 401."""
+        response = self.client.get('/api/listings/analytics/')
+        self.assertEqual(response.status_code, status.HTTP_401_UNAUTHORIZED)
+
+    # ── Test 4 ───────────────────────────────────────────────────────────────
+    def test_4_artisan_only_sees_own_products(self):
+        """Artisan A's analytics products list does not include Artisan B's product."""
+        self.client.force_authenticate(user=self.artisan_user)
+        response = self.client.get('/api/listings/analytics/')
+        product_ids = [p['id'] for p in response.json()['products']]
+        self.assertIn(self.product_a1.id, product_ids)
+        self.assertIn(self.product_a2.id, product_ids)
+        self.assertNotIn(self.product_b1.id, product_ids)
+
+    # ── Test 5 ───────────────────────────────────────────────────────────────
+    def test_5_artisan_only_sees_own_orders(self):
+        """Artisan A's recent_orders does not include Artisan B's orders."""
+        order_a = self._make_order(self.artisan_profile, self.product_a1, 'paid')
+        order_b = self._make_order(self.artisan_profile_b, self.product_b1, 'paid')
+
+        self.client.force_authenticate(user=self.artisan_user)
+        response = self.client.get('/api/listings/analytics/')
+        order_ids = [o['id'] for o in response.json()['recent_orders']]
+        self.assertIn(order_a.id, order_ids)
+        self.assertNotIn(order_b.id, order_ids)
+
+    # ── Test 6 ───────────────────────────────────────────────────────────────
+    def test_6_revenue_excludes_cancelled_orders(self):
+        """Cancelled orders do not contribute to total_revenue."""
+        self._make_order(self.artisan_profile, self.product_a1, 'cancelled', '400.00')
+        self.client.force_authenticate(user=self.artisan_user)
+        response = self.client.get('/api/listings/analytics/')
+        self.assertEqual(response.json()['summary']['total_revenue'], '0.00')
+
+    # ── Test 7 ───────────────────────────────────────────────────────────────
+    def test_7_revenue_excludes_payment_failed_orders(self):
+        """payment_failed orders do not contribute to total_revenue."""
+        self._make_order(self.artisan_profile, self.product_a1, 'payment_failed', '400.00')
+        self.client.force_authenticate(user=self.artisan_user)
+        response = self.client.get('/api/listings/analytics/')
+        self.assertEqual(response.json()['summary']['total_revenue'], '0.00')
+
+    # ── Test 8 ───────────────────────────────────────────────────────────────
+    def test_8_revenue_excludes_created_unpaid_orders(self):
+        """'created' (unpaid) orders do not contribute to total_revenue."""
+        self._make_order(self.artisan_profile, self.product_a1, 'created', '400.00')
+        self.client.force_authenticate(user=self.artisan_user)
+        response = self.client.get('/api/listings/analytics/')
+        self.assertEqual(response.json()['summary']['total_revenue'], '0.00')
+
+    # ── Test 9 ───────────────────────────────────────────────────────────────
+    def test_9_multi_artisan_revenue_attributed_to_correct_artisan(self):
+        """
+        When orders from two artisans exist, each artisan only sees
+        their own product_total in total_revenue.
+        """
+        self._make_order(self.artisan_profile,   self.product_a1, 'paid', '400.00')
+        self._make_order(self.artisan_profile_b, self.product_b1, 'paid', '300.00')
+
+        self.client.force_authenticate(user=self.artisan_user)
+        resp_a = self.client.get('/api/listings/analytics/')
+        self.assertEqual(resp_a.json()['summary']['total_revenue'], '400.00')
+
+        self.client.force_authenticate(user=self.artisan_user_b)
+        resp_b = self.client.get('/api/listings/analytics/')
+        self.assertEqual(resp_b.json()['summary']['total_revenue'], '300.00')
+
+    # ── Test 10 ──────────────────────────────────────────────────────────────
+    def test_10_product_view_count_increments(self):
+        """POST /api/listings/<id>/view/ atomically increments view_count for live products."""
+        initial = self.product_a1.view_count  # 10 from setUp
+        response = self.client.post(f'/api/listings/{self.product_a1.id}/view/')
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.product_a1.refresh_from_db()
+        self.assertEqual(self.product_a1.view_count, initial + 1)
+
+    # ── Test 11 ──────────────────────────────────────────────────────────────
+    def test_11_empty_artisan_returns_valid_zero_analytics(self):
+        """An artisan with no products returns a valid response with zero values."""
+        empty_user = User.objects.create_user(
+            username='artisan_empty', phone='4040404040', password='pass', role='artisan'
+        )
+        ArtisanProfile.objects.create(user=empty_user)
+        self.client.force_authenticate(user=empty_user)
+        response = self.client.get('/api/listings/analytics/')
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        summary = response.json()['summary']
+        self.assertEqual(summary['total_listings'], 0)
+        self.assertEqual(summary['total_views'], 0)
+        self.assertEqual(summary['total_orders'], 0)
+        self.assertEqual(summary['total_revenue'], '0.00')
+        self.assertEqual(response.json()['products'], [])
+        self.assertEqual(response.json()['recent_orders'], [])
+
+    # ── Test 12 ──────────────────────────────────────────────────────────────
+    def test_12_recent_orders_do_not_expose_buyer_private_info(self):
+        """recent_orders must not contain buyer phone, address, or payment secrets."""
+        self._make_order(self.artisan_profile, self.product_a1, 'paid')
+        self.client.force_authenticate(user=self.artisan_user)
+        response = self.client.get('/api/listings/analytics/')
+        for order in response.json()['recent_orders']:
+            self.assertNotIn('phone', order)
+            self.assertNotIn('buyer_phone', order)
+            self.assertNotIn('shipping_address', order)
+            self.assertNotIn('razorpay_payment_id', order)
+            self.assertNotIn('razorpay_order_id', order)
+            self.assertNotIn('buyer', order)
+            # Permitted fields only
+            expected_keys = {'id', 'product_title', 'quantity', 'amount', 'status', 'created_at'}
+            self.assertEqual(set(order.keys()), expected_keys)

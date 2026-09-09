@@ -119,6 +119,10 @@
         <!-- 3. LOGIN SCREEN -->
         <section id="screen-login" class="screen">
             <div class="form-container">
+                <button id="btn-login-back" onclick="navigateTo('onboarding')" style="display:inline-flex;align-items:center;gap:6px;background:none;border:none;cursor:pointer;color:var(--primary-color);font-size:14px;font-weight:600;padding:0 0 18px 0;letter-spacing:0.01em;">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"/></svg>
+                    Back
+                </button>
                 <div class="form-header">
                     <h2>Welcome Back</h2>
                     <p>Enter your credentials to access your dashboard</p>
@@ -386,6 +390,106 @@
                     <div style="grid-column: 1/-1; text-align: center; color: var(--text-secondary); padding: 40px;" id="artisan-empty-state">
                         You haven't listed any products yet.
                     </div>
+                </div>
+            </div>
+
+            <!-- Tab: New Frame (Coming Soon) -->
+            <div id="artisan-view-frame" class="artisan-tab-view" style="display: none;">
+                <div style="background: var(--bg-card); border: 1px solid var(--border-color); border-radius: 24px; padding: 40px 24px; text-align: center; max-width: 600px; margin: 20px auto; box-shadow: var(--shadow-premium);">
+                    <div style="width: 64px; height: 64px; border-radius: 20px; background: var(--primary-light); color: var(--primary-color); display: flex; align-items: center; justify-content: center; margin: 0 auto 20px auto;">
+                        <svg width="32" height="32" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="3"/><path d="M3 9h18M9 21V9"/></svg>
+                    </div>
+                    <h3 class="brand-font" style="font-size: 24px; color: var(--primary-color); margin-bottom: 8px;">New Frame</h3>
+                    <p style="color: var(--text-secondary); font-size: 14px; line-height: 1.6; margin-bottom: 20px;">Create and manage custom frames for your products and showcase them in unique styles.</p>
+                    <span style="display: inline-block; background: var(--accent-gold); color: #22162B; font-weight: 700; font-size: 11px; padding: 6px 14px; border-radius: 20px; text-transform: uppercase; letter-spacing: 0.5px;">Launching Soon</span>
+                </div>
+            </div>
+
+            <!-- Tab: Analytics View -->
+            <div id="artisan-view-analytics" class="artisan-tab-view" style="display: none;">
+                <div class="analytics-page-header">
+                    <div style="display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 12px;">
+                        <div>
+                            <h2 class="analytics-page-title">Analytics</h2>
+                            <p class="analytics-page-subtitle">Track how your products are performing.</p>
+                        </div>
+                        <div class="analytics-refresh-row" style="margin-bottom: 0;">
+                            <span class="analytics-updated-text" id="analytics-updated-label">Updated just now</span>
+                            <button type="button" class="analytics-refresh-btn" id="analytics-refresh-btn" onclick="ArtisanAnalytics.fetch(true)">
+                                <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                                    <path d="M21.5 2v6h-6M21.34 15.57a10 10 0 1 1-.57-8.38l5.67-5.67"/>
+                                </svg>
+                                <span>Refresh</span>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Error Notice Bar (preserved cache banner) -->
+                <div id="analytics-error-bar" class="analytics-error-bar" style="display: none;">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+                    <span id="analytics-error-message" style="flex:1;">Unable to refresh analytics. Showing latest cached data.</span>
+                    <button type="button" onclick="ArtisanAnalytics.fetch(true)" style="background:none; border:none; color:inherit; font-weight:700; cursor:pointer; text-decoration:underline;">Retry</button>
+                </div>
+
+                <!-- KPI Cards Grid -->
+                <div class="analytics-kpi-grid" id="analytics-kpi-container">
+                    <div class="analytics-kpi-card" id="kpi-listings">
+                        <div class="analytics-kpi-label">Total Listings</div>
+                        <div class="analytics-kpi-value" id="kpi-listings-val">—</div>
+                        <div class="analytics-kpi-sub" id="kpi-listings-sub">In your artisan catalog</div>
+                    </div>
+                    <div class="analytics-kpi-card" id="kpi-views">
+                        <div class="analytics-kpi-label">Total Views</div>
+                        <div class="analytics-kpi-value" id="kpi-views-val">—</div>
+                        <div class="analytics-kpi-sub" id="kpi-views-sub">Across all live products</div>
+                    </div>
+                    <div class="analytics-kpi-card" id="kpi-orders">
+                        <div class="analytics-kpi-label">Total Orders</div>
+                        <div class="analytics-kpi-value" id="kpi-orders-val">—</div>
+                        <div class="analytics-kpi-sub" id="kpi-orders-sub">Fulfilled &amp; in-progress</div>
+                    </div>
+                    <div class="analytics-kpi-card" id="kpi-revenue">
+                        <div class="analytics-kpi-label">Total Revenue</div>
+                        <div class="analytics-kpi-value" id="kpi-revenue-val">—</div>
+                        <div class="analytics-kpi-sub" id="kpi-revenue-sub">From paid orders</div>
+                    </div>
+                </div>
+
+                <!-- Product Performance Section -->
+                <div class="analytics-section-header">
+                    <h3 class="analytics-section-title">Product Performance</h3>
+                </div>
+
+                <!-- Desktop Table View -->
+                <div class="analytics-product-table-wrap" id="analytics-table-wrap">
+                    <table class="analytics-product-table">
+                        <thead>
+                            <tr>
+                                <th>Product</th>
+                                <th style="text-align: right;">Views</th>
+                                <th style="text-align: right;">Orders</th>
+                                <th style="text-align: right;">Revenue</th>
+                                <th style="text-align: center;">Status</th>
+                            </tr>
+                        </thead>
+                        <tbody id="analytics-product-tbody">
+                            <!-- Filled dynamically -->
+                        </tbody>
+                    </table>
+                </div>
+
+                <!-- Mobile Stacked Cards View -->
+                <div class="analytics-product-cards" id="analytics-product-cards">
+                    <!-- Filled dynamically -->
+                </div>
+
+                <!-- Recent Orders Section -->
+                <div class="analytics-section-header" style="margin-top: 20px;">
+                    <h3 class="analytics-section-title">Recent Orders</h3>
+                </div>
+                <div class="analytics-orders-list" id="analytics-orders-list">
+                    <!-- Filled dynamically -->
                 </div>
             </div>
 
@@ -1550,6 +1654,9 @@
         // Core Helper: Navigation between screens with SPA history support
         function navigateTo(screenKey, pushHistory = true) {
             if (typeof closeProductDetailModal === 'function') closeProductDetailModal();
+            if (screenKey !== 'artisanDashboard' && window.ArtisanAnalytics) {
+                window.ArtisanAnalytics.stopPolling();
+            }
             if (pushHistory && history.state?.screen !== screenKey) {
                 history.pushState({ screen: screenKey }, '', '#' + screenKey);
             }
@@ -1609,7 +1716,7 @@
 
         // Centralized Route Maps for SPA Routing
         const VALID_BUYER_ROUTES = ['shop', 'reels', 'discover', 'search', 'cart', 'wishlist', 'orders', 'account', 'productDetail'];
-        const VALID_ARTISAN_ROUTES = ['home', 'my-listings', 'new-listing', 'communities', 'account'];
+        const VALID_ARTISAN_ROUTES = ['home', 'my-listings', 'new-listing', 'communities', 'account', 'analytics'];
 
         // SPA History popstate listener
         window.addEventListener('popstate', (e) => {
@@ -1922,7 +2029,7 @@
             if (!currentUser || currentUser.role !== 'artisan') return;
             navigateTo('artisanDashboard');
             const vComing = document.getElementById('artisan-view-coming');
-            const artisanViews = ['artisan-view-listings', 'artisan-view-create', 'artisan-view-communities', 'artisan-view-account'];
+                const artisanViews = ['artisan-view-listings', 'artisan-view-frame', 'artisan-view-analytics', 'artisan-view-create', 'artisan-view-communities', 'artisan-view-account'];
             artisanViews.forEach(vId => {
                 const v = document.getElementById(vId);
                 if (v) v.style.display = 'none';
@@ -2021,15 +2128,15 @@
             artisan: [
                 {
                     id: 'home',
-                    label: 'Home',
+                    label: 'My Listings',
                     icon: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m3 9 9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>`,
                     targetView: 'artisan-view-listings'
                 },
                 {
                     id: 'my-listings',
-                    label: 'My Listings',
+                    label: 'New Frame',
                     icon: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="7" height="9" x="3" y="3" rx="1"/><rect width="7" height="5" x="14" y="3" rx="1"/><rect width="7" height="9" x="14" y="12" rx="1"/><rect width="7" height="5" x="3" y="16" rx="1"/></svg>`,
-                    targetView: 'artisan-view-listings'
+                    targetView: 'artisan-view-frame'
                 },
                 {
                     id: 'new-listing',
@@ -2050,6 +2157,13 @@
                     isAccount: true,
                     icon: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>`,
                     targetView: 'artisan-view-account'
+                },
+                {
+                    id: 'analytics',
+                    label: 'Analytics',
+                    isHidden: true,  // Not rendered in nav bar — accessed via account dropdown only
+                    icon: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg>`,
+                    targetView: 'artisan-view-analytics'
                 }
             ],
             buyer: [
@@ -2123,6 +2237,8 @@
             if (desktopList) {
                 desktopList.innerHTML = '';
                 items.forEach(item => {
+                    // isHidden items (e.g. analytics) are accessible via dropdown only — skip nav bar rendering
+                    if (item.isHidden) return;
                     const li = document.createElement('li');
                     
                     if (item.isAccount) {
@@ -2178,6 +2294,12 @@
                                             Verify My Artwork
                                         </div>
                                     ` : ''}
+                                    ${role === 'artisan' ? `
+                                        <div class="dropdown-nav-link" onclick="switchRoleNavTab('analytics')" tabindex="0" role="button" aria-label="Analytics">
+                                            <svg width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg>
+                                            Analytics
+                                        </div>
+                                    ` : ''}
                                     <div class="dropdown-nav-link danger" onclick="clearAuth()">
                                         <svg width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
                                         Logout
@@ -2219,6 +2341,7 @@
             if (mobileNav) {
                 mobileNav.innerHTML = '';
                 items.forEach(item => {
+                    if (item.isHidden) return; // analytics: accessible via account sheet only
                     const a = document.createElement('div');
                     a.className = `mobile-nav-item ${item.isCenter ? 'nav-center-item' : ''} ${activeRoleNavTab === item.id ? 'active' : ''}`;
                     a.setAttribute('data-tab-id', item.id);
@@ -2395,13 +2518,23 @@
             // Route to dashboard screen & view
             if (role === 'artisan') {
                 navigateTo('artisanDashboard');
-                const artisanViews = ['artisan-view-listings', 'artisan-view-create', 'artisan-view-communities', 'artisan-view-account'];
+                    const artisanViews = ['artisan-view-listings', 'artisan-view-frame', 'artisan-view-analytics', 'artisan-view-create', 'artisan-view-communities', 'artisan-view-account'];
                 artisanViews.forEach(vId => {
                     const v = document.getElementById(vId);
                     if (v) v.style.display = (vId === (item ? item.targetView : 'artisan-view-listings')) ? 'block' : 'none';
                 });
                 if (item && (item.id === 'home' || item.id === 'my-listings')) {
                     loadArtisanProducts();
+                }
+                if (item && item.id === 'analytics') {
+                    if (window.ArtisanAnalytics) {
+                        window.ArtisanAnalytics.startPolling();
+                        window.ArtisanAnalytics.fetch();
+                    }
+                } else {
+                    if (window.ArtisanAnalytics) {
+                        window.ArtisanAnalytics.stopPolling();
+                    }
                 }
             } else {
                 navigateTo('buyerDashboard');
@@ -2439,16 +2572,19 @@
             const cartSection = document.getElementById('sheet-cart-section');
             const wishlistSection = document.getElementById('sheet-wishlist-item');
             const verifyArtworkSection = document.getElementById('sheet-verify-artwork-item');
+            const analyticsItem = document.getElementById('sheet-analytics-item');
             
             if (currentUser.role === 'buyer') {
                 cartSection.style.display = 'block';
                 if (wishlistSection) wishlistSection.style.display = 'flex';
                 if (verifyArtworkSection) verifyArtworkSection.style.display = 'flex';
+                if (analyticsItem) analyticsItem.style.display = 'none';
                 fetchCartForNav();
             } else {
                 cartSection.style.display = 'none';
                 if (wishlistSection) wishlistSection.style.display = 'none';
                 if (verifyArtworkSection) verifyArtworkSection.style.display = 'none';
+                if (analyticsItem) analyticsItem.style.display = 'flex';
             }
 
             backdrop.classList.add('show');
@@ -2578,7 +2714,7 @@
                         navigateTo('about', false);
                     } else if (currentUser.role === 'artisan') {
                         navigateTo('artisanDashboard', false);
-                        const artisanValidTabs = ['home', 'my-listings', 'new-listing', 'communities', 'account'];
+                        const artisanValidTabs = ['home', 'my-listings', 'new-listing', 'communities', 'account', 'analytics'];
                         const targetTab = (rawHash && artisanValidTabs.includes(rawHash)) ? rawHash : (sessionStorage.getItem('anantah_active_tab') || 'home');
                         switchRoleNavTab(targetTab);
                         loadArtisanProducts();
@@ -2655,6 +2791,11 @@
             sessionStorage.removeItem('anantah_active_tab');
             sessionStorage.removeItem('anantah_buyer_tab');
             sessionStorage.removeItem('anantah_artisan_tab');
+            if (window.ArtisanAnalytics) {
+                window.ArtisanAnalytics.stopPolling();
+                window.ArtisanAnalytics._lastData = null;
+                window.ArtisanAnalytics._lastUpdated = null;
+            }
             if (localStorage.getItem('selected_language')) {
                 navigateTo('login');
             } else {
@@ -3697,6 +3838,360 @@
         }
 
         // =====================================================================
+        // ARTISAN ANALYTICS MODULE (V1)
+        // =====================================================================
+        const ArtisanAnalytics = {
+            _pollTimer: null,
+            _timeUpdateTimer: null,
+            _isFetching: false,
+            _lastData: null,
+            _lastUpdated: null,
+
+            formatCurrency(val) {
+                const num = Number(val) || 0;
+                return '₹' + num.toLocaleString('en-IN', {
+                    minimumFractionDigits: 2,
+                    maximumFractionDigits: 2
+                });
+            },
+
+            formatRelativeTime(date) {
+                if (!date) return 'Updated just now';
+                const sec = Math.floor((Date.now() - date.getTime()) / 1000);
+                if (sec < 10) return 'Updated just now';
+                if (sec < 60) return `Updated ${sec}s ago`;
+                const min = Math.floor(sec / 60);
+                if (min < 60) return `Updated ${min}m ago`;
+                const hr = Math.floor(min / 60);
+                return `Updated ${hr}h ago`;
+            },
+
+            formatDate(isoStr) {
+                if (!isoStr) return '—';
+                try {
+                    const d = new Date(isoStr);
+                    return d.toLocaleDateString('en-IN', {
+                        day: '2-digit',
+                        month: 'short',
+                        year: 'numeric'
+                    });
+                } catch {
+                    return '—';
+                }
+            },
+
+            escapeHtml(str) {
+                if (!str) return '';
+                return String(str)
+                    .replace(/&/g, '&amp;')
+                    .replace(/</g, '&lt;')
+                    .replace(/>/g, '&gt;')
+                    .replace(/"/g, '&quot;')
+                    .replace(/'/g, '&#039;');
+            },
+
+            showSkeleton() {
+                const kpiVal = (id) => {
+                    const el = document.getElementById(id);
+                    if (el) el.innerHTML = '<span class="analytics-skeleton" style="width: 70px; height: 26px;"></span>';
+                };
+                kpiVal('kpi-listings-val');
+                kpiVal('kpi-views-val');
+                kpiVal('kpi-orders-val');
+                kpiVal('kpi-revenue-val');
+
+                const tbody = document.getElementById('analytics-product-tbody');
+                if (tbody) {
+                    tbody.innerHTML = `
+                        <tr>
+                            <td colspan="5" style="padding: 24px 16px;">
+                                <div class="analytics-skeleton" style="width: 100%; height: 28px; margin-bottom: 8px;"></div>
+                                <div class="analytics-skeleton" style="width: 80%; height: 28px;"></div>
+                            </td>
+                        </tr>
+                    `;
+                }
+
+                const mCards = document.getElementById('analytics-product-cards');
+                if (mCards) {
+                    mCards.innerHTML = `
+                        <div class="analytics-skeleton" style="width: 100%; height: 68px; margin-bottom: 8px; border-radius: 14px;"></div>
+                        <div class="analytics-skeleton" style="width: 100%; height: 68px; border-radius: 14px;"></div>
+                    `;
+                }
+
+                const oList = document.getElementById('analytics-orders-list');
+                if (oList) {
+                    oList.innerHTML = `
+                        <div class="analytics-skeleton" style="width: 100%; height: 56px; margin-bottom: 8px; border-radius: 14px;"></div>
+                        <div class="analytics-skeleton" style="width: 100%; height: 56px; border-radius: 14px;"></div>
+                    `;
+                }
+            },
+
+            renderSummary(summary) {
+                if (!summary) return;
+                const listingsVal = document.getElementById('kpi-listings-val');
+                const viewsVal = document.getElementById('kpi-views-val');
+                const ordersVal = document.getElementById('kpi-orders-val');
+                const revenueVal = document.getElementById('kpi-revenue-val');
+                const viewsSub = document.getElementById('kpi-views-sub');
+
+                if (listingsVal) listingsVal.textContent = summary.total_listings ?? 0;
+                if (viewsVal) viewsVal.textContent = (summary.total_views ?? 0).toLocaleString('en-IN');
+                if (viewsSub) {
+                    viewsSub.textContent = (summary.total_views === 0)
+                        ? 'View tracking active'
+                        : 'Across all live products';
+                }
+                if (ordersVal) ordersVal.textContent = summary.total_orders ?? 0;
+                if (revenueVal) revenueVal.textContent = this.formatCurrency(summary.total_revenue);
+            },
+
+            renderProducts(products) {
+                const tbody = document.getElementById('analytics-product-tbody');
+                const mCards = document.getElementById('analytics-product-cards');
+
+                if (!products || products.length === 0) {
+                    const emptyHtml = `
+                        <div class="analytics-empty-state">
+                            <div class="empty-icon">
+                                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/>
+                                    <polyline points="3.27 6.96 12 12.01 20.73 6.96"/>
+                                    <line x1="12" y1="22.08" x2="12" y2="12"/>
+                                </svg>
+                            </div>
+                            <div class="analytics-empty-title">No listings yet</div>
+                            <div>Create your first listing to start tracking performance.</div>
+                        </div>
+                    `;
+                    if (tbody) {
+                        tbody.innerHTML = `<tr><td colspan="5" style="padding: 0;">${emptyHtml}</td></tr>`;
+                    }
+                    if (mCards) {
+                        mCards.innerHTML = emptyHtml;
+                    }
+                    return;
+                }
+
+                // Desktop Table
+                if (tbody) {
+                    tbody.innerHTML = products.map(p => {
+                        const safeTitle = this.escapeHtml(p.title);
+                        const safeStatus = this.escapeHtml(p.status);
+                        const thumbHtml = p.image_url
+                            ? `<img class="analytics-product-thumb" src="${p.image_url}" alt="${safeTitle}" onerror="this.style.display='none'">`
+                            : `<span class="analytics-product-thumb-placeholder"><svg width="16" height="16" fill="none" stroke="var(--primary-color)" stroke-width="2" viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="2"/></svg></span>`;
+
+                        return `
+                            <tr>
+                                <td>
+                                    <div style="display: flex; align-items: center;">
+                                        ${thumbHtml}
+                                        <span style="font-weight: 600;">${safeTitle}</span>
+                                    </div>
+                                </td>
+                                <td style="text-align: right; font-weight: 600;">${(p.views || 0).toLocaleString('en-IN')}</td>
+                                <td style="text-align: right; font-weight: 600;">${p.orders || 0}</td>
+                                <td style="text-align: right; font-family: var(--brand-font, serif); font-weight: 700; color: var(--primary-color);">${this.formatCurrency(p.revenue)}</td>
+                                <td style="text-align: center;">
+                                    <span class="analytics-status-badge ${safeStatus}">${safeStatus}</span>
+                                </td>
+                            </tr>
+                        `;
+                    }).join('');
+                }
+
+                // Mobile Stacked Cards
+                if (mCards) {
+                    mCards.innerHTML = products.map(p => {
+                        const safeTitle = this.escapeHtml(p.title);
+                        const safeStatus = this.escapeHtml(p.status);
+                        const thumbHtml = p.image_url
+                            ? `<img class="analytics-product-thumb" src="${p.image_url}" alt="${safeTitle}" style="width: 44px; height: 44px;" onerror="this.style.display='none'">`
+                            : `<span class="analytics-product-thumb-placeholder" style="width: 44px; height: 44px;"><svg width="18" height="18" fill="none" stroke="var(--primary-color)" stroke-width="2" viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="2"/></svg></span>`;
+
+                        return `
+                            <div class="analytics-product-card-row">
+                                ${thumbHtml}
+                                <div class="analytics-product-card-info">
+                                    <div class="analytics-product-card-title">${safeTitle}</div>
+                                    <div class="analytics-product-card-meta">
+                                        <span class="analytics-product-card-stat">
+                                            <strong>${(p.views || 0).toLocaleString('en-IN')}</strong> views
+                                        </span>
+                                        <span>•</span>
+                                        <span class="analytics-product-card-stat">
+                                            <strong>${p.orders || 0}</strong> orders
+                                        </span>
+                                        <span>•</span>
+                                        <span style="font-weight: 700; color: var(--primary-color);">
+                                            ${this.formatCurrency(p.revenue)}
+                                        </span>
+                                    </div>
+                                </div>
+                                <span class="analytics-status-badge ${safeStatus}" style="flex-shrink: 0; align-self: center;">${safeStatus}</span>
+                            </div>
+                        `;
+                    }).join('');
+                }
+            },
+
+            renderOrders(orders) {
+                const container = document.getElementById('analytics-orders-list');
+                if (!container) return;
+
+                if (!orders || orders.length === 0) {
+                    container.innerHTML = `
+                        <div class="analytics-empty-state" style="background: var(--bg-card); border: 1px solid var(--border-color); border-radius: 16px;">
+                            <div class="empty-icon">
+                                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <circle cx="9" cy="21" r="1"/>
+                                    <circle cx="20" cy="21" r="1"/>
+                                    <path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"/>
+                                </svg>
+                            </div>
+                            <div class="analytics-empty-title">No orders yet</div>
+                            <div>Your sales activity will appear here.</div>
+                        </div>
+                    `;
+                    return;
+                }
+
+                container.innerHTML = orders.map(o => {
+                    const safeProd = this.escapeHtml(o.product_title || 'Craft Listing');
+                    const safeStatus = this.escapeHtml((o.status || 'paid').replace(/_/g, ' '));
+                    const orderDate = this.formatDate(o.created_at);
+                    const qty = o.quantity ? `Qty: ${o.quantity}` : '';
+
+                    return `
+                        <div class="analytics-order-card">
+                            <div class="analytics-order-product">${safeProd}</div>
+                            <div class="analytics-order-meta">
+                                <span>Order #${o.id}</span>
+                                ${qty ? `<span> • ${qty}</span>` : ''}
+                                <span> • ${orderDate}</span>
+                            </div>
+                            <div class="analytics-order-amount">${this.formatCurrency(o.amount)}</div>
+                            <div class="analytics-order-status">
+                                <span class="analytics-status-badge live" style="font-size: 10px; text-transform: capitalize;">${safeStatus}</span>
+                            </div>
+                        </div>
+                    `;
+                }).join('');
+            },
+
+            async fetch(isManual = false) {
+                if (this._isFetching) return;
+                this._isFetching = true;
+
+                const refreshBtn = document.getElementById('analytics-refresh-btn');
+                const errorBar = document.getElementById('analytics-error-bar');
+                if (isManual && refreshBtn) {
+                    refreshBtn.classList.add('spinning');
+                }
+
+                // If first time loading, display skeleton placeholders
+                if (!this._lastData) {
+                    this.showSkeleton();
+                }
+
+                try {
+                    const token = localStorage.getItem('access_token') || localStorage.getItem('accessToken');
+                    const res = await customFetch(`${CONFIG.API_BASE_URL}/listings/analytics/`, {
+                        headers: token ? { 'Authorization': `Bearer ${token}` } : {}
+                    });
+
+                    if (!res.ok) {
+                        throw new Error(`Analytics fetch failed with status ${res.status}`);
+                    }
+
+                    const data = await res.json();
+                    this._lastData = data;
+                    this._lastUpdated = new Date();
+
+                    if (errorBar) errorBar.style.display = 'none';
+
+                    this.renderSummary(data.summary);
+                    this.renderProducts(data.products);
+                    this.renderOrders(data.recent_orders);
+                    this.updateTimeLabel();
+                } catch (err) {
+                    console.warn('[ArtisanAnalytics] Fetch error:', err);
+                    if (this._lastData) {
+                        // Preserve existing values, show subtle error notice
+                        if (errorBar) {
+                            errorBar.style.display = 'flex';
+                            const msgEl = document.getElementById('analytics-error-message');
+                            if (msgEl) msgEl.textContent = 'Unable to refresh analytics. Showing latest cached data.';
+                        }
+                    } else {
+                        // Initial load error
+                        if (errorBar) {
+                            errorBar.style.display = 'flex';
+                            const msgEl = document.getElementById('analytics-error-message');
+                            if (msgEl) msgEl.textContent = 'Could not load analytics. Please check your connection and retry.';
+                        }
+                    }
+                } finally {
+                    this._isFetching = false;
+                    if (refreshBtn) {
+                        refreshBtn.classList.remove('spinning');
+                    }
+                }
+            },
+
+            updateTimeLabel() {
+                const label = document.getElementById('analytics-updated-label');
+                if (label && this._lastUpdated) {
+                    label.textContent = this.formatRelativeTime(this._lastUpdated);
+                }
+            },
+
+            startPolling() {
+                this.stopPolling();
+                // Periodic background poll every 60s while tab is visible and analytics tab is active
+                this._pollTimer = setInterval(() => {
+                    if (!document.hidden && activeRoleNavTab === 'analytics') {
+                        this.fetch();
+                    }
+                }, 60000);
+
+                // Relative time label updater every 10s
+                this._timeUpdateTimer = setInterval(() => {
+                    this.updateTimeLabel();
+                }, 10000);
+
+                // Listen for Page Visibility API
+                if (!this._visibilityBound) {
+                    this._visibilityBound = true;
+                    document.addEventListener('visibilitychange', () => {
+                        if (!document.hidden && activeRoleNavTab === 'analytics') {
+                            const now = Date.now();
+                            const lastTime = this._lastUpdated ? this._lastUpdated.getTime() : 0;
+                            if (now - lastTime > 60000) {
+                                this.fetch();
+                            }
+                        }
+                    });
+                }
+            },
+
+            stopPolling() {
+                if (this._pollTimer) {
+                    clearInterval(this._pollTimer);
+                    this._pollTimer = null;
+                }
+                if (this._timeUpdateTimer) {
+                    clearInterval(this._timeUpdateTimer);
+                    this._timeUpdateTimer = null;
+                }
+            }
+        };
+        window.ArtisanAnalytics = ArtisanAnalytics;
+
+        // =====================================================================
         // WISHLIST MODULE
         // =====================================================================
         let userWishlistMap = {}; // product_id -> item_id
@@ -4006,6 +4501,14 @@
 
         function openProductDetailModal(product, pushHistory = true) {
             if (!product) return;
+
+            // Atomic real view counter — recorded when user opens product detail
+            if (product.id) {
+                fetch(`${CONFIG.API_BASE_URL}/listings/${product.id}/view/`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' }
+                }).catch(() => {});
+            }
 
             const displayImage = getMediaUrl(product.refined_image_url || product.raw_image_url || 'anantah_logo.png');
             const artisanName = product.artisan_name || 'Master Artisan';
@@ -6119,6 +6622,10 @@
             <div class="sheet-action-item" onclick="closeAccountSheet(); switchRoleNavTab('account');">
                 <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
                 <span>Profile Settings</span>
+            </div>
+            <div class="sheet-action-item" id="sheet-analytics-item" onclick="closeAccountSheet(); switchRoleNavTab('analytics');" style="display: none;">
+                <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg>
+                <span>Analytics</span>
             </div>
             <div class="sheet-action-item danger" onclick="closeAccountSheet(); clearAuth();">
                 <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>

@@ -1,12 +1,14 @@
 import os
 import re
 import logging
+from decimal import Decimal
 from rest_framework import status, permissions
 from rest_framework.throttling import ScopedRateThrottle
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from django.core.files.base import ContentFile
-from django.db.models import Q
+from django.db.models import Q, Sum, Count, F
+from django.utils import timezone
 from rapidfuzz import fuzz
 from .models import Product
 from .serializers import ProductSerializer
@@ -577,3 +579,165 @@ class ProductDeleteView(APIView):
 
         product.delete()
         return Response({"detail": "Listing deleted successfully."}, status=status.HTTP_200_OK)
+
+
+# ──────────────────────────────────────────────────────────────────────────────
+# Artisan Analytics
+# ──────────────────────────────────────────────────────────────────────────────
+
+# Order statuses that represent a successfully paid / in-progress or completed
+# transaction.  Cancelled, refunded, failed, and bare "created" orders are
+# deliberately excluded from revenue and order counts.
+PAID_STATUSES = [
+    'paid',
+    'payment_received',
+    'awaiting_artisan_shipment',
+    'in_transit_to_hub',
+    'at_hub_verification',
+    'payout_released',
+    'in_transit_to_buyer',
+    'delivered',
+]
+
+
+class IsArtisan(permissions.IsAuthenticated):
+    """Allows access only to authenticated users with role == 'artisan'."""
+
+    def has_permission(self, request, view):
+        if not super().has_permission(request, view):
+            return False
+        return request.user.role == 'artisan'
+
+
+class ArtisanAnalyticsView(APIView):
+    """
+    GET /api/listings/analytics/
+
+    Returns a single analytics payload for the authenticated artisan.
+    The artisan is derived exclusively from request.user — no query-param
+    override is accepted, preventing IDOR.
+
+    Response shape:
+    {
+        "summary": { total_listings, total_views, total_orders, total_revenue },
+        "products": [ { id, title, image_url, views, orders, revenue, status } ],
+        "recent_orders": [ { id, product_title, quantity, amount, status, created_at } ]
+    }
+    """
+
+    permission_classes = [IsArtisan]
+
+    def get(self, request):
+        try:
+            artisan_profile = request.user.artisan_profile
+        except Exception:
+            return Response(
+                {"detail": "Artisan profile not found."},
+                status=status.HTTP_403_FORBIDDEN,
+            )
+
+        # ── 1. Summary ──────────────────────────────────────────────────────
+        products_qs = Product.objects.filter(artisan=artisan_profile)
+
+        total_listings = products_qs.count()
+        total_views = products_qs.aggregate(tv=Sum('view_count'))['tv'] or 0
+
+        from cart.models import Order
+        artisan_orders_qs = Order.objects.filter(
+            artisan=artisan_profile,
+            status__in=PAID_STATUSES,
+        )
+        order_agg = artisan_orders_qs.aggregate(
+            total_orders=Count('id'),
+            total_revenue=Sum('product_total'),
+        )
+        total_orders = order_agg['total_orders'] or 0
+        total_revenue = order_agg['total_revenue'] or Decimal('0.00')
+
+        # ── 2. Per-product statistics ────────────────────────────────────────
+        # Annotate each product with its paid order count and revenue.
+        products_annotated = products_qs.annotate(
+            paid_orders=Count(
+                'order',
+                filter=Q(order__artisan=artisan_profile, order__status__in=PAID_STATUSES),
+            ),
+            paid_revenue=Sum(
+                'order__product_total',
+                filter=Q(order__artisan=artisan_profile, order__status__in=PAID_STATUSES),
+            ),
+        ).order_by('-view_count', '-paid_orders')
+
+        def _image_url(product):
+            img = product.refined_image or product.raw_image
+            if not img or not img.name:
+                return None
+            try:
+                return request.build_absolute_uri(img.url)
+            except Exception:
+                return None
+
+        products_data = [
+            {
+                "id": p.id,
+                "title": p.title_en,
+                "image_url": _image_url(p),
+                "views": p.view_count,
+                "orders": p.paid_orders or 0,
+                "revenue": f"{Decimal(p.paid_revenue or 0):.2f}",
+                "status": p.status,
+            }
+            for p in products_annotated
+        ]
+
+        # ── 3. Recent orders (last 20, no private buyer data) ───────────────
+        recent_orders_qs = artisan_orders_qs.select_related('product').order_by('-created_at')[:20]
+        recent_orders_data = [
+            {
+                "id": o.id,
+                "product_title": o.product.title_en if o.product else "—",
+                "quantity": o.quantity,
+                "amount": f"{Decimal(o.product_total):.2f}",
+                "status": o.status,
+                "created_at": o.created_at.isoformat(),
+            }
+            for o in recent_orders_qs
+        ]
+
+        return Response({
+            "summary": {
+                "total_listings": total_listings,
+                "total_views": total_views,
+                "total_orders": total_orders,
+                "total_revenue": f"{Decimal(total_revenue):.2f}",
+            },
+            "products": products_data,
+            "recent_orders": recent_orders_data,
+        })
+
+
+class IncrementProductViewView(APIView):
+    """
+    POST /api/listings/<product_id>/view/
+
+    Atomically increments the view_count for a live product.
+    Authentication is optional — guest buyers can also view products.
+    Only live products are counted; draft/flagged products are silently ignored.
+    Uses F() expression to prevent lost updates under concurrent traffic.
+    """
+
+    permission_classes = [permissions.AllowAny]
+    throttle_classes = [ScopedRateThrottle]
+    throttle_scope = 'product_view'
+
+    def post(self, request, product_id):
+        updated = Product.objects.filter(
+            pk=product_id,
+            status='live',
+        ).update(view_count=F('view_count') + 1)
+
+        if updated == 0:
+            # Product doesn't exist or is not live — return 200 silently to
+            # avoid leaking product state to unauthenticated callers.
+            return Response({"detail": "ok"}, status=status.HTTP_200_OK)
+
+        return Response({"detail": "ok"}, status=status.HTTP_200_OK)

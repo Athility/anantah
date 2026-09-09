@@ -5960,3 +5960,379 @@ h1, h2, h3, h4, h5, h6, .brand-font {
         height: 20px;
     }
 }
+
+/* ==========================================================================
+   Artisan Analytics Page
+   ========================================================================== */
+
+/* ── KPI Cards Grid ─────────────────────────────────────────────────────── */
+.analytics-kpi-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 16px;
+    margin-bottom: 28px;
+}
+
+.analytics-kpi-card {
+    background: var(--bg-card);
+    border: 1px solid var(--border-color);
+    border-radius: 16px;
+    padding: 20px;
+    box-shadow: var(--shadow-sm, 0 1px 6px rgba(44,27,77,0.06));
+    min-width: 0;
+}
+
+.analytics-kpi-label {
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--text-secondary);
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    margin-bottom: 8px;
+}
+
+.analytics-kpi-value {
+    font-family: var(--brand-font, serif);
+    font-size: 28px;
+    font-weight: 700;
+    color: var(--primary-color);
+    line-height: 1;
+    margin-bottom: 4px;
+}
+
+.analytics-kpi-sub {
+    font-size: 12px;
+    color: var(--text-secondary);
+}
+
+/* ── Section Headers ────────────────────────────────────────────────────── */
+.analytics-section-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 16px;
+}
+
+.analytics-section-title {
+    font-family: var(--brand-font, serif);
+    font-size: 18px;
+    font-weight: 700;
+    color: var(--primary-color);
+}
+
+/* ── Product Performance Table ──────────────────────────────────────────── */
+.analytics-product-table-wrap {
+    background: var(--bg-card);
+    border: 1px solid var(--border-color);
+    border-radius: 16px;
+    overflow: hidden;
+    margin-bottom: 28px;
+    box-shadow: var(--shadow-sm, 0 1px 6px rgba(44,27,77,0.06));
+}
+
+.analytics-product-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 14px;
+}
+
+.analytics-product-table thead th {
+    background: var(--primary-light);
+    color: var(--primary-color);
+    font-weight: 700;
+    font-size: 12px;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    padding: 12px 16px;
+    text-align: left;
+}
+
+.analytics-product-table tbody tr {
+    border-top: 1px solid var(--border-color);
+}
+
+.analytics-product-table tbody tr:hover {
+    background: var(--bg-cream, #faf8f5);
+}
+
+.analytics-product-table td {
+    padding: 14px 16px;
+    color: var(--text-primary);
+    vertical-align: middle;
+}
+
+.analytics-product-thumb {
+    width: 36px;
+    height: 36px;
+    border-radius: 8px;
+    object-fit: cover;
+    background: var(--primary-light);
+    display: inline-block;
+    vertical-align: middle;
+    margin-right: 10px;
+}
+
+.analytics-product-thumb-placeholder {
+    width: 36px;
+    height: 36px;
+    border-radius: 8px;
+    background: var(--primary-light);
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    vertical-align: middle;
+    margin-right: 10px;
+    flex-shrink: 0;
+}
+
+.analytics-status-badge {
+    display: inline-block;
+    padding: 3px 10px;
+    border-radius: 20px;
+    font-size: 11px;
+    font-weight: 700;
+    text-transform: capitalize;
+    letter-spacing: 0.03em;
+}
+.analytics-status-badge.live    { background: #E8F5E9; color: #2E7D32; }
+.analytics-status-badge.draft   { background: #FFF3E0; color: #E65100; }
+.analytics-status-badge.flagged { background: #FFEBEE; color: #C62828; }
+
+/* ── Recent Orders ──────────────────────────────────────────────────────── */
+.analytics-orders-list {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    margin-bottom: 28px;
+}
+
+.analytics-order-card {
+    background: var(--bg-card);
+    border: 1px solid var(--border-color);
+    border-radius: 14px;
+    padding: 14px 18px;
+    display: grid;
+    grid-template-columns: 1fr auto;
+    gap: 4px 16px;
+    align-items: center;
+    box-shadow: var(--shadow-sm, 0 1px 6px rgba(44,27,77,0.06));
+    font-size: 14px;
+}
+
+.analytics-order-product {
+    font-weight: 600;
+    color: var(--text-primary);
+    grid-column: 1;
+}
+
+.analytics-order-meta {
+    font-size: 12px;
+    color: var(--text-secondary);
+    grid-column: 1;
+}
+
+.analytics-order-amount {
+    font-family: var(--brand-font, serif);
+    font-weight: 700;
+    font-size: 15px;
+    color: var(--primary-color);
+    grid-column: 2;
+    grid-row: 1;
+    text-align: right;
+}
+
+.analytics-order-status {
+    grid-column: 2;
+    grid-row: 2;
+    text-align: right;
+}
+
+/* ── Empty & Error States ───────────────────────────────────────────────── */
+.analytics-empty-state {
+    text-align: center;
+    padding: 40px 24px;
+    color: var(--text-secondary);
+    font-size: 14px;
+    line-height: 1.6;
+}
+
+.analytics-empty-state .empty-icon {
+    width: 48px;
+    height: 48px;
+    background: var(--primary-light);
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 auto 16px;
+    color: var(--primary-color);
+}
+
+.analytics-empty-title {
+    font-weight: 700;
+    color: var(--text-primary);
+    margin-bottom: 6px;
+    font-size: 15px;
+}
+
+.analytics-error-bar {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    background: #FFF3E0;
+    border: 1px solid #FFB74D;
+    border-radius: 10px;
+    padding: 10px 14px;
+    font-size: 13px;
+    color: #E65100;
+    margin-bottom: 16px;
+}
+
+/* ── Update Timestamp & Refresh ─────────────────────────────────────────── */
+.analytics-refresh-row {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 24px;
+    flex-wrap: wrap;
+}
+
+.analytics-updated-text {
+    font-size: 12px;
+    color: var(--text-secondary);
+}
+
+.analytics-refresh-btn {
+    background: none;
+    border: 1px solid var(--border-color);
+    border-radius: 8px;
+    padding: 5px 12px;
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--primary-color);
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    transition: background 0.15s, border-color 0.15s;
+}
+.analytics-refresh-btn:hover { background: var(--primary-light); border-color: var(--primary-color); }
+.analytics-refresh-btn.spinning svg { animation: analyticsSpinIcon 0.8s linear infinite; }
+@keyframes analyticsSpinIcon { to { transform: rotate(360deg); } }
+
+/* ── Skeleton Shimmer ───────────────────────────────────────────────────── */
+@keyframes analyticsShimmer {
+    0%   { background-position: -400px 0; }
+    100% { background-position: 400px 0; }
+}
+
+.analytics-skeleton {
+    background: linear-gradient(90deg, #f0ecf5 25%, #e6e0ef 50%, #f0ecf5 75%);
+    background-size: 800px 100%;
+    animation: analyticsShimmer 1.4s ease-in-out infinite;
+    border-radius: 8px;
+    display: block;
+}
+
+.analytics-skeleton-card {
+    background: var(--bg-card);
+    border: 1px solid var(--border-color);
+    border-radius: 16px;
+    padding: 20px;
+}
+
+/* ── Analytics Page Header ──────────────────────────────────────────────── */
+.analytics-page-header {
+    margin-bottom: 24px;
+}
+
+.analytics-page-title {
+    font-family: var(--brand-font, serif);
+    font-size: 24px;
+    font-weight: 700;
+    color: var(--primary-color);
+    margin-bottom: 4px;
+}
+
+.analytics-page-subtitle {
+    font-size: 14px;
+    color: var(--text-secondary);
+    line-height: 1.5;
+}
+
+/* ── Mobile Product Cards (replaces table on narrow screens) ────────────── */
+.analytics-product-cards {
+    display: none;
+    flex-direction: column;
+    gap: 10px;
+    margin-bottom: 28px;
+}
+
+.analytics-product-card-row {
+    background: var(--bg-card);
+    border: 1px solid var(--border-color);
+    border-radius: 14px;
+    padding: 14px 16px;
+    display: flex;
+    align-items: flex-start;
+    gap: 12px;
+    box-shadow: var(--shadow-sm, 0 1px 6px rgba(44,27,77,0.06));
+}
+
+.analytics-product-card-info {
+    flex: 1;
+    min-width: 0;
+}
+
+.analytics-product-card-title {
+    font-weight: 700;
+    color: var(--text-primary);
+    font-size: 14px;
+    margin-bottom: 6px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.analytics-product-card-meta {
+    font-size: 12px;
+    color: var(--text-secondary);
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+}
+
+.analytics-product-card-stat {
+    display: inline-flex;
+    align-items: center;
+    gap: 3px;
+}
+
+/* ── Responsive ─────────────────────────────────────────────────────────── */
+@media (max-width: 768px) {
+    .analytics-kpi-grid {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 12px;
+    }
+
+    .analytics-kpi-value {
+        font-size: 22px;
+    }
+
+    /* Hide table, show card layout */
+    .analytics-product-table-wrap { display: none; }
+    .analytics-product-cards { display: flex; }
+
+    .analytics-orders-list { gap: 8px; }
+    .analytics-order-card { padding: 12px 14px; }
+
+    #artisan-view-analytics {
+        padding-bottom: 80px; /* clear fixed mobile nav */
+    }
+}
+
+@media (max-width: 400px) {
+    .analytics-kpi-card { padding: 14px 12px; }
+    .analytics-kpi-value { font-size: 20px; }
+    .analytics-page-title { font-size: 20px; }
+}

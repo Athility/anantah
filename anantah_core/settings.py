@@ -236,6 +236,7 @@ REST_FRAMEWORK = {
         'otp_verify': '5/minute',
         'product_upload': '20/minute',
         'voice_catalog': '20/minute',
+        'product_view': '60/minute',
     }
 }
 

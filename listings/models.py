@@ -45,6 +45,8 @@ class Product(models.Model):
     refined_image = models.ImageField(upload_to='products/refined/', max_length=255, null=True, blank=True)
     raw_audio = models.FileField(upload_to='products/audio/', storage=get_audio_storage, max_length=255, null=True, blank=True)
     status = models.CharField(max_length=10, choices=STATUS_CHOICES, default='draft')
+    # Atomic view counter — incremented via F() expression to avoid lost updates
+    view_count = models.PositiveIntegerField(default=0)
     created_at = models.DateTimeField(auto_now_add=True)
 
     class Meta:
