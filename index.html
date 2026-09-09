@@ -920,35 +920,49 @@
             </div>
 
             <!-- TAB: Dedicated Search View -->
+            <div id="search-mobile-backdrop" class="search-mobile-backdrop" style="display: none;" onclick="closeDedicatedSearch()"></div>
             <div id="buyer-view-search" class="search-view-container" style="display: none;">
+                <!-- Mobile Drag Handle -->
+                <div class="search-mobile-drag-handle"></div>
                 <!-- Search Experience Header -->
-                <div class="search-experience-header">
-                    <div class="search-experience-eyebrow">
-                        <span class="eyebrow-sparkle">✦</span> Search Marketplace
+                <div class="search-experience-header premium-search-header">
+                    <div class="search-premium-title-row">
+                        <div>
+                            <h2 class="brand-font search-premium-title">Search</h2>
+                            <p class="search-premium-subtitle">Find handcrafted pieces, artisans & traditions</p>
+                        </div>
+                        <button type="button" id="dedicated-search-close-btn" class="search-premium-close-btn" title="Close search" aria-label="Close search">
+                            <svg viewBox="0 0 24 24" width="22" height="22" stroke="currentColor" stroke-width="1.5" fill="none" stroke-linecap="round" stroke-linejoin="round">
+                                <line x1="18" y1="6" x2="6" y2="18"></line>
+                                <line x1="6" y1="6" x2="18" y2="18"></line>
+                            </svg>
+                        </button>
                     </div>
                     
-                    <div class="search-input-wrapper-dedicated">
-                        <div class="search-input-box-dedicated">
-                            <svg class="search-icon-dedicated" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <div class="search-input-wrapper-dedicated premium-search-input-wrapper">
+                        <div class="search-input-box-dedicated premium-search-box">
+                            <svg class="search-icon-dedicated" viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
                                 <circle cx="11" cy="11" r="8"></circle>
                                 <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
                             </svg>
-                            <input type="text" id="dedicated-search-input" placeholder="Search crafts, artisans, materials, pottery..." aria-label="Search crafts and artisans" autocomplete="off">
-                            <button type="button" id="dedicated-search-clear" class="search-clear-btn" aria-label="Clear search" style="display: none;" title="Clear query">✕</button>
+                            <input type="text" id="dedicated-search-input" class="premium-search-input" placeholder="Search crafts, artisans, categories..." aria-label="Search crafts and artisans" autocomplete="off">
+                            <button type="button" id="dedicated-search-clear" class="search-clear-btn premium-clear-btn" aria-label="Clear search" style="display: none;" title="Clear query">
+                                <svg viewBox="0 0 24 24" width="16" height="16" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+                            </button>
                         </div>
-                        <button type="button" id="dedicated-search-close-btn" class="search-close-btn" title="Close search" aria-label="Close search">
-                            <span>Cancel</span>
-                        </button>
                     </div>
 
                     <!-- Category Pills in Search -->
-                    <div class="search-category-scroll-container">
-                        <div id="search-category-pills" class="buyer-category-pills" role="tablist" aria-label="Filter search results by category">
-                            <button type="button" class="category-pill active" data-category="all">All Crafts</button>
+                    <div class="search-category-scroll-container premium-category-scroll">
+                        <div id="search-category-pills" class="buyer-category-pills premium-pills" role="tablist" aria-label="Filter search results by category">
+                            <button type="button" class="category-pill premium-pill active" data-category="all">All</button>
                         </div>
                     </div>
+                </div>
 
-                    <!-- Search Meta Status Row -->
+
+
+                <!-- Search Meta Status Row -->
                     <div class="search-results-meta-row">
                         <div class="search-results-label">
                             <h3 class="brand-font" id="search-results-title">Search Results</h3>
@@ -959,7 +973,6 @@
                             <button type="button" onclick="clearDedicatedSearchFilters()" class="clear-filter-btn" title="Clear filter" aria-label="Clear filter">✕</button>
                         </div>
                     </div>
-                </div>
 
                 <!-- Empty State for Search -->
                 <div id="search-empty-state" class="search-empty-card" style="display: none;">
@@ -4546,8 +4559,12 @@
             const prevTab = window._lastNonSearchBuyerTab || 'shop';
             const prefersReducedMotion = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
+            const backdrop = document.getElementById('search-mobile-backdrop');
+            if (backdrop) backdrop.classList.remove('active');
+
             if (!searchView || prefersReducedMotion || searchView.style.display === 'none') {
                 window._isClosingSearch = false;
+                if (backdrop) backdrop.style.display = 'none';
                 switchBuyerTab(prevTab);
                 return;
             }
@@ -4562,7 +4579,9 @@
             window._searchCloseTimeoutId = setTimeout(() => {
                 window._searchCloseTimeoutId = null;
                 searchView.classList.remove('search-view-closing');
+                searchView.classList.remove('expanded');
                 searchView.style.display = 'none';
+                if (backdrop) backdrop.style.display = 'none';
                 window._isClosingSearch = false;
                 switchBuyerTab(prevTab);
             }, 180);
@@ -4602,10 +4621,10 @@
                 }
             });
 
-            let html = `<button type="button" class="category-pill ${(!window._dedicatedSearchCategory || window._dedicatedSearchCategory === 'all') ? 'active' : ''}" data-category="all">All Crafts</button>`;
+            let html = `<button type="button" class="category-pill premium-pill ${(!window._dedicatedSearchCategory || window._dedicatedSearchCategory === 'all') ? 'active' : ''}" data-category="all">All</button>`;
             uniqueCategories.forEach(cat => {
                 const isActive = window._dedicatedSearchCategory && window._dedicatedSearchCategory.toLowerCase() === cat.toLowerCase();
-                html += `<button type="button" class="category-pill ${isActive ? 'active' : ''}" data-category="${cat}">${cat}</button>`;
+                html += `<button type="button" class="category-pill premium-pill ${isActive ? 'active' : ''}" data-category="${cat}">${cat}</button>`;
             });
 
             pillsContainer.innerHTML = html;
@@ -4620,9 +4639,20 @@
         }
 
         function filterAndRenderSearchProducts() {
+            const container = document.getElementById('search-product-list');
+            const suggestions = document.getElementById('search-suggestions-container');
+            const metaRow = document.querySelector('.search-results-meta-row');
+            const activeCategory = (window._dedicatedSearchCategory || 'all').toLowerCase();
+            const query = (window._dedicatedSearchQuery || '').trim().toLowerCase();
+            
+            const isSearchActive = query.length > 0 || activeCategory !== 'all';
+            
+            if (suggestions) suggestions.style.display = 'none';
+            if (metaRow) metaRow.style.display = 'flex';
+            if (container) container.style.display = 'grid';
+
             const isGuestUser = window._buyerIsGuest;
             const products = window._cachedBuyerProducts || [];
-            const container = document.getElementById('search-product-list');
             const emptyState = document.getElementById('search-empty-state');
             const emptyDesc = document.getElementById('search-empty-desc');
             const countBadge = document.getElementById('search-product-count-badge');
@@ -4631,9 +4661,6 @@
             const resultsTitle = document.getElementById('search-results-title');
 
             if (!container) return;
-
-            const activeCategory = (window._dedicatedSearchCategory || 'all').toLowerCase();
-            const query = (window._dedicatedSearchQuery || '').trim().toLowerCase();
 
             const matchedList = [];
             products.forEach(p => {
@@ -4713,6 +4740,23 @@
         const dedicatedSearchClose = document.getElementById('dedicated-search-close-btn');
 
         if (dedicatedSearchInput) {
+            const searchProductList = document.getElementById('search-product-list');
+            if (searchProductList) {
+                searchProductList.addEventListener('touchmove', () => {
+                    if (window.innerWidth <= 768) {
+                        const searchView = document.getElementById('buyer-view-search');
+                        if (searchView) searchView.classList.add('expanded');
+                    }
+                }, { passive: true });
+            }
+
+            dedicatedSearchInput.addEventListener('focus', () => {
+                if (window.innerWidth <= 768) {
+                    const searchView = document.getElementById('buyer-view-search');
+                    if (searchView) searchView.classList.add('expanded');
+                }
+            });
+
             dedicatedSearchInput.addEventListener('input', (e) => {
                 const val = e.target.value;
                 if (dedicatedSearchClear) {
@@ -5344,9 +5388,15 @@
                 window._searchCloseTimeoutId = null;
                 window._isClosingSearch = false;
                 const searchView = document.getElementById('buyer-view-search');
+                const backdrop = document.getElementById('search-mobile-backdrop');
                 if (searchView) {
                     searchView.classList.remove('search-view-closing');
+                    searchView.classList.remove('expanded');
                     searchView.style.display = 'none';
+                }
+                if (backdrop) {
+                    backdrop.classList.remove('active');
+                    backdrop.style.display = 'none';
                 }
             }
             const views = {
@@ -5408,8 +5458,15 @@
                 const btn  = document.getElementById(btns[key]);
                 if (key === tab) {
                     if (view) {
-                        view.style.display = 'block';
+                        view.style.display = (key === 'search') ? 'flex' : 'block';
                         if (key === 'search') {
+                            if (window.innerWidth <= 768) {
+                                const backdrop = document.getElementById('search-mobile-backdrop');
+                                if (backdrop) {
+                                    backdrop.style.display = 'block';
+                                    setTimeout(() => backdrop.classList.add('active'), 10);
+                                }
+                            }
                             view.classList.remove('search-view-closing');
                             view.classList.remove('search-view-animate-in');
                             void view.offsetWidth;
@@ -5418,7 +5475,7 @@
                             filterAndRenderSearchProducts();
                             setTimeout(() => {
                                 const sInput = document.getElementById('dedicated-search-input');
-                                if (sInput) {
+                                if (sInput && window.innerWidth > 768) {
                                     sInput.focus({ preventScroll: true });
                                     sInput.select();
                                 }
@@ -5430,7 +5487,23 @@
                         btn.style.borderBottomColor = 'var(--primary-color)';
                     }
                 } else {
-                    if (view) view.style.display = 'none';
+                    if (window.innerWidth <= 768 && tab === 'search' && key === window._lastNonSearchBuyerTab) {
+                        // Keep previous view visible underneath the bottom sheet on mobile
+                        if (view) view.style.display = 'block';
+                    } else {
+                        if (view) view.style.display = 'none';
+                        if (key === 'search') {
+                            const backdrop = document.getElementById('search-mobile-backdrop');
+                            if (backdrop) {
+                                backdrop.classList.remove('active');
+                                backdrop.style.display = 'none';
+                            }
+                            if (view) {
+                                view.classList.remove('expanded');
+                                view.classList.remove('search-view-closing');
+                            }
+                        }
+                    }
                     if (btn) {
                         btn.style.color = 'var(--text-secondary)';
                         btn.style.borderBottomColor = 'transparent';
