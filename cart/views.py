@@ -330,9 +330,22 @@ class OrderCreateView(APIView):
 
         # Step 4: Short follow-up transaction to attach Razorpay ID
         with transaction.atomic():
-            for order in created_orders:
+            # Lock the orders to ensure they haven't been cancelled concurrently
+            order_ids = [o.id for o in created_orders]
+            locked_orders = list(Order.objects.filter(id__in=order_ids).select_for_update())
+            
+            for order in locked_orders:
+                if order.status != 'created':
+                    # If any order was cancelled, we shouldn't attach the razorpay ID
+                    # We should probably abort and return an error.
+                    return Response({'detail': 'Order state changed during payment initialization.'}, status=status.HTTP_409_CONFLICT)
+            
+            for order in locked_orders:
                 order.razorpay_order_id = rzp_order['id']
                 order.save(update_fields=['razorpay_order_id'])
+                
+            # Update the created_orders list so the serializer has the latest data
+            created_orders = locked_orders
                 
         serializer = OrderSerializer(created_orders, many=True, context={'request': request})
         return Response({

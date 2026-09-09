@@ -13,7 +13,11 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = config('SECRET_KEY')
 DEBUG = config('DEBUG', default=False, cast=bool)
 
-ALLOWED_HOSTS = ['*']
+if DEBUG:
+    ALLOWED_HOSTS = ['*']
+else:
+    raw_hosts = config('ALLOWED_HOSTS', default='anantah.com')
+    ALLOWED_HOSTS = [host.strip() for host in raw_hosts.split(',') if host.strip()]
 
 # Optional Sentry Monitoring Integration
 SENTRY_DSN = config('SENTRY_DSN', default='')
@@ -244,7 +248,23 @@ SIMPLE_JWT = {
 }
 
 # CORS Configuration
-CORS_ALLOW_ALL_ORIGINS = True  # Allowed for local PWA frontend development
+if DEBUG:
+    CORS_ALLOW_ALL_ORIGINS = True  # Allowed for local PWA frontend development
+else:
+    CORS_ALLOW_ALL_ORIGINS = False
+    # Allow passing multiple origins via comma-separated string in env, fallback to anantah.com
+    raw_origins = config('CORS_ALLOWED_ORIGINS', default='https://anantah.com')
+    CORS_ALLOWED_ORIGINS = [origin.strip() for origin in raw_origins.split(',') if origin.strip()]
+
+    # Django Security Headers (Production)
+    SECURE_SSL_REDIRECT = True
+    SECURE_HSTS_SECONDS = 31536000
+    SECURE_HSTS_INCLUDE_SUBDOMAINS = True
+    SECURE_HSTS_PRELOAD = True
+    SECURE_BROWSER_XSS_FILTER = True
+    SECURE_CONTENT_TYPE_NOSNIFF = True
+    SESSION_COOKIE_SECURE = True
+    CSRF_COOKIE_SECURE = True
 
 # Django Caching Framework (for temporary OTP verification status)
 CACHES = {

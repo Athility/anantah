@@ -20,7 +20,7 @@ class CheckoutTests(TestCase):
             artisan=self.artisan_profile,
             title_en='Test Product',
             price=100.0,
-            status='active'
+            status='live'
         )
         
         self.address = Address.objects.create(
@@ -47,6 +47,8 @@ class CheckoutTests(TestCase):
         mock_create.side_effect = Exception('Razorpay API down')
         
         response = self.client.post('/api/orders/create/', {'address_id': self.address.id}, format='json')
+        print("RESPONSE STATUS:", response.status_code)
+        print("RESPONSE DATA:", response.data)
         
         self.assertEqual(response.status_code, status.HTTP_502_BAD_GATEWAY)
         self.assertEqual(Order.objects.count(), 2)

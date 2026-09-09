@@ -1394,9 +1394,7 @@
             }
         });
 
-<<<<<<< Updated upstream
-=======
-        // ─── Desktop Site Footer & About Screen Management ──────────────────────
+        //  Desktop Site Footer & About Screen Management ──────────────────────
         function renderSiteFooter() {
             const roleCol = document.getElementById('footer-role-column');
             if (!roleCol) return;
@@ -1722,7 +1720,6 @@
             document.body.style.overflow = '';
         }
 
->>>>>>> Stashed changes
         // ─── Role-Based Navigation System Manager ─────────────────────────────
         let activeRoleNavTab = 'home';
         let accountDropdownTimer = null;
@@ -3931,14 +3928,9 @@
                       <span class="btn-label-desktop">Login to Add</span>
                       <span class="btn-label-mobile">Login</span>
                    </button>`
-<<<<<<< Updated upstream
-                : `<button class="btn-add-cart-minimal" data-product-id="${p.id}" data-product-title="${p.title_en}" aria-label="Add ${title} to Cart">
+                : `<button class="btn-add-cart-minimal" data-product-id="${p.id}" data-product-title="${escapeHTML(p.title_en)}" aria-label="Add ${title} to Cart">
                       <span class="btn-label-desktop">Add to Cart</span>
                       <span class="btn-label-mobile">Add</span>
-=======
-                : `<button class="btn-add-cart-minimal" data-product-id="${p.id}" data-product-title="${escapeHTML(p.title_en)}" aria-label="Add ${title} to Cart">
-                      <span class="btn-label">Add to Cart</span>
->>>>>>> Stashed changes
                       <span class="add-icon">+</span>
                    </button>`;
 

@@ -23,16 +23,12 @@ class ProductUploadThrottle(ScopedRateThrottle):
 
 
 class ProductUploadView(APIView):
-<<<<<<< Updated upstream
-    permission_classes = [permissions.IsAuthenticated]
-=======
     throttle_classes = [ProductUploadThrottle]
 
     def get_permissions(self):
         if self.request.method == 'GET':
             return [permissions.AllowAny()]
         return [permissions.IsAuthenticated()]
->>>>>>> Stashed changes
 
     def get(self, request, *args, **kwargs):
         user = request.user
@@ -378,10 +374,21 @@ class ConfirmCatalogView(APIView):
             )
 
         # Update fields that were actually provided and non-empty
+        from django.core.exceptions import ValidationError
+        
         for field in ('title_en', 'title_hi', 'description_en', 'description_hi'):
-            value = request.data.get(field, '').strip()
-            if value:
-                setattr(product, field, value)
+            value = request.data.get(field)
+            if value is not None:
+                value = str(value).strip()
+                
+                # Explicit bounds to prevent SQLite massive payload DoS
+                if field in ('title_en', 'title_hi') and len(value) > 200:
+                    return Response({'detail': f'{field} exceeds maximum length of 200 characters.'}, status=status.HTTP_400_BAD_REQUEST)
+                if field in ('description_en', 'description_hi') and len(value) > 10000:
+                    return Response({'detail': f'{field} exceeds maximum length.'}, status=status.HTTP_400_BAD_REQUEST)
+                
+                if value:
+                    setattr(product, field, value)
 
         # Publish the product
         product.status = 'live'
