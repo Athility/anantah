@@ -4,6 +4,13 @@ from pathlib import Path
 from datetime import timedelta
 from decouple import config
 
+try:
+    import sentry_sdk
+    from sentry_sdk.integrations.django import DjangoIntegration
+except ImportError:
+    sentry_sdk = None
+    DjangoIntegration = None
+
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
@@ -23,10 +30,8 @@ else:
 
 # Optional Sentry Monitoring Integration
 SENTRY_DSN = config('SENTRY_DSN', default='')
-if SENTRY_DSN:
+if SENTRY_DSN and sentry_sdk and DjangoIntegration:
     try:
-        import sentry_sdk
-        from sentry_sdk.integrations.django import DjangoIntegration
         sentry_sdk.init(
             dsn=SENTRY_DSN,
             integrations=[DjangoIntegration()],
@@ -121,8 +126,8 @@ if 'test' not in sys.argv:
         host = config('DB_HOST')
         port = config('DB_PORT', cast=int)
         socket.gethostbyname(host)
-        # Try a quick socket connection (timeout 1s) to make sure database is online
-        with socket.create_connection((host, port), timeout=1.0):
+        # Try a quick socket connection (timeout 5s) to make sure database is online
+        with socket.create_connection((host, port), timeout=5.0):
             mysql_reachable = True
     except Exception:
         mysql_reachable = False
