@@ -4037,11 +4037,7 @@
 
                 this.isLoading = true;
                 try {
-                    const token = localStorage.getItem('token');
-                    const headers = { 'Content-Type': 'application/json' };
-                    if (token) headers['Authorization'] = `Bearer ${token}`;
-
-                    const res = await fetch(`${API_BASE_URL}/api/frames/feed/`, { headers });
+                    const res = await customFetch(`${CONFIG.API_BASE_URL}/frames/feed/`);
                     if (!res.ok) throw new Error(`Feed fetch failed: ${res.status}`);
                     const data = await res.json();
                     this.reels = data.results || data || [];
@@ -4124,13 +4120,13 @@
                                     </div>
                                 </div>
 
-                                ${reel.caption ? `<div class="frame-caption">${reel.caption}</div>` : ''}
+                                ${reel.caption ? `<div class="frame-caption">${escapeHTML(reel.caption)}</div>` : ''}
 
                                 ${reel.product_id ? `
                                     <div class="frame-product-pill" onclick="FramesFeed.openProduct(${reel.product_id})">
-                                        ${reel.product_image ? `<img src="${reel.product_image}" class="frame-product-thumb" alt="Product">` : '<div class="frame-product-thumb" style="display: flex; align-items: center; justify-content: center; color: var(--accent-gold);"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="7" width="20" height="14" rx="2" ry="2"/><path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"/></svg></div>'}
+                                        ${reel.product_image ? `<img src="${getMediaUrl(reel.product_image)}" class="frame-product-thumb" alt="Product" onerror="this.onerror=null; this.src='anantah_logo.png';">` : '<div class="frame-product-thumb" style="display: flex; align-items: center; justify-content: center; color: var(--accent-gold);"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="7" width="20" height="14" rx="2" ry="2"/><path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"/></svg></div>'}
                                         <div class="frame-product-text">
-                                            <span class="frame-product-title">${reel.product_title || 'Featured Craft'}</span>
+                                            <span class="frame-product-title">${escapeHTML(reel.product_title || 'Featured Craft')}</span>
                                             <span class="frame-product-price">₹${reel.product_price ? Number(reel.product_price).toFixed(2) : '0.00'}</span>
                                         </div>
                                         <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" style="color: var(--accent-gold); margin-left: 2px;"><polyline points="9 18 15 12 9 6"/></svg>
@@ -4234,9 +4230,9 @@
             },
 
             async toggleLike(reelId) {
-                const token = localStorage.getItem('token');
+                const token = localStorage.getItem('access_token') || localStorage.getItem('accessToken');
                 if (!token) {
-                    showToast('Please log in to like Frames', 'error');
+                    showToastAlert('Please log in to like Frames', 'error');
                     return;
                 }
 
@@ -4257,12 +4253,8 @@
                 countEl.textContent = Math.max(0, wasLiked ? currentCount - 1 : currentCount + 1);
 
                 try {
-                    const res = await fetch(`${API_BASE_URL}/api/frames/${reelId}/like/`, {
-                        method: 'POST',
-                        headers: {
-                            'Content-Type': 'application/json',
-                            'Authorization': `Bearer ${token}`
-                        }
+                    const res = await customFetch(`${CONFIG.API_BASE_URL}/frames/${reelId}/like/`, {
+                        method: 'POST'
                     });
                     if (!res.ok) throw new Error('Like toggle failed');
                     const data = await res.json();
@@ -4281,7 +4273,7 @@
                         svg.setAttribute('fill', wasLiked ? '#EF4444' : 'none');
                         svg.setAttribute('stroke', wasLiked ? '#EF4444' : 'currentColor');
                     }
-                    showToast('Unable to update like. Please try again.', 'error');
+                    showToastAlert('Unable to update like. Please try again.', 'error');
                 }
             },
 
@@ -4289,9 +4281,8 @@
                 if (this.viewedReelIds.has(reelId)) return;
                 this.viewedReelIds.add(reelId);
 
-                fetch(`${API_BASE_URL}/api/frames/${reelId}/view/`, {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' }
+                customFetch(`${CONFIG.API_BASE_URL}/frames/${reelId}/view/`, {
+                    method: 'POST'
                 }).catch(err => console.debug('[FramesFeed] View count record error:', err));
             },
 
@@ -4312,7 +4303,6 @@
 
             init() {
                 this.switchTab('mine');
-                this.loadMine();
                 this.populateProductDropdown();
             },
 
@@ -4347,16 +4337,11 @@
                 if (grid) grid.style.display = 'none';
                 if (empty) empty.style.display = 'none';
 
-                const token = localStorage.getItem('token');
-                if (!token) return;
-
                 try {
-                    const res = await fetch(`${API_BASE_URL}/api/frames/mine/`, {
-                        headers: { 'Authorization': `Bearer ${token}` }
-                    });
+                    const res = await customFetch(`${CONFIG.API_BASE_URL}/frames/mine/`);
                     if (!res.ok) throw new Error(`Mine fetch failed: ${res.status}`);
                     const data = await res.json();
-                    this.myFrames = data || [];
+                    this.myFrames = data.results || data || [];
 
                     if (loading) loading.style.display = 'none';
 
@@ -4378,7 +4363,7 @@
                                     </div>
                                     <div class="artisan-frame-info">
                                         <div>
-                                            <div class="artisan-frame-caption">${reel.caption || 'No caption'}</div>
+                                            <div class="artisan-frame-caption">${escapeHTML(reel.caption || 'No caption')}</div>
                                             <div style="font-size: 11px; color: var(--text-secondary); margin-bottom: 10px;">
                                                 ${new Date(reel.created_at).toLocaleDateString(undefined, { month: 'short', day: 'numeric', year: 'numeric' })}
                                             </div>
@@ -4397,7 +4382,14 @@
                     if (loading) loading.style.display = 'none';
                     if (empty) {
                         empty.style.display = 'block';
-                        empty.innerHTML = `<p style="color:var(--danger-color); font-size:14px;">Error loading your frames: ${err.message}</p>`;
+                        empty.innerHTML = `
+                            <div style="width: 64px; height: 64px; border-radius: 20px; background: var(--primary-light); color: var(--primary-color); display: flex; align-items: center; justify-content: center; margin: 0 auto 16px auto;">
+                                <svg width="32" height="32" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><polygon points="23 7 16 12 23 17 23 7"/><rect x="1" y="5" width="15" height="14" rx="2" ry="2"/></svg>
+                            </div>
+                            <h3 class="brand-font" style="font-size: 20px; color: var(--primary-color); margin-bottom: 8px;">No Frames Yet</h3>
+                            <p style="color: var(--text-secondary); font-size: 14px; line-height: 1.6; margin-bottom: 24px;">Upload short behind-the-scenes videos of your craftsmanship to engage with buyers and increase sales.</p>
+                            <button type="button" class="btn btn-primary" onclick="ArtisanFrames.switchTab('upload')" style="border-radius: 16px; padding: 12px 28px; font-weight: 700;">+ Upload Your First Frame</button>
+                        `;
                     }
                 }
             },
@@ -4406,20 +4398,15 @@
                 const select = document.getElementById('frame-product-select');
                 if (!select) return;
 
-                const token = localStorage.getItem('token');
-                if (!token) return;
-
                 try {
-                    const res = await fetch(`${API_BASE_URL}/api/listings/mine/`, {
-                        headers: { 'Authorization': `Bearer ${token}` }
-                    });
+                    const res = await customFetch(`${CONFIG.API_BASE_URL}/listings/upload/`);
                     if (!res.ok) return;
                     const prods = await res.json();
                     const list = prods.results || prods || [];
 
                     select.innerHTML = '<option value="">-- No Product Linked --</option>' +
                         list.map(p => `
-                            <option value="${p.id}">${p.title_en || p.title_hi || ('Product #' + p.id)} (₹${Number(p.price || 0).toFixed(2)})</option>
+                            <option value="${p.id}">${escapeHTML(p.title_en || p.title_hi || ('Product #' + p.id))} (₹${Number(p.price || 0).toFixed(2)})</option>
                         `).join('');
                 } catch (err) {
                     console.debug('[ArtisanFrames] Could not load artisan products for dropdown:', err);
@@ -4432,7 +4419,7 @@
 
                 // Max 100MB
                 if (file.size > 100 * 1024 * 1024) {
-                    showToast('Video file size exceeds 100MB limit', 'error');
+                    showToastAlert('Video file size exceeds 100MB limit', 'error');
                     event.target.value = '';
                     return;
                 }
@@ -4454,13 +4441,13 @@
                 event.preventDefault();
 
                 if (!this.selectedVideoFile) {
-                    showToast('Please select a video file to upload', 'error');
+                    showToastAlert('Please select a video file to upload', 'error');
                     return;
                 }
 
-                const token = localStorage.getItem('token');
+                const token = localStorage.getItem('access_token') || localStorage.getItem('accessToken');
                 if (!token) {
-                    showToast('Please log in to upload Frames', 'error');
+                    showToastAlert('Please log in to upload Frames', 'error');
                     return;
                 }
 
@@ -4491,24 +4478,21 @@
                 try {
                     if (progressBar) progressBar.style.width = '60%';
 
-                    const res = await fetch(`${API_BASE_URL}/api/frames/upload/`, {
+                    const res = await customFetch(`${CONFIG.API_BASE_URL}/frames/upload/`, {
                         method: 'POST',
-                        headers: {
-                            'Authorization': `Bearer ${token}`
-                        },
                         body: formData
                     });
 
                     if (progressBar) progressBar.style.width = '90%';
 
                     if (!res.ok) {
-                        const errData = await res.json();
+                        const errData = await res.json().catch(() => ({}));
                         const errMsg = Object.values(errData).flat().join(' ') || 'Upload failed';
                         throw new Error(errMsg);
                     }
 
                     if (progressBar) progressBar.style.width = '100%';
-                    showToast('Frame published successfully!', 'success');
+                    showToastAlert('Frame published successfully!', 'success');
 
                     // Reset form
                     this.selectedVideoFile = null;
@@ -4521,16 +4505,17 @@
                         preview.style.display = 'none';
                     }
                     if (prompt) prompt.style.display = 'block';
-                    document.getElementById('frame-caption-count').textContent = '0 / 300';
+                    const captionCount = document.getElementById('frame-caption-count');
+                    if (captionCount) captionCount.textContent = '0 / 300';
 
-                    // Switch back to "My Frames" tab
+                    // Switch back to "My Frames" tab and reload
                     setTimeout(() => {
                         this.switchTab('mine');
-                    }, 600);
+                    }, 400);
 
                 } catch (err) {
                     console.error('[ArtisanFrames] Upload error:', err);
-                    showToast(err.message || 'Failed to upload frame', 'error');
+                    showToastAlert(err.message || 'Failed to upload frame', 'error');
                 } finally {
                     if (progressWrap) progressWrap.style.display = 'none';
                     if (progressBar) progressBar.style.width = '0%';
@@ -4546,13 +4531,8 @@
                 const modal = document.getElementById('frame-stats-modal');
                 if (!modal) return;
 
-                const token = localStorage.getItem('token');
-                if (!token) return;
-
                 try {
-                    const res = await fetch(`${API_BASE_URL}/api/frames/${reelId}/stats/`, {
-                        headers: { 'Authorization': `Bearer ${token}` }
-                    });
+                    const res = await customFetch(`${CONFIG.API_BASE_URL}/frames/${reelId}/stats/`);
                     if (!res.ok) throw new Error('Could not load frame stats');
                     const data = await res.json();
                     const reel = data.reel;
@@ -4577,7 +4557,7 @@
                             document.getElementById('stats-modal-prod-price').textContent = '₹' + Number(reel.product_price || 0).toFixed(2);
                             const prodImg = document.getElementById('stats-modal-prod-img');
                             if (prodImg) {
-                                prodImg.src = reel.product_image || 'anantah_logo.png';
+                                prodImg.src = getMediaUrl(reel.product_image);
                             }
                         } else {
                             prodSec.style.display = 'none';
@@ -4587,7 +4567,7 @@
                     modal.classList.add('active');
                 } catch (err) {
                     console.error('[ArtisanFrames] Error opening stats modal:', err);
-                    showToast('Unable to load frame statistics', 'error');
+                    showToastAlert('Unable to load frame statistics', 'error');
                 }
             },
 
@@ -4601,6 +4581,9 @@
                 }
             }
         };
+
+        window.FramesFeed = FramesFeed;
+        window.ArtisanFrames = ArtisanFrames;
 
         // =====================================================================
         // ARTISAN ANALYTICS MODULE (V1)
