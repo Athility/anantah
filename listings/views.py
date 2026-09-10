@@ -539,6 +539,12 @@ class ConfirmCatalogView(APIView):
         product.status = 'live'
         product.save()
 
+        try:
+            from payments.verified_page_generator import generate_verified_page
+            generate_verified_page(product, force_regenerate=True)
+        except Exception as e:
+            logger.warning(f"Error generating verified page on catalog confirmation: {e}")
+
         serializer = ProductSerializer(product, context={'request': request})
         return Response(serializer.data, status=status.HTTP_200_OK)
 
