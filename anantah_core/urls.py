@@ -13,6 +13,7 @@ urlpatterns = [
     path('api/orders/', include(order_urlpatterns)),
     path('api/payments/', include('payments.urls')),
     path('api/wishlist/', include('wishlist.urls')),
+    path('api/frames/', include('frames.urls')),
     
     # Static serving for auto-generated verified authenticity certificate HTML pages.
     # NOTE FOR PRODUCTION / VERCEL:
