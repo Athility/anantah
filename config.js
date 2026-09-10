@@ -1,22 +1,63 @@
+/**
+ * Anantah Frontend Configuration
+ *
+ * Architecture:
+ * - Frontend: Deployed on Vercel (static SPA).
+ * - Backend: Django API running on local PC port 8000, exposed via HTTPS Cloudflare Tunnel.
+ * - Production: Browser sends requests directly to the Cloudflare Tunnel URL (e.g. https://api.yourdomain.com or https://*.trycloudflare.com).
+ * - Development: Browser connects to http://127.0.0.1:8000 when served on localhost.
+ */
+
+// Optional default production backend URL (e.g., 'https://api.yourdomain.com')
+// Can also be configured dynamically via <meta name="backend-url" content="..."> in index.html,
+// window.__BACKEND_URL__, or localStorage.getItem('custom_backend_url').
+const DEFAULT_PRODUCTION_API_URL = '';
+
 const getBackendBaseUrl = () => {
     if (typeof window !== 'undefined') {
-        // 1. Explicit global runtime override (e.g. injected by environment)
+        // 1. Explicit global runtime override (injected by script / deployment)
         if (window.__BACKEND_URL__ && typeof window.__BACKEND_URL__ === 'string' && window.__BACKEND_URL__.trim()) {
             return window.__BACKEND_URL__.trim().replace(/\/+$/, '');
         }
-        // 2. HTML meta tag configuration (e.g. set at deployment)
+
+        // 2. Developer / tester dynamic override via browser localStorage:
+        //    Allows testing quick ephemeral tunnels (e.g., https://xyz.trycloudflare.com) on Vercel instantly without redeploying:
+        //    Open DevTools Console -> localStorage.setItem('custom_backend_url', 'https://xyz.trycloudflare.com')
+        try {
+            const devOverride = localStorage.getItem('custom_backend_url');
+            if (devOverride && typeof devOverride === 'string' && devOverride.trim()) {
+                return devOverride.trim().replace(/\/+$/, '');
+            }
+        } catch (e) {
+            // LocalStorage might be disabled in private browsing
+        }
+
+        // 3. HTML meta tag configuration (e.g. <meta name="backend-url" content="https://api.yourdomain.com">)
         if (typeof document !== 'undefined') {
             const metaTag = document.querySelector('meta[name="backend-url"]');
             if (metaTag && metaTag.content && metaTag.content.trim()) {
                 return metaTag.content.trim().replace(/\/+$/, '');
             }
         }
-        // 3. Localhost development: Django typically runs on port 8000
+
+        // 4. Localhost development: Django typically runs on port 8000
         const hostname = window.location.hostname;
-        if (hostname === 'localhost' || hostname === '127.0.0.1' || window.location.protocol === 'file:') {
+        if (hostname === 'localhost' || hostname === '127.0.0.1' || hostname === '0.0.0.0' || window.location.protocol === 'file:') {
             return 'http://127.0.0.1:8000';
         }
-        // 4. Hosted production fallback (same-origin or proxy deployment)
+
+        // 5. Configured default production API URL
+        if (DEFAULT_PRODUCTION_API_URL && DEFAULT_PRODUCTION_API_URL.trim()) {
+            return DEFAULT_PRODUCTION_API_URL.trim().replace(/\/+$/, '');
+        }
+
+        // 6. Hosted production warning fallback:
+        //    If running on Vercel or a hosted domain with no tunnel configured, log guidance for the developer
+        console.warn(
+            '[Anantah Config] No backend URL configured for hosted deployment.\n' +
+            'Set <meta name="backend-url" content="https://your-tunnel-url"> in index.html,\n' +
+            'or run in browser console: localStorage.setItem("custom_backend_url", "https://your-tunnel-url")'
+        );
         return window.location.origin;
     }
     return 'http://127.0.0.1:8000';
@@ -35,16 +76,17 @@ function getMediaUrl(path) {
         return path;
     }
 
+    const backendBase = getBackendBaseUrl();
+
     if (path.startsWith('http://') || path.startsWith('https://')) {
+        // Rewrite localhost or 127.0.0.1 URLs to the configured backend base URL
+        // Ensures media works in production even if database or serializer had localhost
         if (path.startsWith('http://127.0.0.1:8000') || path.startsWith('http://localhost:8000')) {
-            const backendBase = getBackendBaseUrl();
             const relativePath = path.replace(/^http:\/\/(127\.0\.0\.1|localhost):8000/, '');
             return `${backendBase}${relativePath}`;
         }
         return path;
     }
-    
-    const backendBase = getBackendBaseUrl();
     
     if (path.startsWith('/')) {
         return `${backendBase}${path}`;

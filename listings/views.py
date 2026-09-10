@@ -10,8 +10,10 @@ from django.core.files.base import ContentFile
 from django.db.models import Q, Sum, Count, F
 from django.utils import timezone
 from rapidfuzz import fuzz
+import uuid
 from .models import Product
 from .serializers import ProductSerializer
+from anantah_core.utils import build_public_media_url
 from ai_services.refiner import refine_image
 from ai_services.voice_cataloger import (
     transcribe_and_translate,
@@ -238,13 +240,40 @@ class ProductUploadView(APIView):
                 status=status.HTTP_400_BAD_REQUEST
             )
 
+        # Size limit validation (10MB max)
+        MAX_IMAGE_SIZE_BYTES = 10 * 1024 * 1024
+        if raw_image.size > MAX_IMAGE_SIZE_BYTES:
+            return Response(
+                {"raw_image": ["Image file size exceeds the maximum limit of 10MB."]},
+                status=status.HTTP_400_BAD_REQUEST
+            )
+
+        # Extension and path sanitization
+        original_name = os.path.basename(raw_image.name or 'upload.jpg')
+        ext = os.path.splitext(original_name)[1].lower()
+        allowed_extensions = {'.jpg', '.jpeg', '.png', '.webp'}
+        if ext not in allowed_extensions:
+            return Response(
+                {'raw_image': ['Unsupported file extension. Allowed extensions: .jpg, .jpeg, .png, .webp']},
+                status=status.HTTP_400_BAD_REQUEST
+            )
+
         from PIL import Image
         try:
             with Image.open(raw_image) as img:
                 img.verify()
+                if img.format not in ['JPEG', 'PNG', 'WEBP']:
+                    return Response(
+                        {'raw_image': ['Unsupported image format. Allowed formats: JPEG, PNG, WEBP.']},
+                        status=status.HTTP_400_BAD_REQUEST
+                    )
             raw_image.seek(0)
         except Exception:
             return Response({'raw_image': ['Upload a valid image.']}, status=status.HTTP_400_BAD_REQUEST)
+
+        # Unique UUID token prevents concurrent name collisions, user data leak, and path traversal
+        unique_token = uuid.uuid4().hex
+        raw_image.name = f"raw_{unique_token}{ext}"
 
         from django.core.exceptions import ValidationError
         product = Product(
@@ -266,27 +295,32 @@ class ProductUploadView(APIView):
         enhancements = [e.strip() for e in enhancements_raw.split(',') if e.strip()]
 
         # 2. Perform AI Image refinement with only selected tools
+        refined_io = None
         try:
             refined_io = refine_image(product.raw_image.file, enhancements=enhancements)
-
-            raw_name = os.path.basename(product.raw_image.name)
-            refined_name = f"refined_{raw_name}"
-
-            if not refined_name.lower().endswith(('.jpg', '.jpeg', '.png')):
-                base, _ = os.path.splitext(refined_name)
-                refined_name = f"{base}.jpg"
+            refined_bytes = refined_io.read() if hasattr(refined_io, 'read') else refined_io.getvalue()
+            refined_name = f"refined_{unique_token}.jpg"
 
             product.refined_image.save(
                 refined_name,
-                ContentFile(refined_io.read()),
+                ContentFile(refined_bytes),
                 save=True
             )
         except Exception as e:
+            logger.error(f"AI Image refinement failed for product {product.id}: {e}", exc_info=True)
             product.delete()
             return Response(
                 {"detail": f"AI Image refinement failed: {str(e)}"},
-                status=status.HTTP_500_INTERNAL_SERVER_ERROR
+                status=status.HTTP_422_UNPROCESSABLE_ENTITY
             )
+        finally:
+            if refined_io and hasattr(refined_io, 'close'):
+                try:
+                    refined_io.close()
+                except Exception:
+                    pass
+            import gc
+            gc.collect()
 
         serializer = ProductSerializer(product, context={'request': request})
         return Response(serializer.data, status=status.HTTP_201_CREATED)
@@ -399,8 +433,9 @@ class VoiceCatalogView(APIView):
         # This ensures the artisan's audio is preserved even if processing fails.
         audio_file.seek(0)
         audio_bytes = audio_file.read()
+        clean_audio_name = os.path.basename(audio_file.name or 'recording.webm')
         product.raw_audio.save(
-            f"voice_{product_id}_{audio_file.name}",
+            f"voice_{product_id}_{uuid.uuid4().hex[:8]}_{clean_audio_name}",
             ContentFile(audio_bytes),
             save=True
         )
@@ -669,12 +704,7 @@ class ArtisanAnalyticsView(APIView):
 
         def _image_url(product):
             img = product.refined_image or product.raw_image
-            if not img or not img.name:
-                return None
-            try:
-                return request.build_absolute_uri(img.url)
-            except Exception:
-                return None
+            return build_public_media_url(img, request)
 
         products_data = [
             {

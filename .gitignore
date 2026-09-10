@@ -89,3 +89,17 @@ coverage.xml
 *.bak
 *.tmp
 *.orig
+
+# ========================
+# Cloudflare Tunnel & Secrets
+# ========================
+.cloudflared/
+cloudflared/
+cloudflared.exe
+*.tunnel.json
+tunnel-credentials*.json
+cert.pem
+*.pem
+!certs/aiven-ca.pem
+secrets.json
+local_settings.py
