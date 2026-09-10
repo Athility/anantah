@@ -1,7 +1,6 @@
 from rest_framework import serializers
 from .models import WishlistItem
 from listings.models import Product
-from anantah_core.utils import build_public_media_url
 
 class WishlistProductSerializer(serializers.ModelSerializer):
     raw_image_url = serializers.SerializerMethodField()
@@ -19,13 +18,28 @@ class WishlistProductSerializer(serializers.ModelSerializer):
         ]
 
     def get_raw_image_url(self, obj):
-        return build_public_media_url(obj.raw_image, self.context.get('request'))
+        if obj.raw_image:
+            request = self.context.get('request')
+            if request:
+                return request.build_absolute_uri(obj.raw_image.url)
+            return obj.raw_image.url
+        return None
 
     def get_refined_image_url(self, obj):
-        return build_public_media_url(obj.refined_image, self.context.get('request'))
+        if obj.refined_image:
+            request = self.context.get('request')
+            if request:
+                return request.build_absolute_uri(obj.refined_image.url)
+            return obj.refined_image.url
+        return None
 
     def get_raw_audio_url(self, obj):
-        return build_public_media_url(obj.raw_audio, self.context.get('request'))
+        if obj.raw_audio:
+            request = self.context.get('request')
+            if request:
+                return request.build_absolute_uri(obj.raw_audio.url)
+            return obj.raw_audio.url
+        return None
 
     def get_artisan_name(self, obj):
         if obj.artisan and getattr(obj.artisan, 'user', None):

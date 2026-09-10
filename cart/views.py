@@ -266,10 +266,19 @@ class OrderCreateView(APIView):
             existing_orders = list(Order.objects.filter(buyer=request.user.buyer_profile, status='created').select_for_update())
             
             # Check if existing orders perfectly match current cart + address
-            cart_sig = {(item.product.id, item.quantity, item.product.price, int(address_id)) for item in locked_items}
-            order_sig = {(o.product.id, o.quantity, o.product_total / o.quantity, o.shipping_address_id) for o in existing_orders}
+            cart_sig = {(item.product_id, item.quantity, item.product.price, int(address_id)) for item in locked_items}
+            order_sig = {
+                (
+                    o.product_id,
+                    o.quantity,
+                    (o.product_total / o.quantity) if o.quantity else Decimal('0.00'),
+                    o.shipping_address_id
+                )
+                for o in existing_orders
+                if o.product_id is not None
+            }
             
-            if existing_orders and cart_sig == order_sig:
+            if existing_orders and len(locked_items) == len(existing_orders) and cart_sig == order_sig:
                 if any(not o.razorpay_order_id for o in existing_orders):
                     return Response({'detail': 'A checkout is already in progress. Please wait a moment.'}, status=status.HTTP_409_CONFLICT)
                 

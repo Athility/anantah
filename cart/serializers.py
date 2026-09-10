@@ -1,7 +1,6 @@
 from rest_framework import serializers
 from .models import CartItem, Order, Address
 from listings.models import Product
-from anantah_core.utils import build_public_media_url
 
 
 class ProductMiniSerializer(serializers.ModelSerializer):
@@ -12,7 +11,11 @@ class ProductMiniSerializer(serializers.ModelSerializer):
         fields = ['id', 'title_en', 'price', 'refined_image']
 
     def get_refined_image(self, obj):
-        return build_public_media_url(obj.refined_image, self.context.get('request'))
+        request = self.context.get('request')
+        if obj.refined_image:
+            url = obj.refined_image.url
+            return request.build_absolute_uri(url) if request else url
+        return None
 
 
 class CartItemSerializer(serializers.ModelSerializer):

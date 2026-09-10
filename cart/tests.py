@@ -76,3 +76,34 @@ class CheckoutTests(TestCase):
         self.assertIsNone(order.product)
         self.assertIsNotNone(order.buyer)
 
+    @mock.patch('cart.views.create_razorpay_order')
+    def test_checkout_with_existing_order_having_null_product(self, mock_create):
+        mock_create.return_value = {
+            'id': 'order_rzp_test_123',
+            'amount': 18500,
+            'currency': 'INR',
+            'status': 'created'
+        }
+        # Create an existing order in 'created' status with null product
+        Order.objects.create(
+            buyer=self.buyer_profile,
+            product=None,
+            artisan=self.artisan_profile,
+            shipping_address=self.address,
+            quantity=1,
+            total_amount=100.0,
+            currency='INR',
+            status='created',
+            product_total=100.0,
+            shipping_cost=0.0,
+            platform_commission=0.0,
+            total_payable=100.0
+        )
+        # Put an item in the cart
+        CartItem.objects.create(buyer=self.buyer_profile, product=self.product, quantity=1)
+        
+        response = self.client.post('/api/orders/create/', {'address_id': self.address.id}, format='json')
+        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
+        self.assertEqual(response.data['razorpay_order_id'], 'order_rzp_test_123')
+
+

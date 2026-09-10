@@ -148,31 +148,29 @@ DB_PORT=3306
 
 ---
 
-### 6. Run Migrations & Start Local Backend
+### 6. Run Migrations & Start Server
 
 ```bash
 # Apply database migrations
 python manage.py migrate
 
-# Start the Django server locally on port 8000
-python manage.py runserver 127.0.0.1:8000
+# Start the Django development server
+python manage.py runserver
 ```
 
-The local backend API runs at `http://127.0.0.1:8000/`.
+The backend API will be live at `http://127.0.0.1:8000/`.
 
 ---
 
-### 7. Expose Backend via Cloudflare Tunnel (for Vercel Frontend)
+### 7. Launch the Frontend
 
-To allow the static frontend deployed on **Vercel** to directly access your local PC's Django backend and CPU AI pipeline:
-
-1. In a second PowerShell terminal, launch a Cloudflare Tunnel:
-   ```powershell
-   # Quick ephemeral tunnel (instant HTTPS URL, no domain needed):
-   cloudflared tunnel --url http://127.0.0.1:8000
+1. Ensure `config.js` points to your backend URL:
+   ```javascript
+   const CONFIG = {
+       API_BASE_URL: 'http://127.0.0.1:8000/api'
+   };
    ```
-2. For stable custom domain setup (e.g. `https://api.yourdomain.com`), consult the complete [Cloudflare Tunnel Setup Guide](docs/CLOUDFLARE_TUNNEL_SETUP.md).
-3. The frontend on Vercel communicates directly with the public tunnel HTTPS API with JWT Bearer authentication. For local dev, simply open `index.html` in your browser (it automatically connects to `http://127.0.0.1:8000`).
+2. Open `index.html` directly in your browser or serve with Live Server in VS Code.
 
 ---
 

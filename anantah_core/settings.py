@@ -4,13 +4,6 @@ from pathlib import Path
 from datetime import timedelta
 from decouple import config
 
-try:
-    import sentry_sdk
-    from sentry_sdk.integrations.django import DjangoIntegration
-except ImportError:
-    sentry_sdk = None
-    DjangoIntegration = None
-
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
@@ -21,19 +14,19 @@ SECRET_KEY = config('SECRET_KEY')
 DEBUG = config('DEBUG', default=False, cast=bool)
 
 ALLOWED_HOSTS_CONFIG = config('ALLOWED_HOSTS', default='')
-default_allowed_hosts = ['localhost', '127.0.0.1', '.trycloudflare.com', '.vercel.app', '.onrender.com']
 if ALLOWED_HOSTS_CONFIG:
-    env_hosts = [h.strip() for h in ALLOWED_HOSTS_CONFIG.split(',') if h.strip()]
-    ALLOWED_HOSTS = list(dict.fromkeys(default_allowed_hosts + env_hosts))
+    ALLOWED_HOSTS = [h.strip() for h in ALLOWED_HOSTS_CONFIG.split(',') if h.strip()]
 elif DEBUG:
     ALLOWED_HOSTS = ['*']
 else:
-    ALLOWED_HOSTS = default_allowed_hosts
+    ALLOWED_HOSTS = ['localhost', '127.0.0.1', '.onrender.com', '.vercel.app']
 
 # Optional Sentry Monitoring Integration
 SENTRY_DSN = config('SENTRY_DSN', default='')
-if SENTRY_DSN and sentry_sdk and DjangoIntegration:
+if SENTRY_DSN:
     try:
+        import sentry_sdk
+        from sentry_sdk.integrations.django import DjangoIntegration
         sentry_sdk.init(
             dsn=SENTRY_DSN,
             integrations=[DjangoIntegration()],
@@ -128,8 +121,8 @@ if 'test' not in sys.argv:
         host = config('DB_HOST')
         port = config('DB_PORT', cast=int)
         socket.gethostbyname(host)
-        # Try a quick socket connection (timeout 5s) to make sure database is online
-        with socket.create_connection((host, port), timeout=5.0):
+        # Try a quick socket connection (timeout 1s) to make sure database is online
+        with socket.create_connection((host, port), timeout=1.0):
             mysql_reachable = True
     except Exception:
         mysql_reachable = False
@@ -260,79 +253,24 @@ SIMPLE_JWT = {
     'USER_ID_CLAIM': 'user_id',
 }
 
-# Public API URL (for media URLs and Cloudflare Tunnel integration)
-PUBLIC_API_URL = config('PUBLIC_API_URL', default='').rstrip('/')
-
-# Reverse Proxy & Cloudflare Tunnel SSL / Host recognition
-SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
-USE_X_FORWARDED_HOST = True
-USE_X_FORWARDED_PORT = True
-
 # CORS Configuration
-# Security requirement: Never allow all origins, even in development
-CORS_ALLOW_ALL_ORIGINS = False
-
-default_cors_origins = [
-    'http://localhost:3000',
-    'http://127.0.0.1:3000',
-    'http://localhost:5500',
-    'http://127.0.0.1:5500',
-    'http://localhost:8000',
-    'http://127.0.0.1:8000',
-    'http://localhost:5173',
-    'http://127.0.0.1:5173',
-    'https://anantah.vercel.app',
-]
 CORS_ALLOWED_ORIGINS_CONFIG = config('CORS_ALLOWED_ORIGINS', default='')
 if CORS_ALLOWED_ORIGINS_CONFIG:
-    env_cors = [o.strip() for o in CORS_ALLOWED_ORIGINS_CONFIG.split(',') if o.strip()]
-    CORS_ALLOWED_ORIGINS = list(dict.fromkeys(default_cors_origins + env_cors))
+    CORS_ALLOWED_ORIGINS = [o.strip() for o in CORS_ALLOWED_ORIGINS_CONFIG.split(',') if o.strip()]
+    CORS_ALLOW_ALL_ORIGINS = False
+elif DEBUG:
+    CORS_ALLOW_ALL_ORIGINS = True
 else:
-    CORS_ALLOWED_ORIGINS = default_cors_origins
-
-# Regex pattern matching for Vercel preview/production deployments
-CORS_ALLOWED_ORIGIN_REGEXES = [
-    r"^https://[a-zA-Z0-9_-]+\.vercel\.app$",
-]
-
-CORS_ALLOW_HEADERS = [
-    'accept',
-    'accept-encoding',
-    'authorization',
-    'content-type',
-    'dnt',
-    'origin',
-    'user-agent',
-    'x-csrftoken',
-    'x-requested-with',
-]
-
-# CSRF Configuration
-default_csrf_origins = [
-    'http://localhost:8000',
-    'http://127.0.0.1:8000',
-    'https://anantah.vercel.app',
-    'https://*.trycloudflare.com',
-]
-CSRF_TRUSTED_ORIGINS_CONFIG = config('CSRF_TRUSTED_ORIGINS', default='')
-if CSRF_TRUSTED_ORIGINS_CONFIG:
-    env_csrf = [c.strip() for c in CSRF_TRUSTED_ORIGINS_CONFIG.split(',') if c.strip()]
-    CSRF_TRUSTED_ORIGINS = list(dict.fromkeys(default_csrf_origins + env_csrf))
-else:
-    CSRF_TRUSTED_ORIGINS = default_csrf_origins
-
-# If PUBLIC_API_URL is configured, ensure it is added to CSRF_TRUSTED_ORIGINS and ALLOWED_HOSTS
-if PUBLIC_API_URL:
-    if PUBLIC_API_URL not in CSRF_TRUSTED_ORIGINS:
-        CSRF_TRUSTED_ORIGINS.append(PUBLIC_API_URL)
-    import urllib.parse
-    parsed_public_host = urllib.parse.urlparse(PUBLIC_API_URL).netloc
-    if parsed_public_host and parsed_public_host not in ALLOWED_HOSTS and ALLOWED_HOSTS != ['*']:
-        ALLOWED_HOSTS.append(parsed_public_host)
+    CORS_ALLOW_ALL_ORIGINS = False
+    CORS_ALLOWED_ORIGINS = [
+        'http://localhost:3000',
+        'http://127.0.0.1:3000',
+        'https://anantah.vercel.app',
+    ]
 
 if not DEBUG:
     # Django Security Headers (Production)
-    SECURE_SSL_REDIRECT = config('SECURE_SSL_REDIRECT', default=True, cast=bool)
+    SECURE_SSL_REDIRECT = True
     SECURE_HSTS_SECONDS = 31536000
     SECURE_HSTS_INCLUDE_SUBDOMAINS = True
     SECURE_HSTS_PRELOAD = True
