@@ -79,7 +79,7 @@ ROOT_URLCONF = 'anantah_core.urls'
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [],
+        'DIRS': [BASE_DIR / 'templates'],
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
@@ -302,3 +302,7 @@ DEFAULT_AUTO_FIELD = 'django.db.models.AutoField'
 RAZORPAY_KEY_ID = config('RAZORPAY_KEY_ID', default='')
 RAZORPAY_KEY_SECRET = config('RAZORPAY_KEY_SECRET', default='')
 RAZORPAY_WEBHOOK_SECRET = config('RAZORPAY_WEBHOOK_SECRET', default='')
+
+# Artwork Verification & Canonical Links Configuration
+SITE_BASE_URL = config('SITE_BASE_URL', default='http://127.0.0.1:8000').rstrip('/')
+VERIFIED_LINKS_DIR = BASE_DIR / 'verified_links'

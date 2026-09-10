@@ -1,0 +1,466 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Verified Authentic Certificate - Clay Rose Slender Vase | Anantah</title>
+    <!-- Favicon -->
+    <link rel="icon" type="image/png" href="/favicon.png">
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Inter:wght@300;400;500;600;700&family=Outfit:wght@400;500;600;700;800&family=Playfair+Display:ital,wght@0,500;0,700;1,500&display=swap" rel="stylesheet">
+    
+    <style>
+        :root {
+            --bg-deep: #0e0c1a;
+            --bg-card: #151324;
+            --bg-inner: #1c1930;
+            --gold-primary: #e6ca65;
+            --gold-light: #f7e7a9;
+            --gold-gradient: linear-gradient(135deg, #f7e7a9 0%, #d4af37 50%, #aa820a 100%);
+            --terracotta: #e07246;
+            --purple-brand: #7a52cc;
+            --purple-dark: #321e5e;
+            --text-white: #ffffff;
+            --text-cream: #f4efe6;
+            --text-muted: #a59fb8;
+            --border-gold: rgba(212, 175, 55, 0.28);
+            --border-subtle: rgba(255, 255, 255, 0.08);
+            --seal-green: #10b981;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            background-color: var(--bg-deep);
+            color: var(--text-cream);
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 32px 16px;
+            background-image: 
+                radial-gradient(circle at 50% 0%, rgba(122, 82, 204, 0.18) 0%, transparent 60%),
+                radial-gradient(circle at 100% 100%, rgba(224, 114, 70, 0.12) 0%, transparent 50%),
+                radial-gradient(circle at 0% 100%, rgba(212, 175, 55, 0.08) 0%, transparent 50%);
+            background-attachment: fixed;
+        }
+
+        .cert-container {
+            width: 100%;
+            max-width: 780px;
+            position: relative;
+            background: var(--bg-card);
+            border: 1px solid var(--border-gold);
+            border-radius: 20px;
+            box-shadow: 
+                0 25px 60px -12px rgba(0, 0, 0, 0.7),
+                0 0 0 1px rgba(212, 175, 55, 0.15),
+                0 0 50px rgba(122, 82, 204, 0.12);
+            overflow: hidden;
+            animation: fadeIn 0.8s ease-out;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(16px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* Certificate Guilloche / Corner Ornaments */
+        .corner-ornament {
+            position: absolute;
+            width: 40px;
+            height: 40px;
+            border-color: var(--gold-primary);
+            opacity: 0.6;
+            pointer-events: none;
+        }
+        .corner-tl { top: 12px; left: 12px; border-top: 2px solid; border-left: 2px solid; border-top-left-radius: 8px; }
+        .corner-tr { top: 12px; right: 12px; border-top: 2px solid; border-right: 2px solid; border-top-right-radius: 8px; }
+        .corner-bl { bottom: 12px; left: 12px; border-bottom: 2px solid; border-left: 2px solid; border-bottom-left-radius: 8px; }
+        .corner-br { bottom: 12px; right: 12px; border-bottom: 2px solid; border-right: 2px solid; border-bottom-right-radius: 8px; }
+
+        /* Header Branding */
+        .cert-header {
+            text-align: center;
+            padding: 44px 32px 24px;
+            border-bottom: 1px solid var(--border-subtle);
+            position: relative;
+            background: linear-gradient(180deg, rgba(255,255,255,0.02) 0%, transparent 100%);
+        }
+
+        .cert-brand-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 14px;
+        }
+
+        .cert-brand-logo {
+            height: 38px;
+            width: auto;
+            object-fit: contain;
+            filter: drop-shadow(0 2px 8px rgba(0,0,0,0.4));
+        }
+
+        .cert-brand-name {
+            font-family: 'Outfit', sans-serif;
+            font-size: 26px;
+            font-weight: 800;
+            letter-spacing: 2px;
+            background: linear-gradient(135deg, #ffffff 0%, #f4efe6 50%, #d4af37 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            text-transform: uppercase;
+        }
+
+        .cert-super-title {
+            font-family: 'Outfit', sans-serif;
+            font-size: 11px;
+            text-transform: uppercase;
+            letter-spacing: 4px;
+            color: var(--gold-primary);
+            margin-bottom: 6px;
+            font-weight: 700;
+        }
+
+        .cert-main-title {
+            font-family: 'Playfair Display', serif;
+            font-size: 32px;
+            font-weight: 700;
+            color: #ffffff;
+            letter-spacing: 0.5px;
+            margin-bottom: 18px;
+        }
+
+        /* Verified Seal */
+        .verified-seal-pill {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            background: rgba(16, 185, 129, 0.12);
+            border: 1px solid rgba(16, 185, 129, 0.4);
+            padding: 8px 20px;
+            border-radius: 999px;
+            color: #34d399;
+            font-family: 'Outfit', sans-serif;
+            font-size: 14px;
+            font-weight: 700;
+            letter-spacing: 1px;
+            box-shadow: 0 0 20px rgba(16, 185, 129, 0.2);
+        }
+
+        .verified-seal-pill svg {
+            width: 18px;
+            height: 18px;
+            fill: currentColor;
+        }
+
+        /* Certificate Body */
+        .cert-body {
+            padding: 36px 36px 28px;
+        }
+
+        .artwork-showcase {
+            display: grid;
+            grid-template-columns: 240px 1fr;
+            gap: 28px;
+            background: var(--bg-inner);
+            border: 1px solid var(--border-subtle);
+            border-radius: 16px;
+            padding: 20px;
+            margin-bottom: 28px;
+            box-shadow: inset 0 2px 6px rgba(0,0,0,0.3);
+        }
+
+        @media (max-width: 640px) {
+            .artwork-showcase {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .artwork-img-frame {
+            border-radius: 12px;
+            overflow: hidden;
+            border: 1px solid var(--border-gold);
+            background: #000;
+            position: relative;
+            aspect-ratio: 1/1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .artwork-img-frame img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transition: transform 0.4s ease;
+        }
+
+        .artwork-meta {
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+
+        .artwork-title-en {
+            font-family: 'Outfit', sans-serif;
+            font-size: 22px;
+            font-weight: 700;
+            color: #ffffff;
+            margin-bottom: 4px;
+            line-height: 1.3;
+        }
+
+        .artwork-title-hi {
+            font-size: 17px;
+            color: var(--gold-light);
+            margin-bottom: 12px;
+            font-weight: 500;
+        }
+
+        .artwork-desc {
+            font-size: 13.5px;
+            line-height: 1.6;
+            color: var(--text-muted);
+            margin-bottom: 12px;
+            display: -webkit-box;
+            -webkit-line-clamp: 3;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+        }
+
+        .artwork-desc-hi {
+            font-size: 13px;
+            line-height: 1.6;
+            color: #b5aed1;
+            font-style: italic;
+            display: -webkit-box;
+            -webkit-line-clamp: 2;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+        }
+
+        /* Certificate Spec Grid */
+        .cert-specs {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 16px;
+            margin-bottom: 28px;
+        }
+
+        @media (max-width: 500px) {
+            .cert-specs {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .spec-card {
+            background: rgba(255, 255, 255, 0.02);
+            border: 1px solid var(--border-subtle);
+            border-radius: 12px;
+            padding: 16px 20px;
+            transition: border-color 0.2s;
+        }
+
+        .spec-card:hover {
+            border-color: rgba(212, 175, 55, 0.35);
+        }
+
+        .spec-label {
+            font-family: 'Outfit', sans-serif;
+            font-size: 11px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 1.5px;
+            color: var(--gold-primary);
+            margin-bottom: 6px;
+        }
+
+        .spec-value {
+            font-size: 15px;
+            font-weight: 600;
+            color: #ffffff;
+        }
+
+        .spec-subtext {
+            font-size: 12px;
+            color: var(--text-muted);
+            margin-top: 2px;
+        }
+
+        /* Certificate Statement & Sign-off */
+        .cert-statement {
+            text-align: center;
+            padding: 24px 20px;
+            border-top: 1px solid var(--border-subtle);
+            border-bottom: 1px solid var(--border-subtle);
+            margin-bottom: 28px;
+            background: radial-gradient(circle at center, rgba(122, 82, 204, 0.08) 0%, transparent 70%);
+        }
+
+        .cert-statement-text {
+            font-family: 'Instrument Serif', serif;
+            font-size: 26px;
+            font-style: italic;
+            color: var(--gold-light);
+            margin-bottom: 8px;
+            letter-spacing: 0.5px;
+        }
+
+        .cert-statement-sub {
+            font-size: 12px;
+            color: var(--text-muted);
+            letter-spacing: 0.5px;
+        }
+
+        /* Reference Footer */
+        .cert-footer {
+            padding: 0 36px 36px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            flex-wrap: wrap;
+            gap: 16px;
+            font-size: 12px;
+            color: var(--text-muted);
+        }
+
+        .cert-ref-block {
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+        }
+
+        .cert-ref-code {
+            font-family: 'Outfit', monospace;
+            font-size: 13px;
+            font-weight: 700;
+            color: var(--gold-primary);
+            letter-spacing: 1px;
+        }
+
+        .cert-home-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 10px 18px;
+            background: linear-gradient(135deg, #7a52cc 0%, #482e83 100%);
+            color: #ffffff;
+            text-decoration: none;
+            border-radius: 999px;
+            font-family: 'Outfit', sans-serif;
+            font-size: 13px;
+            font-weight: 600;
+            transition: all 0.2s ease;
+            box-shadow: 0 4px 14px rgba(122, 82, 204, 0.4);
+        }
+
+        .cert-home-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(122, 82, 204, 0.6);
+            color: #ffffff;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="cert-container">
+        <!-- Guilloche Corner Ornaments -->
+        <div class="corner-ornament corner-tl"></div>
+        <div class="corner-ornament corner-tr"></div>
+        <div class="corner-ornament corner-bl"></div>
+        <div class="corner-ornament corner-br"></div>
+
+        <!-- Header -->
+        <div class="cert-header">
+            <div class="cert-brand-badge">
+                <img src="http://127.0.0.1:8000/anantah_logo.png" alt="Anantah Logo" class="cert-brand-logo" onerror="this.style.display='none'">
+                <span class="cert-brand-name">Anantah</span>
+            </div>
+            <div class="cert-super-title">Official Digital Certificate</div>
+            <h1 class="cert-main-title">Certificate of Authenticity</h1>
+            <div class="verified-seal-pill">
+                <svg viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"/></svg>
+                <span>VERIFIED AUTHENTIC</span>
+            </div>
+        </div>
+
+        <!-- Body -->
+        <div class="cert-body">
+            <!-- Artwork Showcase -->
+            <div class="artwork-showcase">
+                <div class="artwork-img-frame">
+                    <img src="https://res.cloudinary.com/q4xw3e2i/image/upload/v1/media/products/refined/refined_8th_ofyzaf_o8mk7s" alt="Clay Rose Slender Vase" loading="eager" onerror="this.onerror=null; this.src='http://127.0.0.1:8000/anantah_logo.png';">
+                </div>
+                <div class="artwork-meta">
+                    <h2 class="artwork-title-en">Clay Rose Slender Vase</h2>
+                    
+                    <div class="artwork-title-hi">Clay Rose Slender Vase</div>
+                    
+                    
+                    <p class="artwork-desc">Elevate your home decor with this exquisite Clay Rose Slender Vase, featuring a delicate 3D soil-crafted rose blooming from a long, thin stem. Hand-sculpted by skilled artisans, this piece showcases the intricate beauty of traditional clay work, capturing the natural curves of a rose in perfect detail. The slender silhouette adds a touch of modern elegance, making it a stunning centerpiece for living rooms, bedrooms, or office spaces. As a unique handmade gift, it symbolizes timeless beauty and the enduring spirit of Indian craftsmanship.</p>
+                    
+                    
+                    <p class="artwork-desc-hi">अपने घर के सजावट को एक अनोखा स्पर्श दें इस शानदार मिट्टी की गुलाब की बेलनुमा वास से, जिसमें एक सुंदर 3D गुलाब लंबी और पतली डाली से खिलता हुआ दिखाई देता है। कुशल कारीगरों द्वारा हाथ से गढ़ी गई यह कलाकृति, पारंपरिक मिट्टी के काम की सूक्ष्म सुंदरता को प्रदर्शित करती है, जिसमें गुलाब के प्राकृतिक वक्र पूर्ण विवरण में पकड़े गए हैं। इसकी पतली और लंबी संरचना आधुनिक शैली में एक छू देती है, जिससे यह लिविंग रूम, बेडरूम या ऑफिस के लिए एक आकर्षक सजावट बन जाती है। एक अद्वितीय हस्तनिर्मित उपहार के रूप में, यह शाश्वत सुंदरता और भारतीय शिल्पकला के अटूट भाव को दर्शाती है।</p>
+                    
+                </div>
+            </div>
+
+            <!-- Specs Grid -->
+            <div class="cert-specs">
+                <div class="spec-card">
+                    <div class="spec-label">Master Artisan</div>
+                    <div class="spec-value">Pranavg</div>
+                    
+                </div>
+
+                <div class="spec-card">
+                    <div class="spec-label">Heritage Craft</div>
+                    <div class="spec-value">Clay Pots</div>
+                    <div class="spec-subtext">Handcrafted Traditional Art</div>
+                </div>
+
+                <div class="spec-card">
+                    <div class="spec-label">Certificate ID</div>
+                    <div class="spec-value cert-ref-code">AN-AUTH-000059</div>
+                    <div class="spec-subtext">Immutable Verification Record</div>
+                </div>
+
+                <div class="spec-card">
+                    <div class="spec-label">Verification Date</div>
+                    <div class="spec-value">September 10, 2026</div>
+                    <div class="spec-subtext">Sale & Authenticity Timestamp</div>
+                </div>
+            </div>
+
+            <!-- Eternal Statement -->
+            <div class="cert-statement">
+                <div class="cert-statement-text">"Beauty of the art stays Eternal"</div>
+                <div class="cert-statement-sub">Handmade with ancestral craftsmanship & verified by the Anantah Trust Network</div>
+            </div>
+        </div>
+
+        <!-- Footer -->
+        <div class="cert-footer">
+            <div class="cert-ref-block">
+                <span>Canonical Verification URL:</span>
+                <span style="color: var(--text-cream); word-break: break-all; font-family: monospace;">http://127.0.0.1:8000/verified_links/product_59.html</span>
+            </div>
+            <a href="/" class="cert-home-btn">
+                <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="m3 9 9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
+                <span>Visit Marketplace</span>
+            </a>
+        </div>
+    </div>
+
+</body>
+</html>
