@@ -17,6 +17,8 @@ from .razorpay_service import (
     verify_payment_signature,
     verify_webhook_signature
 )
+from .verified_page_generator import generate_verified_page
+
 
 logger = logging.getLogger(__name__)
 
@@ -134,6 +136,11 @@ class VerifyPaymentView(APIView):
                 
                 orders.update(status='paid', razorpay_payment_id=razorpay_payment_id)
                 
+                # Auto-generate verified authenticity certificate pages for purchased products
+                for o in orders:
+                    if o.product:
+                        generate_verified_page(o.product)
+
                 # Clear purchased items from the cart
                 from cart.models import CartItem
                 purchased_product_ids = [o.product_id for o in orders if o.product_id]
@@ -198,6 +205,11 @@ class RazorpayWebhookView(APIView):
                     orders.update(status='paid', razorpay_payment_id=rzp_payment_id)
                     logger.info(f"Webhook success: {orders.count()} order(s) marked as paid for {rzp_order_id}.")
                     
+                    # Auto-generate verified authenticity certificate pages for purchased products
+                    for o in orders:
+                        if o.product:
+                            generate_verified_page(o.product)
+
                     # Cart cleanup: remove purchased items from the buyer's cart
                     from cart.models import CartItem
                     first_order = orders.first()

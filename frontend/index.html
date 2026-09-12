@@ -16,6 +16,9 @@
     <link rel="stylesheet" href="style.css?v=6">
     <!-- Sentry Error Monitoring & PostHog Analytics SDKs (Placeholders) -->
     <script src="https://browser.sentry-cdn.com/7.100.0/bundle.min.js" crossorigin="anonymous"></script>
+    <!-- QR Code Scanning & Decoding Libraries -->
+    <script src="https://unpkg.com/html5-qrcode@2.3.8/html5-qrcode.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/jsqr@1.4.0/dist/jsQR.min.js"></script>
     <script>
         if (window.Sentry) {
             Sentry.init({ dsn: "https://placeholder_key@o0.ingest.sentry.io/0", tracesSampleRate: 1.0 });
@@ -393,17 +396,95 @@
                 </div>
             </div>
 
-            <!-- Tab: New Frame (Coming Soon) -->
+            <!-- Tab: Frames Studio (Artisan) -->
             <div id="artisan-view-frame" class="artisan-tab-view" style="display: none;">
-                <div style="background: var(--bg-card); border: 1px solid var(--border-color); border-radius: 24px; padding: 40px 24px; text-align: center; max-width: 600px; margin: 20px auto; box-shadow: var(--shadow-premium);">
-                    <div style="width: 64px; height: 64px; border-radius: 20px; background: var(--primary-light); color: var(--primary-color); display: flex; align-items: center; justify-content: center; margin: 0 auto 20px auto;">
-                        <svg width="32" height="32" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="3"/><path d="M3 9h18M9 21V9"/></svg>
+                <div class="artisan-frames-wrapper">
+                    <div class="artisan-frames-header">
+                        <div>
+                            <h2 class="brand-font" style="font-size: 26px; color: var(--primary-color); margin-bottom: 4px;">Frames Studio</h2>
+                            <p style="color: var(--text-secondary); font-size: 14px;">Showcase behind-the-scenes craft videos to buyers across India.</p>
+                        </div>
+                        <div class="artisan-frames-tabs">
+                            <button type="button" class="artisan-frames-tab-btn active" id="tab-btn-artisan-mine" onclick="ArtisanFrames.switchTab('mine')">
+                                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg>
+                                My Frames
+                            </button>
+                            <button type="button" class="artisan-frames-tab-btn" id="tab-btn-artisan-upload" onclick="ArtisanFrames.switchTab('upload')">
+                                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+                                Upload Frame
+                            </button>
+                        </div>
                     </div>
-                    <h3 class="brand-font" style="font-size: 24px; color: var(--primary-color); margin-bottom: 8px;">New Frame</h3>
-                    <p style="color: var(--text-secondary); font-size: 14px; line-height: 1.6; margin-bottom: 20px;">Create and manage custom frames for your products and showcase them in unique styles.</p>
-                    <span style="display: inline-block; background: var(--accent-gold); color: #22162B; font-weight: 700; font-size: 11px; padding: 6px 14px; border-radius: 20px; text-transform: uppercase; letter-spacing: 0.5px;">Launching Soon</span>
+
+                    <!-- Sub-View: My Frames Grid -->
+                    <div id="artisan-frames-mine-view">
+                        <div id="artisan-frames-loading" style="text-align: center; padding: 40px; color: var(--text-secondary); font-size: 14px;">
+                            <div class="spinner" style="margin: 0 auto 12px auto;"></div>
+                            Loading your Frames...
+                        </div>
+                        <div class="artisan-frames-grid" id="artisan-frames-grid" style="display: none;">
+                            <!-- Populated by ArtisanFrames.loadMine() -->
+                        </div>
+                        <div id="artisan-frames-empty" style="display: none; background: var(--bg-card); border: 1px solid var(--border-color); border-radius: 24px; padding: 48px 24px; text-align: center; max-width: 540px; margin: 20px auto; box-shadow: var(--shadow-premium);">
+                            <div style="width: 64px; height: 64px; border-radius: 20px; background: var(--primary-light); color: var(--primary-color); display: flex; align-items: center; justify-content: center; margin: 0 auto 16px auto;">
+                                <svg width="32" height="32" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><polygon points="23 7 16 12 23 17 23 7"/><rect x="1" y="5" width="15" height="14" rx="2" ry="2"/></svg>
+                            </div>
+                            <h3 class="brand-font" style="font-size: 22px; color: var(--primary-color); margin-bottom: 8px;">No Frames Uploaded Yet</h3>
+                            <p style="color: var(--text-secondary); font-size: 14px; line-height: 1.6; margin-bottom: 24px;">Upload short behind-the-scenes videos of your craftsmanship to engage with buyers and increase sales.</p>
+                            <button type="button" class="btn btn-primary" onclick="ArtisanFrames.switchTab('upload')" style="border-radius: 16px; padding: 12px 28px; font-weight: 700;">+ Upload Your First Frame</button>
+                        </div>
+                    </div>
+
+                    <!-- Sub-View: Upload New Frame -->
+                    <div id="artisan-frames-upload-view" style="display: none;">
+                        <div class="artisan-upload-card">
+                            <form id="form-artisan-frame-upload" onsubmit="ArtisanFrames.handleUpload(event)">
+                                <!-- Dropzone -->
+                                <div class="artisan-dropzone" id="frame-dropzone" onclick="document.getElementById('frame-video-input').click()">
+                                    <input type="file" id="frame-video-input" accept="video/mp4,video/quicktime,video/webm,video/*" style="display: none;" onchange="ArtisanFrames.onVideoSelected(event)">
+                                    <div id="frame-dropzone-prompt">
+                                        <div style="width: 52px; height: 52px; border-radius: 16px; background: var(--primary-light); color: var(--primary-color); display: flex; align-items: center; justify-content: center; margin: 0 auto 12px auto;">
+                                            <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="23 7 16 12 23 17 23 7"/><rect x="1" y="5" width="15" height="14" rx="2" ry="2"/></svg>
+                                        </div>
+                                        <p style="font-weight: 700; color: var(--text-primary); margin-bottom: 4px;">Choose Video or Drag & Drop</p>
+                                        <p style="font-size: 12px; color: var(--text-secondary);">Vertical MP4 or WebM (Max 100MB)</p>
+                                    </div>
+                                    <video id="frame-video-preview" class="artisan-dropzone-preview" style="display: none;" controls playsinline></video>
+                                </div>
+
+                                <!-- Caption -->
+                                <div style="margin-top: 20px;">
+                                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px;">
+                                        <label style="font-size: 13px; font-weight: 700; color: var(--text-primary);">Caption</label>
+                                        <span id="frame-caption-count" style="font-size: 11px; color: var(--text-secondary);">0 / 300</span>
+                                    </div>
+                                    <textarea id="frame-caption-input" rows="3" class="form-control" maxlength="300" oninput="document.getElementById('frame-caption-count').textContent = `${this.value.length} / 300`" placeholder="Share the story behind this craft technique, materials used, or inspiration..." style="width: 100%; border-radius: 14px; padding: 12px; font-family: var(--font-inter); font-size: 14px;"></textarea>
+                                </div>
+
+                                <!-- Link to Product (Optional) -->
+                                <div style="margin-top: 16px;">
+                                    <label style="display: block; font-size: 13px; font-weight: 700; color: var(--text-primary); margin-bottom: 6px;">Feature One of Your Products (Optional)</label>
+                                    <select id="frame-product-select" class="form-control" style="width: 100%; border-radius: 14px; padding: 10px 14px; font-size: 14px; background: var(--bg-cream);">
+                                        <option value="">-- No Product Linked --</option>
+                                    </select>
+                                </div>
+
+                                <!-- Progress Bar -->
+                                <div class="artisan-upload-progress" id="frame-upload-progress">
+                                    <div class="artisan-upload-progress-bar" id="frame-upload-progress-bar"></div>
+                                </div>
+                                <div id="frame-upload-status-text" style="font-size: 12px; color: var(--text-secondary); margin-top: 6px; display: none; text-align: center;">Uploading video to Cloudinary...</div>
+
+                                <div style="display: flex; gap: 12px; margin-top: 24px;">
+                                    <button type="button" class="btn btn-secondary" onclick="ArtisanFrames.switchTab('mine')" style="flex: 1; border-radius: 14px;">Cancel</button>
+                                    <button type="submit" class="btn btn-primary" id="btn-submit-frame-upload" style="flex: 2; border-radius: 14px; font-weight: 700;">Publish Frame</button>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
                 </div>
             </div>
+
 
             <!-- Tab: Analytics View -->
             <div id="artisan-view-analytics" class="artisan-tab-view" style="display: none;">
@@ -1124,17 +1205,19 @@
                 </div>
             </div>
 
-            <!-- TAB: Frames -->
+            <!-- TAB: Frames (Art Reels Feed) -->
             <div id="buyer-view-reels" style="display: none;">
-                <div style="background: var(--bg-card); border: 1px solid var(--border-color); border-radius: 24px; padding: 40px 24px; text-align: center; max-width: 600px; margin: 20px auto; box-shadow: var(--shadow-premium);">
-                    <div style="width: 64px; height: 64px; border-radius: 20px; background: #FFE8E8; color: #D32F2F; display: flex; align-items: center; justify-content: center; margin: 0 auto 20px auto;">
-                        <svg width="32" height="32" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><polygon points="23 7 16 12 23 17 23 7"/><rect x="1" y="5" width="15" height="14" rx="2" ry="2"/></svg>
+                <div class="frames-feed-wrapper">
+                    <div class="frames-feed-container" id="frames-feed-scroll">
+                        <!-- Populated dynamically by FramesFeed.render() -->
+                        <div id="frames-feed-loading" style="display: flex; flex-direction: column; align-items: center; justify-content: center; height: 100%; color: #fff;">
+                            <div class="spinner" style="border-top-color: var(--accent-gold); margin-bottom: 12px;"></div>
+                            <span style="font-size: 14px; font-weight: 600; letter-spacing: 0.5px;">Loading Frames...</span>
+                        </div>
                     </div>
-                    <h3 class="brand-font" style="font-size: 24px; color: var(--primary-color); margin-bottom: 8px;">Artisan Short Frames</h3>
-                    <p style="color: var(--text-secondary); font-size: 14px; line-height: 1.6; margin-bottom: 20px;">Watch short behind-the-scenes videos of Indian master artisans creating handmade pottery, silk weaving, and brass casting in real-time.</p>
-                    <span style="display: inline-block; background: var(--accent-gold); color: #22162B; font-weight: 700; font-size: 11px; padding: 6px 14px; border-radius: 20px; text-transform: uppercase; letter-spacing: 0.5px;">Coming Soon</span>
                 </div>
             </div>
+
 
             <!-- TAB: Discover -->
             <div id="buyer-view-discover" style="display: none;">
@@ -1192,6 +1275,88 @@
                     <h4 style="font-size: 20px; font-weight: 700; color: var(--text-primary); margin: 0 0 8px 0;">Nothing saved yet</h4>
                     <p style="font-size: 14px; color: var(--text-secondary); margin: 0 0 24px 0; max-width: 400px; margin-left: auto; margin-right: auto;">Save your favorite handcrafted items while browsing to easily view or purchase them later!</p>
                     <button type="button" onclick="switchRoleNavTab('shop')" class="btn btn-primary" style="padding: 12px 24px; font-size: 14px; border-radius: 20px;">Explore Marketplace &rarr;</button>
+                </div>
+            </div>
+
+            <!-- TAB: Verify My Artwork -->
+            <div id="buyer-view-verify-artwork" style="display: none;">
+                <div style="margin-bottom: 20px; display: flex; align-items: center; justify-content: space-between;">
+                    <button type="button" onclick="switchBuyerTab('shop')" class="btn-back-link" style="background: var(--bg-card); border: 1px solid var(--border-color); padding: 10px 18px; border-radius: 14px; color: var(--primary-color); font-size: 14px; font-weight: 700; cursor: pointer; display: inline-flex; align-items: center; gap: 8px; font-family: var(--font-inter); transition: var(--transition-smooth);">
+                        <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><line x1="19" y1="12" x2="5" y2="12"/><polyline points="12 19 5 12 12 5"/></svg>
+                        Back to Marketplace
+                    </button>
+                </div>
+
+                <div class="verify-artwork-card" style="background: var(--bg-card); border: 1px solid var(--border-color); border-radius: 24px; padding: 36px 28px; box-shadow: var(--shadow-premium); max-width: 680px; margin: 0 auto;">
+                    <!-- Verification Header -->
+                    <div style="text-align: center; margin-bottom: 28px;">
+                        <div style="display: inline-flex; align-items: center; justify-content: center; width: 64px; height: 64px; border-radius: 50%; background: linear-gradient(135deg, rgba(217, 106, 61, 0.15), rgba(72, 46, 131, 0.2)); border: 1px solid rgba(212, 175, 55, 0.4); margin-bottom: 16px; box-shadow: 0 0 24px rgba(72, 46, 131, 0.15);">
+                            <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="var(--primary-color)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
+                                <path d="m9 12 2 2 4-4"/>
+                            </svg>
+                        </div>
+                        <h2 class="brand-font" style="font-size: 26px; color: var(--text-primary); margin: 0 0 8px 0; font-weight: 800;">Verify My Artwork</h2>
+                        <p style="font-size: 14px; color: var(--text-secondary); max-width: 480px; margin: 0 auto; line-height: 1.5;">
+                            Scan or upload the QR certificate code attached to your physical artwork to inspect its verified authenticity and origin certificate.
+                        </p>
+                    </div>
+
+                    <!-- Mode Toggle Tabs (Scan vs Upload) -->
+                    <div style="display: flex; gap: 8px; background: var(--bg-cream); padding: 6px; border-radius: 16px; border: 1px solid var(--border-color); margin-bottom: 28px;">
+                        <button type="button" id="btn-verify-tab-scan" onclick="switchVerifyMode('scan')" style="flex: 1; padding: 12px; border: none; border-radius: 12px; font-weight: 700; font-size: 14px; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 8px; transition: all 0.2s; background: var(--primary-color); color: #fff; box-shadow: var(--shadow-sm);">
+                            <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/><circle cx="12" cy="13" r="4"/></svg>
+                            Scan QR (Camera)
+                        </button>
+                        <button type="button" id="btn-verify-tab-upload" onclick="switchVerifyMode('upload')" style="flex: 1; padding: 12px; border: none; border-radius: 12px; font-weight: 600; font-size: 14px; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 8px; transition: all 0.2s; background: transparent; color: var(--text-secondary);">
+                            <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+                            Upload QR (Image)
+                        </button>
+                    </div>
+
+                    <!-- MODE 1: Camera Scanner View -->
+                    <div id="verify-section-scan" style="display: block;">
+                        <div id="qr-camera-container" style="position: relative; width: 100%; min-height: 280px; background: #0c0a17; border-radius: 20px; overflow: hidden; border: 2px dashed rgba(212, 175, 55, 0.4); display: flex; flex-direction: column; align-items: center; justify-content: center; margin-bottom: 20px;">
+                            <div id="qr-reader" style="width: 100%;"></div>
+                            <div id="qr-camera-placeholder" style="padding: 30px 20px; text-align: center; color: var(--text-secondary);">
+                                <svg width="48" height="48" fill="none" stroke="var(--primary-color)" stroke-width="1.5" viewBox="0 0 24 24" style="margin-bottom: 12px; opacity: 0.8;"><path d="M3 7V5a2 2 0 0 1 2-2h2"/><path d="M17 3h2a2 2 0 0 1 2 2v2"/><path d="M21 17v2a2 2 0 0 1-2 2h-2"/><path d="M7 21H5a2 2 0 0 1-2-2v-2"/><rect width="10" height="10" x="7" y="7" rx="2"/></svg>
+                                <div style="font-weight: 700; color: var(--text-primary); font-size: 16px; margin-bottom: 6px;">Camera Ready</div>
+                                <div style="font-size: 13px; color: var(--text-secondary); max-width: 320px; margin: 0 auto;">Click "Start Camera Scanner" below to point your lens at the artwork's QR code.</div>
+                            </div>
+                        </div>
+
+                        <div style="display: flex; gap: 12px; justify-content: center;">
+                            <button type="button" id="btn-start-qr-camera" onclick="startQRScanner()" class="btn btn-primary" style="padding: 12px 24px; font-size: 14px; border-radius: 16px; display: inline-flex; align-items: center; gap: 8px;">
+                                <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><polygon points="5 3 19 12 5 21 5 3"/></svg>
+                                <span>Start Camera Scanner</span>
+                            </button>
+                            <button type="button" id="btn-stop-qr-camera" onclick="stopQRScanner()" class="btn btn-secondary" style="display: none; padding: 12px 24px; font-size: 14px; border-radius: 16px;">
+                                <span>Stop Camera</span>
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- MODE 2: File Upload View -->
+                    <div id="verify-section-upload" style="display: none;">
+                        <div id="qr-dropzone" onclick="document.getElementById('qr-file-input').click()" style="border: 2px dashed rgba(212, 175, 55, 0.4); background: var(--bg-cream); border-radius: 20px; padding: 40px 20px; text-align: center; cursor: pointer; transition: all 0.2s; margin-bottom: 20px;">
+                            <input type="file" id="qr-file-input" accept="image/*" style="display: none;" onchange="handleQRFileUpload(event)">
+                            <div id="qr-upload-content">
+                                <svg width="48" height="48" fill="none" stroke="var(--primary-color)" stroke-width="1.5" viewBox="0 0 24 24" style="margin-bottom: 12px;"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+                                <div style="font-weight: 700; color: var(--text-primary); font-size: 16px; margin-bottom: 6px;">Choose QR Image or Drop here</div>
+                                <div style="font-size: 13px; color: var(--text-secondary);">Supports PNG, JPG, JPEG, WEBP photos of QR code</div>
+                            </div>
+                            <div id="qr-upload-preview-wrapper" style="display: none; flex-direction: column; align-items: center; gap: 12px;">
+                                <img id="qr-upload-preview" src="" alt="QR Preview" style="max-width: 220px; max-height: 220px; object-fit: contain; border-radius: 12px; border: 1px solid var(--border-color);">
+                                <span style="font-size: 12px; color: var(--primary-color); font-weight: 600;">Click or drop a different image to replace</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Feedback Alert Banner -->
+                    <div id="verify-status-banner" style="display: none; margin-top: 20px; padding: 14px 18px; border-radius: 14px; font-size: 13.5px; line-height: 1.5; text-align: center;"></div>
+
+                    <!-- Hidden Canvas for Fallback jsQR Processing -->
+                    <canvas id="qr-canvas" style="display: none;"></canvas>
                 </div>
             </div>
 
@@ -1715,7 +1880,7 @@
         }
 
         // Centralized Route Maps for SPA Routing
-        const VALID_BUYER_ROUTES = ['shop', 'reels', 'discover', 'search', 'cart', 'wishlist', 'orders', 'account', 'productDetail'];
+        const VALID_BUYER_ROUTES = ['shop', 'reels', 'discover', 'search', 'cart', 'wishlist', 'orders', 'account', 'productDetail', 'verifyArtwork', 'verify-artwork'];
         const VALID_ARTISAN_ROUTES = ['home', 'my-listings', 'new-listing', 'communities', 'account', 'analytics'];
 
         // SPA History popstate listener
@@ -2289,7 +2454,7 @@
                                             <svg width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
                                             Proceed to Checkout
                                         </div>
-                                        <div class="dropdown-nav-link" onclick="alert('Artwork Verification requested. Our team will review your application soon.')">
+                                        <div class="dropdown-nav-link" onclick="openVerifyArtworkScreen()">
                                             <svg width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/><path d="M9 12l2 2 4-4"/></svg>
                                             Verify My Artwork
                                         </div>
@@ -2523,10 +2688,15 @@
                     const v = document.getElementById(vId);
                     if (v) v.style.display = (vId === (item ? item.targetView : 'artisan-view-listings')) ? 'block' : 'none';
                 });
-                if (item && (item.id === 'home' || item.id === 'my-listings')) {
+                if (item && item.id === 'home') {
                     loadArtisanProducts();
+                } else if (item && item.id === 'my-listings') {
+                    if (window.ArtisanFrames) {
+                        window.ArtisanFrames.init();
+                    }
                 }
                 if (item && item.id === 'analytics') {
+
                     if (window.ArtisanAnalytics) {
                         window.ArtisanAnalytics.startPolling();
                         window.ArtisanAnalytics.fetch();
@@ -3838,9 +4008,588 @@
         }
 
         // =====================================================================
+        // FRAMES (ART REELS) BUYER & ARTISAN MODULES
+        // =====================================================================
+
+        const FramesFeed = {
+            reels: [],
+            isLoading: false,
+            viewedReelIds: new Set(),
+            observer: null,
+            isGlobalMuted: true,
+
+            async loadFeed() {
+                const container = document.getElementById('frames-feed-scroll');
+                if (!container) return;
+
+                // If already rendered with items, re-engage observer
+                if (this.reels.length > 0 && container.querySelectorAll('.frame-card').length > 0) {
+                    this.setupObserver();
+                    return;
+                }
+
+                container.innerHTML = `
+                    <div id="frames-feed-loading" style="display: flex; flex-direction: column; align-items: center; justify-content: center; height: 100%; color: #fff;">
+                        <div class="spinner" style="border-top-color: var(--accent-gold); margin-bottom: 12px;"></div>
+                        <span style="font-size: 14px; font-weight: 600; letter-spacing: 0.5px;">Loading Frames...</span>
+                    </div>
+                `;
+
+                this.isLoading = true;
+                try {
+                    const res = await customFetch(`${CONFIG.API_BASE_URL}/frames/feed/`);
+                    if (!res.ok) throw new Error(`Feed fetch failed: ${res.status}`);
+                    const data = await res.json();
+                    this.reels = data.results || data || [];
+                    this.render();
+                } catch (err) {
+                    console.error('[FramesFeed] Error loading feed:', err);
+                    container.innerHTML = `
+                        <div class="frames-empty-state">
+                            <div class="frames-empty-icon">
+                                <svg width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+                            </div>
+                            <h3 class="brand-font" style="font-size: 20px; margin-bottom: 8px;">Unable to load Frames</h3>
+                            <p style="font-size: 13px; color: #a59fb8; margin-bottom: 20px;">Please check your connection and try again.</p>
+                            <button type="button" class="btn btn-primary" onclick="FramesFeed.loadFeed()" style="border-radius: 14px; padding: 10px 24px;">Retry</button>
+                        </div>
+                    `;
+                } finally {
+                    this.isLoading = false;
+                }
+            },
+
+            render() {
+                const container = document.getElementById('frames-feed-scroll');
+                if (!container) return;
+
+                if (!this.reels || this.reels.length === 0) {
+                    container.innerHTML = `
+                        <div class="frames-empty-state">
+                            <div class="frames-empty-icon">
+                                <svg width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="23 7 16 12 23 17 23 7"/><rect x="1" y="5" width="15" height="14" rx="2" ry="2"/></svg>
+                            </div>
+                            <h3 class="brand-font" style="font-size: 22px; margin-bottom: 8px;">No Frames Yet</h3>
+                            <p style="font-size: 14px; color: #a59fb8; max-width: 320px; line-height: 1.5; margin-bottom: 20px;">Behind-the-scenes artisan craft videos will appear here. Check back soon!</p>
+                            <button type="button" class="btn btn-primary" onclick="switchRoleNavTab('home')" style="border-radius: 14px; padding: 10px 24px;">Explore Marketplace</button>
+                        </div>
+                    `;
+                    return;
+                }
+
+                container.innerHTML = this.reels.map((reel, idx) => `
+                    <div class="frame-card" data-reel-id="${reel.id}" id="frame-card-${reel.id}">
+                        <video class="frame-video" 
+                               id="frame-vid-${reel.id}" 
+                               src="${reel.video_file || ''}" 
+                               poster="${reel.thumbnail || ''}" 
+                               playsinline 
+                               loop 
+                               ${this.isGlobalMuted ? 'muted' : ''} 
+                               preload="${idx < 3 ? 'auto' : 'metadata'}"
+                               onclick="FramesFeed.togglePlayPause(${reel.id})"></video>
+                        
+                        <div class="frame-play-indicator" id="play-indicator-${reel.id}">
+                            <svg width="32" height="32" viewBox="0 0 24 24" fill="currentColor"><polygon points="5 3 19 12 5 21 5 3"/></svg>
+                        </div>
+
+                        <!-- Top Scrim Overlay -->
+                        <div class="frame-scrim-top">
+                            <div class="frame-live-badge">
+                                <span class="frame-live-dot"></span>
+                                <span>Frames</span>
+                            </div>
+                            <button type="button" class="frame-sound-btn" onclick="FramesFeed.toggleSound()" style="background: rgba(30, 24, 46, 0.65); border: 1px solid rgba(255,255,255,0.15); border-radius: 50%; width: 36px; height: 36px; color: #fff; display: flex; align-items: center; justify-content: center; cursor: pointer;">
+                                <svg class="sound-icon-muted" style="display: ${this.isGlobalMuted ? 'block' : 'none'};" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="1" y1="1" x2="23" y2="23"/><path d="M9 9v3a3 3 0 0 0 5.12 2.12M15 9.34V4a3 3 0 0 0-5.94-.6"/></svg>
+                                <svg class="sound-icon-unmuted" style="display: ${this.isGlobalMuted ? 'none' : 'block'};" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/><path d="M19.07 4.93a10 10 0 0 1 0 14.14M15.54 8.46a5 5 0 0 1 0 7.07"/></svg>
+                            </button>
+                        </div>
+
+                        <!-- Bottom Scrim Overlay -->
+                        <div class="frame-scrim-bottom">
+                            <div class="frame-content-layer">
+                                <div class="frame-artisan-header">
+                                    <div class="frame-artisan-avatar">${reel.artisan_avatar || 'A'}</div>
+                                    <div class="frame-artisan-details">
+                                        <div class="frame-artisan-name">${reel.artisan_name || 'Master Artisan'}</div>
+                                        <div class="frame-craft-badge">
+                                            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+                                            <span>${reel.craft_type || 'Craft'}</span>
+                                            ${reel.artisan_region ? `<span style="opacity: 0.7;">• ${reel.artisan_region}</span>` : ''}
+                                        </div>
+                                    </div>
+                                </div>
+
+                                ${reel.caption ? `<div class="frame-caption">${escapeHTML(reel.caption)}</div>` : ''}
+
+                                ${reel.product_id ? `
+                                    <div class="frame-product-pill" onclick="FramesFeed.openProduct(${reel.product_id})">
+                                        ${reel.product_image ? `<img src="${getMediaUrl(reel.product_image)}" class="frame-product-thumb" alt="Product" onerror="this.onerror=null; this.src='anantah_logo.png';">` : '<div class="frame-product-thumb" style="display: flex; align-items: center; justify-content: center; color: var(--accent-gold);"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="7" width="20" height="14" rx="2" ry="2"/><path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"/></svg></div>'}
+                                        <div class="frame-product-text">
+                                            <span class="frame-product-title">${escapeHTML(reel.product_title || 'Featured Craft')}</span>
+                                            <span class="frame-product-price">₹${reel.product_price ? Number(reel.product_price).toFixed(2) : '0.00'}</span>
+                                        </div>
+                                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" style="color: var(--accent-gold); margin-left: 2px;"><polyline points="9 18 15 12 9 6"/></svg>
+                                    </div>
+                                ` : ''}
+                            </div>
+                        </div>
+
+                        <!-- Right Action Rail -->
+                        <div class="frame-action-rail">
+                            <button type="button" class="frame-action-btn ${reel.is_liked_by_me ? 'liked' : ''}" id="frame-like-btn-${reel.id}" onclick="FramesFeed.toggleLike(${reel.id})">
+                                <div class="frame-action-icon-wrap">
+                                    <svg width="22" height="22" viewBox="0 0 24 24" fill="${reel.is_liked_by_me ? '#EF4444' : 'none'}" stroke="${reel.is_liked_by_me ? '#EF4444' : 'currentColor'}" stroke-width="2"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>
+                                </div>
+                                <span class="frame-action-count" id="frame-like-count-${reel.id}">${reel.like_count || 0}</span>
+                            </button>
+                        </div>
+                    </div>
+                `).join('');
+
+                this.setupObserver();
+            },
+
+            setupObserver() {
+                if (this.observer) {
+                    this.observer.disconnect();
+                }
+
+                const container = document.getElementById('frames-feed-scroll');
+                if (!container) return;
+
+                const options = {
+                    root: container,
+                    threshold: 0.65
+                };
+
+                this.observer = new IntersectionObserver((entries) => {
+                    entries.forEach(entry => {
+                        const vid = entry.target.querySelector('video');
+                        const reelId = entry.target.getAttribute('data-reel-id');
+
+                        if (entry.isIntersecting) {
+                            if (vid) {
+                                vid.play().catch(e => console.debug('Autoplay prevented:', e));
+                            }
+                            if (reelId) {
+                                this.recordView(reelId);
+                            }
+                        } else {
+                            if (vid) {
+                                vid.pause();
+                            }
+                        }
+                    });
+                }, options);
+
+                container.querySelectorAll('.frame-card').forEach(card => {
+                    this.observer.observe(card);
+                });
+            },
+
+            togglePlayPause(reelId) {
+                const vid = document.getElementById(`frame-vid-${reelId}`);
+                const indicator = document.getElementById(`play-indicator-${reelId}`);
+                if (!vid) return;
+
+                if (vid.paused) {
+                    vid.play();
+                    if (indicator) {
+                        indicator.innerHTML = '<svg width="32" height="32" viewBox="0 0 24 24" fill="currentColor"><polygon points="5 3 19 12 5 21 5 3"/></svg>';
+                        indicator.classList.add('show');
+                        setTimeout(() => indicator.classList.remove('show'), 500);
+                    }
+                } else {
+                    vid.pause();
+                    if (indicator) {
+                        indicator.innerHTML = '<svg width="32" height="32" viewBox="0 0 24 24" fill="currentColor"><rect x="6" y="4" width="4" height="16"/><rect x="14" y="4" width="4" height="16"/></svg>';
+                        indicator.classList.add('show');
+                        setTimeout(() => indicator.classList.remove('show'), 500);
+                    }
+                }
+            },
+
+            toggleSound() {
+                this.isGlobalMuted = !this.isGlobalMuted;
+                document.querySelectorAll('.frame-video').forEach(vid => {
+                    vid.muted = this.isGlobalMuted;
+                });
+                document.querySelectorAll('.sound-icon-muted').forEach(el => {
+                    el.style.display = this.isGlobalMuted ? 'block' : 'none';
+                });
+                document.querySelectorAll('.sound-icon-unmuted').forEach(el => {
+                    el.style.display = this.isGlobalMuted ? 'none' : 'block';
+                });
+            },
+
+            pauseAll() {
+                document.querySelectorAll('.frame-video').forEach(vid => {
+                    if (!vid.paused) vid.pause();
+                });
+            },
+
+            async toggleLike(reelId) {
+                const token = localStorage.getItem('access_token') || localStorage.getItem('accessToken');
+                if (!token) {
+                    showToastAlert('Please log in to like Frames', 'error');
+                    return;
+                }
+
+                const btn = document.getElementById(`frame-like-btn-${reelId}`);
+                const countEl = document.getElementById(`frame-like-count-${reelId}`);
+                if (!btn || !countEl) return;
+
+                const wasLiked = btn.classList.contains('liked');
+                const currentCount = parseInt(countEl.textContent, 10) || 0;
+
+                // Optimistic UI update
+                btn.classList.toggle('liked', !wasLiked);
+                const svg = btn.querySelector('svg');
+                if (svg) {
+                    svg.setAttribute('fill', !wasLiked ? '#EF4444' : 'none');
+                    svg.setAttribute('stroke', !wasLiked ? '#EF4444' : 'currentColor');
+                }
+                countEl.textContent = Math.max(0, wasLiked ? currentCount - 1 : currentCount + 1);
+
+                try {
+                    const res = await customFetch(`${CONFIG.API_BASE_URL}/frames/${reelId}/like/`, {
+                        method: 'POST'
+                    });
+                    if (!res.ok) throw new Error('Like toggle failed');
+                    const data = await res.json();
+                    btn.classList.toggle('liked', data.is_liked);
+                    countEl.textContent = data.like_count;
+                    if (svg) {
+                        svg.setAttribute('fill', data.is_liked ? '#EF4444' : 'none');
+                        svg.setAttribute('stroke', data.is_liked ? '#EF4444' : 'currentColor');
+                    }
+                } catch (err) {
+                    console.error('[FramesFeed] Error toggling like:', err);
+                    // Revert optimistic update on failure
+                    btn.classList.toggle('liked', wasLiked);
+                    countEl.textContent = currentCount;
+                    if (svg) {
+                        svg.setAttribute('fill', wasLiked ? '#EF4444' : 'none');
+                        svg.setAttribute('stroke', wasLiked ? '#EF4444' : 'currentColor');
+                    }
+                    showToastAlert('Unable to update like. Please try again.', 'error');
+                }
+            },
+
+            recordView(reelId) {
+                if (this.viewedReelIds.has(reelId)) return;
+                this.viewedReelIds.add(reelId);
+
+                customFetch(`${CONFIG.API_BASE_URL}/frames/${reelId}/view/`, {
+                    method: 'POST'
+                }).catch(err => console.debug('[FramesFeed] View count record error:', err));
+            },
+
+            openProduct(productId) {
+                if (typeof openProductDetailModal === 'function') {
+                    openProductDetailModal(productId);
+                } else if (typeof showProductDetail === 'function') {
+                    showProductDetail(productId);
+                } else {
+                    switchRoleNavTab('home');
+                }
+            }
+        };
+
+        const ArtisanFrames = {
+            myFrames: [],
+            selectedVideoFile: null,
+
+            init() {
+                this.switchTab('mine');
+                this.populateProductDropdown();
+            },
+
+            switchTab(tab) {
+                const mineTabBtn = document.getElementById('tab-btn-artisan-mine');
+                const uploadTabBtn = document.getElementById('tab-btn-artisan-upload');
+                const mineView = document.getElementById('artisan-frames-mine-view');
+                const uploadView = document.getElementById('artisan-frames-upload-view');
+
+                if (tab === 'mine') {
+                    if (mineTabBtn) mineTabBtn.classList.add('active');
+                    if (uploadTabBtn) uploadTabBtn.classList.remove('active');
+                    if (mineView) mineView.style.display = 'block';
+                    if (uploadView) uploadView.style.display = 'none';
+                    this.loadMine();
+                } else {
+                    if (uploadTabBtn) uploadTabBtn.classList.add('active');
+                    if (mineTabBtn) mineTabBtn.classList.remove('active');
+                    if (uploadView) uploadView.style.display = 'block';
+                    if (mineView) mineView.style.display = 'none';
+                    this.populateProductDropdown();
+                }
+            },
+
+            async loadMine() {
+                const grid = document.getElementById('artisan-frames-grid');
+                const loading = document.getElementById('artisan-frames-loading');
+                const empty = document.getElementById('artisan-frames-empty');
+                if (!grid) return;
+
+                if (loading) loading.style.display = 'block';
+                if (grid) grid.style.display = 'none';
+                if (empty) empty.style.display = 'none';
+
+                try {
+                    const res = await customFetch(`${CONFIG.API_BASE_URL}/frames/mine/`);
+                    if (!res.ok) throw new Error(`Mine fetch failed: ${res.status}`);
+                    const data = await res.json();
+                    this.myFrames = data.results || data || [];
+
+                    if (loading) loading.style.display = 'none';
+
+                    if (this.myFrames.length === 0) {
+                        if (empty) empty.style.display = 'block';
+                        if (grid) grid.style.display = 'none';
+                    } else {
+                        if (empty) empty.style.display = 'none';
+                        if (grid) {
+                            grid.style.display = 'grid';
+                            grid.innerHTML = this.myFrames.map(reel => `
+                                <div class="artisan-frame-card" id="artisan-frame-${reel.id}">
+                                    <div class="artisan-frame-thumb-wrap">
+                                        <video src="${reel.video_file || ''}" poster="${reel.thumbnail || ''}" preload="metadata" muted playsinline style="pointer-events:none;"></video>
+                                        <div class="artisan-frame-stat-overlay">
+                                            <span>👁️ ${reel.view_count || 0} views</span>
+                                            <span>❤️ ${reel.like_count || 0} likes</span>
+                                        </div>
+                                    </div>
+                                    <div class="artisan-frame-info">
+                                        <div>
+                                            <div class="artisan-frame-caption">${escapeHTML(reel.caption || 'No caption')}</div>
+                                            <div style="font-size: 11px; color: var(--text-secondary); margin-bottom: 10px;">
+                                                ${new Date(reel.created_at).toLocaleDateString(undefined, { month: 'short', day: 'numeric', year: 'numeric' })}
+                                            </div>
+                                        </div>
+                                        <button type="button" class="artisan-frame-btn-stats" onclick="ArtisanFrames.openStatsModal(${reel.id})">
+                                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg>
+                                            View Stats
+                                        </button>
+                                    </div>
+                                </div>
+                            `).join('');
+                        }
+                    }
+                } catch (err) {
+                    console.error('[ArtisanFrames] Error loading mine:', err);
+                    if (loading) loading.style.display = 'none';
+                    if (empty) {
+                        empty.style.display = 'block';
+                        empty.innerHTML = `
+                            <div style="width: 64px; height: 64px; border-radius: 20px; background: var(--primary-light); color: var(--primary-color); display: flex; align-items: center; justify-content: center; margin: 0 auto 16px auto;">
+                                <svg width="32" height="32" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><polygon points="23 7 16 12 23 17 23 7"/><rect x="1" y="5" width="15" height="14" rx="2" ry="2"/></svg>
+                            </div>
+                            <h3 class="brand-font" style="font-size: 20px; color: var(--primary-color); margin-bottom: 8px;">No Frames Yet</h3>
+                            <p style="color: var(--text-secondary); font-size: 14px; line-height: 1.6; margin-bottom: 24px;">Upload short behind-the-scenes videos of your craftsmanship to engage with buyers and increase sales.</p>
+                            <button type="button" class="btn btn-primary" onclick="ArtisanFrames.switchTab('upload')" style="border-radius: 16px; padding: 12px 28px; font-weight: 700;">+ Upload Your First Frame</button>
+                        `;
+                    }
+                }
+            },
+
+            async populateProductDropdown() {
+                const select = document.getElementById('frame-product-select');
+                if (!select) return;
+
+                try {
+                    const res = await customFetch(`${CONFIG.API_BASE_URL}/listings/upload/`);
+                    if (!res.ok) return;
+                    const prods = await res.json();
+                    const list = prods.results || prods || [];
+
+                    select.innerHTML = '<option value="">-- No Product Linked --</option>' +
+                        list.map(p => `
+                            <option value="${p.id}">${escapeHTML(p.title_en || p.title_hi || ('Product #' + p.id))} (₹${Number(p.price || 0).toFixed(2)})</option>
+                        `).join('');
+                } catch (err) {
+                    console.debug('[ArtisanFrames] Could not load artisan products for dropdown:', err);
+                }
+            },
+
+            onVideoSelected(event) {
+                const file = event.target.files[0];
+                if (!file) return;
+
+                // Max 100MB
+                if (file.size > 100 * 1024 * 1024) {
+                    showToastAlert('Video file size exceeds 100MB limit', 'error');
+                    event.target.value = '';
+                    return;
+                }
+
+                this.selectedVideoFile = file;
+                const preview = document.getElementById('frame-video-preview');
+                const prompt = document.getElementById('frame-dropzone-prompt');
+
+                if (preview) {
+                    preview.src = URL.createObjectURL(file);
+                    preview.style.display = 'block';
+                }
+                if (prompt) {
+                    prompt.style.display = 'none';
+                }
+            },
+
+            async handleUpload(event) {
+                event.preventDefault();
+
+                if (!this.selectedVideoFile) {
+                    showToastAlert('Please select a video file to upload', 'error');
+                    return;
+                }
+
+                const token = localStorage.getItem('access_token') || localStorage.getItem('accessToken');
+                if (!token) {
+                    showToastAlert('Please log in to upload Frames', 'error');
+                    return;
+                }
+
+                const caption = document.getElementById('frame-caption-input')?.value.trim() || '';
+                const productId = document.getElementById('frame-product-select')?.value || '';
+
+                const formData = new FormData();
+                formData.append('video_file', this.selectedVideoFile);
+                if (caption) formData.append('caption', caption);
+                if (productId) formData.append('product_id', productId);
+
+                const progressWrap = document.getElementById('frame-upload-progress');
+                const progressBar = document.getElementById('frame-upload-progress-bar');
+                const statusText = document.getElementById('frame-upload-status-text');
+                const submitBtn = document.getElementById('btn-submit-frame-upload');
+
+                if (progressWrap) progressWrap.style.display = 'block';
+                if (progressBar) progressBar.style.width = '30%';
+                if (statusText) {
+                    statusText.style.display = 'block';
+                    statusText.textContent = 'Uploading video to Cloudinary...';
+                }
+                if (submitBtn) {
+                    submitBtn.disabled = true;
+                    submitBtn.textContent = 'Publishing...';
+                }
+
+                try {
+                    if (progressBar) progressBar.style.width = '60%';
+
+                    const res = await customFetch(`${CONFIG.API_BASE_URL}/frames/upload/`, {
+                        method: 'POST',
+                        body: formData
+                    });
+
+                    if (progressBar) progressBar.style.width = '90%';
+
+                    if (!res.ok) {
+                        const errData = await res.json().catch(() => ({}));
+                        const errMsg = Object.values(errData).flat().join(' ') || 'Upload failed';
+                        throw new Error(errMsg);
+                    }
+
+                    if (progressBar) progressBar.style.width = '100%';
+                    showToastAlert('Frame published successfully!', 'success');
+
+                    // Reset form
+                    this.selectedVideoFile = null;
+                    document.getElementById('form-artisan-frame-upload')?.reset();
+                    const preview = document.getElementById('frame-video-preview');
+                    const prompt = document.getElementById('frame-dropzone-prompt');
+                    if (preview) {
+                        preview.pause();
+                        preview.src = '';
+                        preview.style.display = 'none';
+                    }
+                    if (prompt) prompt.style.display = 'block';
+                    const captionCount = document.getElementById('frame-caption-count');
+                    if (captionCount) captionCount.textContent = '0 / 300';
+
+                    // Switch back to "My Frames" tab and reload
+                    setTimeout(() => {
+                        this.switchTab('mine');
+                    }, 400);
+
+                } catch (err) {
+                    console.error('[ArtisanFrames] Upload error:', err);
+                    showToastAlert(err.message || 'Failed to upload frame', 'error');
+                } finally {
+                    if (progressWrap) progressWrap.style.display = 'none';
+                    if (progressBar) progressBar.style.width = '0%';
+                    if (statusText) statusText.style.display = 'none';
+                    if (submitBtn) {
+                        submitBtn.disabled = false;
+                        submitBtn.textContent = 'Publish Frame';
+                    }
+                }
+            },
+
+            async openStatsModal(reelId) {
+                const modal = document.getElementById('frame-stats-modal');
+                if (!modal) return;
+
+                try {
+                    const res = await customFetch(`${CONFIG.API_BASE_URL}/frames/${reelId}/stats/`);
+                    if (!res.ok) throw new Error('Could not load frame stats');
+                    const data = await res.json();
+                    const reel = data.reel;
+
+                    const videoEl = document.getElementById('stats-modal-video');
+                    if (videoEl) {
+                        videoEl.src = reel.video_file || '';
+                        videoEl.poster = reel.thumbnail || '';
+                        videoEl.play().catch(e => console.debug(e));
+                    }
+
+                    document.getElementById('stats-modal-caption').textContent = reel.caption || 'Frame #' + reel.id;
+                    document.getElementById('stats-modal-date').textContent = 'Uploaded on ' + new Date(reel.created_at).toLocaleDateString(undefined, { month: 'long', day: 'numeric', year: 'numeric' });
+                    document.getElementById('stats-modal-views').textContent = data.total_views || 0;
+                    document.getElementById('stats-modal-likes').textContent = data.total_likes || 0;
+
+                    const prodSec = document.getElementById('stats-modal-product-section');
+                    if (prodSec) {
+                        if (reel.product_id) {
+                            prodSec.style.display = 'block';
+                            document.getElementById('stats-modal-prod-title').textContent = reel.product_title || 'Craft Item';
+                            document.getElementById('stats-modal-prod-price').textContent = '₹' + Number(reel.product_price || 0).toFixed(2);
+                            const prodImg = document.getElementById('stats-modal-prod-img');
+                            if (prodImg) {
+                                prodImg.src = getMediaUrl(reel.product_image);
+                            }
+                        } else {
+                            prodSec.style.display = 'none';
+                        }
+                    }
+
+                    modal.classList.add('active');
+                } catch (err) {
+                    console.error('[ArtisanFrames] Error opening stats modal:', err);
+                    showToastAlert('Unable to load frame statistics', 'error');
+                }
+            },
+
+            closeStatsModal() {
+                const modal = document.getElementById('frame-stats-modal');
+                if (modal) modal.classList.remove('active');
+                const videoEl = document.getElementById('stats-modal-video');
+                if (videoEl) {
+                    videoEl.pause();
+                    videoEl.src = '';
+                }
+            }
+        };
+
+        window.FramesFeed = FramesFeed;
+        window.ArtisanFrames = ArtisanFrames;
+
+        // =====================================================================
         // ARTISAN ANALYTICS MODULE (V1)
         // =====================================================================
         const ArtisanAnalytics = {
+
             _pollTimer: null,
             _timeUpdateTimer: null,
             _isFetching: false,
@@ -5886,6 +6635,12 @@
 
         // ─── Tab switcher ─────────────────────────────────────────────────────
         function switchBuyerTab(tab) {
+            if (tab === 'verify-artwork') tab = 'verifyArtwork';
+
+            if (tab !== 'verifyArtwork' && typeof stopQRScanner === 'function') {
+                stopQRScanner();
+            }
+
             if (tab !== 'search' && window._searchCloseTimeoutId) {
                 clearTimeout(window._searchCloseTimeoutId);
                 window._searchCloseTimeoutId = null;
@@ -5911,7 +6666,8 @@
                 discover: 'buyer-view-discover',
                 account: 'buyer-view-account',
                 wishlist: 'buyer-view-wishlist',
-                productDetail: 'buyer-view-product-detail'
+                productDetail: 'buyer-view-product-detail',
+                verifyArtwork: 'buyer-view-verify-artwork'
             };
             const btns  = {
                 shop: 'buyer-tab-shop',
@@ -5962,6 +6718,9 @@
                 if (key === tab) {
                     if (view) {
                         view.style.display = (key === 'search') ? 'flex' : 'block';
+                        if (key === 'reels') {
+                            if (window.FramesFeed) window.FramesFeed.loadFeed();
+                        }
                         if (key === 'search') {
                             if (window.innerWidth <= 768) {
                                 const backdrop = document.getElementById('search-mobile-backdrop');
@@ -5995,6 +6754,9 @@
                         if (view) view.style.display = 'block';
                     } else {
                         if (view) view.style.display = 'none';
+                        if (key === 'reels') {
+                            if (window.FramesFeed) window.FramesFeed.pauseAll();
+                        }
                         if (key === 'search') {
                             const backdrop = document.getElementById('search-mobile-backdrop');
                             if (backdrop) {
@@ -6007,6 +6769,7 @@
                             }
                         }
                     }
+
                     if (btn) {
                         btn.style.color = 'var(--text-secondary)';
                         btn.style.borderBottomColor = 'transparent';
@@ -6540,6 +7303,240 @@
             }
         }
 
+        // ─── Artwork Verification QR System ──────────────────────────────────
+        let html5QrScanner = null;
+        let isScannerRunning = false;
+
+        function openVerifyArtworkScreen() {
+            // Close desktop account dropdown if open
+            const dropdown = document.getElementById('desktop-account-dropdown');
+            if (dropdown) dropdown.classList.remove('show');
+
+            if (typeof closeAccountSheet === 'function') {
+                closeAccountSheet();
+            }
+
+            // Route to buyer dashboard & verify artwork tab
+            navigateTo('buyerDashboard');
+            switchBuyerTab('verifyArtwork');
+            switchVerifyMode('scan');
+        }
+
+        function switchVerifyMode(mode) {
+            const btnScan = document.getElementById('btn-verify-tab-scan');
+            const btnUpload = document.getElementById('btn-verify-tab-upload');
+            const sectionScan = document.getElementById('verify-section-scan');
+            const sectionUpload = document.getElementById('verify-section-upload');
+            const statusBanner = document.getElementById('verify-status-banner');
+
+            if (statusBanner) statusBanner.style.display = 'none';
+
+            if (mode === 'scan') {
+                if (btnScan) {
+                    btnScan.style.background = 'var(--primary-color)';
+                    btnScan.style.color = '#fff';
+                    btnScan.style.fontWeight = '700';
+                }
+                if (btnUpload) {
+                    btnUpload.style.background = 'transparent';
+                    btnUpload.style.color = 'var(--text-secondary)';
+                    btnUpload.style.fontWeight = '600';
+                }
+                if (sectionScan) sectionScan.style.display = 'block';
+                if (sectionUpload) sectionUpload.style.display = 'none';
+            } else {
+                stopQRScanner();
+                if (btnUpload) {
+                    btnUpload.style.background = 'var(--primary-color)';
+                    btnUpload.style.color = '#fff';
+                    btnUpload.style.fontWeight = '700';
+                }
+                if (btnScan) {
+                    btnScan.style.background = 'transparent';
+                    btnScan.style.color = 'var(--text-secondary)';
+                    btnScan.style.fontWeight = '600';
+                }
+                if (sectionUpload) sectionUpload.style.display = 'block';
+                if (sectionScan) sectionScan.style.display = 'none';
+            }
+        }
+
+        function showVerifyStatus(type, message) {
+            const banner = document.getElementById('verify-status-banner');
+            if (!banner) return;
+            banner.style.display = 'block';
+            if (type === 'success') {
+                banner.style.background = '#E5F6DF';
+                banner.style.color = '#1E4620';
+                banner.style.border = '1px solid #C3E6CB';
+                banner.innerHTML = `<strong>✓ Verified Authentic:</strong> ${message}`;
+            } else if (type === 'error') {
+                banner.style.background = '#FDE8E8';
+                banner.style.color = '#9B1C1C';
+                banner.style.border = '1px solid #F8B4B4';
+                banner.innerHTML = `<strong>⚠️ Verification Notice:</strong> ${message}`;
+            } else {
+                banner.style.background = 'var(--primary-light)';
+                banner.style.color = 'var(--primary-color)';
+                banner.style.border = '1px solid rgba(72, 46, 131, 0.2)';
+                banner.innerHTML = message;
+            }
+        }
+
+        function handleDecodedVerificationUrl(decodedText) {
+            if (!decodedText || typeof decodedText !== 'string') {
+                showVerifyStatus('error', 'No readable data found in this QR code.');
+                return;
+            }
+
+            const cleanText = decodedText.trim();
+
+            // Sanity check: verify URL structure points to verified_links path
+            const isVerifiedLink = cleanText.includes('/verified_links/') ||
+                                   /\/verified_links\/product_\d+\.html/.test(cleanText);
+
+            if (!isVerifiedLink) {
+                showVerifyStatus('error', `This QR code is not a genuine Anantah artwork verification certificate.<br><span style="font-size:12px;opacity:0.8;word-break:break-all;">Scanned: ${escapeHTML(cleanText)}</span>`);
+                return;
+            }
+
+            // Valid Anantah verified certificate URL
+            showVerifyStatus('success', 'Authentic Anantah Certificate verified! Opening certificate...');
+            stopQRScanner();
+
+            setTimeout(() => {
+                window.location.href = cleanText;
+            }, 600);
+        }
+
+        async function startQRScanner() {
+            const placeholder = document.getElementById('qr-camera-placeholder');
+            const btnStart = document.getElementById('btn-start-qr-camera');
+            const btnStop = document.getElementById('btn-stop-qr-camera');
+
+            if (!window.Html5Qrcode) {
+                showVerifyStatus('error', 'QR scanning library is still initializing. Please wait a moment or check your internet connection.');
+                return;
+            }
+
+            try {
+                if (html5QrScanner && isScannerRunning) {
+                    await stopQRScanner();
+                }
+
+                html5QrScanner = new Html5Qrcode("qr-reader");
+                if (placeholder) placeholder.style.display = 'none';
+                if (btnStart) btnStart.style.display = 'none';
+                if (btnStop) btnStop.style.display = 'inline-flex';
+
+                showVerifyStatus('info', 'Camera active. Point your camera steadily at the artwork\'s QR code...');
+
+                await html5QrScanner.start(
+                    { facingMode: "environment" },
+                    {
+                        fps: 10,
+                        qrbox: { width: 250, height: 250 }
+                    },
+                    (decodedText) => {
+                        handleDecodedVerificationUrl(decodedText);
+                    },
+                    (errorMessage) => {
+                        // Frame decode failure (normal when QR not in view)
+                    }
+                );
+                isScannerRunning = true;
+            } catch (err) {
+                console.error("Camera scanner error:", err);
+                if (placeholder) placeholder.style.display = 'block';
+                if (btnStart) btnStart.style.display = 'inline-flex';
+                if (btnStop) btnStop.style.display = 'none';
+                showVerifyStatus('error', `Unable to access camera (${err.message || 'Permission denied'}). Please allow camera access or use the "Upload QR" option.`);
+            }
+        }
+
+        async function stopQRScanner() {
+            const placeholder = document.getElementById('qr-camera-placeholder');
+            const btnStart = document.getElementById('btn-start-qr-camera');
+            const btnStop = document.getElementById('btn-stop-qr-camera');
+
+            if (html5QrScanner && isScannerRunning) {
+                try {
+                    await html5QrScanner.stop();
+                } catch (e) {
+                    console.debug("Scanner stop error:", e);
+                }
+                isScannerRunning = false;
+            }
+            if (placeholder) placeholder.style.display = 'block';
+            if (btnStart) btnStart.style.display = 'inline-flex';
+            if (btnStop) btnStop.style.display = 'none';
+        }
+
+        async function handleQRFileUpload(event) {
+            const file = event.target.files && event.target.files[0];
+            if (!file) return;
+
+            const uploadContent = document.getElementById('qr-upload-content');
+            const previewWrapper = document.getElementById('qr-upload-preview-wrapper');
+            const previewImg = document.getElementById('qr-upload-preview');
+
+            if (uploadContent) uploadContent.style.display = 'none';
+            if (previewWrapper) previewWrapper.style.display = 'flex';
+            if (previewImg) previewImg.src = URL.createObjectURL(file);
+
+            showVerifyStatus('info', 'Analyzing and decoding QR image...');
+
+            // Method 1: Try Html5Qrcode scanFile API
+            if (window.Html5Qrcode) {
+                try {
+                    const tempScanner = new Html5Qrcode("qr-reader");
+                    const decodedText = await tempScanner.scanFile(file, true);
+                    if (decodedText) {
+                        handleDecodedVerificationUrl(decodedText);
+                        return;
+                    }
+                } catch (err) {
+                    console.debug("Html5Qrcode scanFile did not decode, trying jsQR canvas fallback...", err);
+                }
+            }
+
+            // Method 2: Fallback with jsQR on HTML Canvas
+            try {
+                const img = new Image();
+                img.onload = () => {
+                    const canvas = document.getElementById('qr-canvas') || document.createElement('canvas');
+                    const ctx = canvas.getContext('2d');
+                    canvas.width = img.width;
+                    canvas.height = img.height;
+                    ctx.drawImage(img, 0, 0, img.width, img.height);
+                    const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
+                    
+                    if (window.jsQR) {
+                        const code = jsQR(imageData.data, imageData.width, imageData.height, {
+                            inversionAttempts: "dontInvert"
+                        }) || jsQR(imageData.data, imageData.width, imageData.height, {
+                            inversionAttempts: "onlyInvert"
+                        });
+
+                        if (code && code.data) {
+                            handleDecodedVerificationUrl(code.data);
+                            return;
+                        }
+                    }
+
+                    // Failure case: No QR detected in the uploaded image
+                    showVerifyStatus('error', 'No QR code detected in this image. Please ensure the QR code is clearly visible, well-lit, in focus, and uncropped, then try again.');
+                };
+                img.onerror = () => {
+                    showVerifyStatus('error', 'Could not load the image file. Please try another image.');
+                };
+                img.src = URL.createObjectURL(file);
+            } catch (canvasErr) {
+                console.error("Canvas QR decode error:", canvasErr);
+                showVerifyStatus('error', 'No QR code detected in this image, please try again.');
+            }
+        }
+
     </script>
     <!-- Floating Cart Pill & Drawer -->
     <div id="floating-cart-pill" class="floating-cart-pill" onclick="handlePillClick(event)">
@@ -6615,7 +7612,7 @@
                 <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>
                 <span>My Wishlist</span>
             </div>
-            <div class="sheet-action-item" id="sheet-verify-artwork-item" onclick="closeAccountSheet(); alert('Artwork Verification requested. Our team will review your application soon.');">
+            <div class="sheet-action-item" id="sheet-verify-artwork-item" onclick="closeAccountSheet(); openVerifyArtworkScreen();">
                 <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/><path d="M9 12l2 2 4-4"/></svg>
                 <span>Verify My Artwork</span>
             </div>
@@ -6642,14 +7639,53 @@
           <feColorMatrix in="blur" mode="matrix" values="1 0 0 0 0  0 1 0 0 0  0 0 1 0 0  0 0 0 19 -9" result="goo" />
           <feComposite in="SourceGraphic" in2="goo" operator="atop" />
         </filter>
-        <linearGradient id="brandGrad" x1="0%" y1="0%" x2="100%" y2="100%">
-          <stop offset="0%" stop-color="#D96A3D" />
-          <stop offset="100%" stop-color="#482E83" />
-        </linearGradient>
-      </defs>
-    </svg>
+    <!-- Single Reel Stats Modal (Artisan) -->
+    <div class="frame-stats-modal-backdrop" id="frame-stats-modal">
+        <div class="frame-stats-dialog">
+            <button type="button" onclick="ArtisanFrames.closeStatsModal()" style="position: absolute; top: 16px; right: 16px; width: 34px; height: 34px; border-radius: 50%; background: var(--bg-cream); border: 1px solid var(--border-color); display: flex; align-items: center; justify-content: center; cursor: pointer; z-index: 10;">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+            </button>
+            <div class="frame-stats-video-pane">
+                <video id="stats-modal-video" controls loop playsinline style="width: 100%; height: 100%; object-fit: contain;"></video>
+            </div>
+            <div class="frame-stats-info-pane">
+                <div>
+                    <span style="display: inline-block; background: var(--primary-light); color: var(--primary-color); font-size: 11px; font-weight: 700; padding: 4px 10px; border-radius: 12px; text-transform: uppercase; margin-bottom: 8px;">Frame Analytics</span>
+                    <h3 class="brand-font" id="stats-modal-caption" style="font-size: 18px; color: var(--text-primary); margin-bottom: 4px;">Frame Details</h3>
+                    <p style="font-size: 12px; color: var(--text-secondary);" id="stats-modal-date">Uploaded on --</p>
+                    
+                    <div class="frame-stats-kpi-row">
+                        <div class="frame-stats-kpi-card">
+                            <div class="frame-stats-kpi-num" id="stats-modal-views">0</div>
+                            <div class="frame-stats-kpi-label">Total Views</div>
+                        </div>
+                        <div class="frame-stats-kpi-card">
+                            <div class="frame-stats-kpi-num" id="stats-modal-likes">0</div>
+                            <div class="frame-stats-kpi-label">Total Likes</div>
+                        </div>
+                    </div>
+
+                    <div id="stats-modal-product-section" style="display: none; background: var(--bg-cream); border: 1px solid var(--border-color); border-radius: 14px; padding: 12px; margin-top: 12px;">
+                        <span style="font-size: 11px; font-weight: 700; color: var(--text-secondary); text-transform: uppercase;">Featured Craft Product</span>
+                        <div style="display: flex; align-items: center; gap: 10px; margin-top: 6px;">
+                            <img id="stats-modal-prod-img" src="" alt="Product" style="width: 42px; height: 42px; border-radius: 8px; object-fit: cover; background: #eee;">
+                            <div>
+                                <div id="stats-modal-prod-title" style="font-size: 13px; font-weight: 700; color: var(--text-primary);">--</div>
+                                <div id="stats-modal-prod-price" style="font-size: 12px; font-weight: 700; color: var(--accent-gold);">₹0.00</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div style="margin-top: 20px;">
+                    <button type="button" class="btn btn-secondary" onclick="ArtisanFrames.closeStatsModal()" style="width: 100%; border-radius: 14px;">Back to My Frames</button>
+                </div>
+            </div>
+        </div>
+    </div>
 
 </body>
 </html>
+
 
 

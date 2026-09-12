@@ -52,3 +52,4 @@ django-cloudinary-storage==0.3.0
 
 whitenoise
 rapidfuzz==3.14.6
+qrcode==8.2

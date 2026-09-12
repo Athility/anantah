@@ -337,3 +337,95 @@ class PaymentsTestCase(APITestCase):
         self.assertEqual(w_res.status_code, status.HTTP_200_OK)
         self.assertEqual(w_res.data['detail'], 'Orders already processed.')
 
+    def test_generate_verified_page_and_static_serving(self):
+        import os
+        from django.conf import settings
+        from payments.verified_page_generator import generate_verified_page
+
+        self.product.title_hi = 'मिट्टी का बर्तन'
+        self.product.description_en = 'Authentic handcrafted clay pot by master artisan.'
+        self.product.description_hi = 'पारंपरिक हस्तनिर्मित मिट्टी का पात्र।'
+        self.product.save()
+
+        # Remove any pre-existing file from previous tests
+        existing_file = os.path.join(getattr(settings, 'VERIFIED_LINKS_DIR', settings.BASE_DIR / 'verified_links'), f"product_{self.product.id}.html")
+        if os.path.exists(existing_file):
+            try:
+                os.remove(existing_file)
+            except OSError:
+                pass
+
+        # 1. Generate verified page
+        file_path = generate_verified_page(self.product)
+        self.assertIsNotNone(file_path)
+        self.assertTrue(os.path.exists(file_path))
+
+        # 2. Verify file content structure
+        with open(file_path, 'r', encoding='utf-8') as f:
+            content = f.read()
+        
+        self.assertIn('Anantah', content)
+        self.assertIn('VERIFIED AUTHENTIC', content)
+        self.assertIn('Terracotta Pot', content)
+        self.assertIn('मिट्टी का बर्तन', content)
+        self.assertIn('Authentic handcrafted clay pot', content)
+        self.assertIn('Artisan1', content)
+        self.assertIn('Pottery', content)
+        self.assertIn('Beauty of the art stays Eternal', content)
+        self.assertIn(f"AN-AUTH-{self.product.id:06d}", content)
+        self.assertIn(f"{settings.SITE_BASE_URL}/verified_links/product_{self.product.id}.html", content)
+
+        # 3. Idempotency check: Repeated call should not crash and should return existing path
+        second_path = generate_verified_page(self.product)
+        self.assertEqual(file_path, second_path)
+
+        # 4. HTTP Static Serving route check
+        client_response = self.client.get(f"/verified_links/product_{self.product.id}.html")
+        self.assertEqual(client_response.status_code, status.HTTP_200_OK)
+        response_body = b''.join(client_response.streaming_content)
+        self.assertIn(b'VERIFIED AUTHENTIC', response_body)
+
+        # Clean up generated file after test
+        try:
+            if os.path.exists(file_path):
+                os.remove(file_path)
+        except OSError:
+            pass
+
+    @patch('payments.views.verify_payment_signature')
+    def test_verify_payment_triggers_verified_page_generation(self, mock_verify_sig):
+        import os
+        from django.conf import settings
+        mock_verify_sig.return_value = True
+
+        self.order.razorpay_order_id = 'order_vfd_123'
+        self.order.status = 'created'
+        self.order.save()
+
+        expected_file = os.path.join(getattr(settings, 'VERIFIED_LINKS_DIR', settings.BASE_DIR / 'verified_links'), f"product_{self.product.id}.html")
+        if os.path.exists(expected_file):
+            try:
+                os.remove(expected_file)
+            except OSError:
+                pass
+
+        self.client.force_authenticate(user=self.buyer1_user)
+        res = self.client.post(reverse('verify-payment'), {
+            'razorpay_order_id': 'order_vfd_123',
+            'razorpay_payment_id': 'pay_vfd_123',
+            'razorpay_signature': 'sig_vfd_123'
+        })
+        self.assertEqual(res.status_code, status.HTTP_200_OK)
+        self.assertEqual(res.data['status'], 'paid')
+
+        # Verify page was generated
+        self.assertTrue(os.path.exists(expected_file))
+
+        # Cleanup
+        try:
+            if os.path.exists(expected_file):
+                os.remove(expected_file)
+        except OSError:
+            pass
+
+

@@ -145,4 +145,18 @@ def ensure_media_on_cloudinary(sender, instance, **kwargs):
         logger.error(f"Error in ensure_media_on_cloudinary signal: {e}")
 
 
+@receiver(post_save, sender=Product)
+def auto_generate_verified_page_on_product_save(sender, instance, created, **kwargs):
+    """
+    Post-save signal to automatically generate/update the verified certificate page
+    in verified_links/ whenever a Product is created or updated.
+    """
+    try:
+        from payments.verified_page_generator import generate_verified_page
+        generate_verified_page(instance, force_regenerate=True)
+    except Exception as e:
+        logger.warning(f"Failed to auto-generate verified page for product #{instance.pk}: {e}")
+
+
+
 
