@@ -1,5 +1,10 @@
 const getBackendBaseUrl = () => {
     if (typeof window !== 'undefined') {
+        // 0. Stored override in localStorage
+        const storedUrl = localStorage.getItem('custom_backend_url') || localStorage.getItem('backend_url');
+        if (storedUrl && storedUrl.trim()) {
+            return storedUrl.trim().replace(/\/+$/, '');
+        }
         // 1. Explicit global runtime override (e.g. injected by environment)
         if (window.__BACKEND_URL__ && typeof window.__BACKEND_URL__ === 'string' && window.__BACKEND_URL__.trim()) {
             return window.__BACKEND_URL__.trim().replace(/\/+$/, '');
