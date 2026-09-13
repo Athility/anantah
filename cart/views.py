@@ -104,9 +104,9 @@ class CartAddView(APIView):
             return Response({'detail': 'quantity must not exceed 100.'}, status=status.HTTP_400_BAD_REQUEST)
 
         try:
-            product = Product.objects.get(id=product_id, status='live')
+            product = Product.objects.get(id=product_id, status='live', sales_paused=False)
         except Product.DoesNotExist:
-            return Response({'detail': 'Product not found or not live.'}, status=status.HTTP_404_NOT_FOUND)
+            return Response({'detail': 'Product not found or not currently available.'}, status=status.HTTP_404_NOT_FOUND)
 
         item, created = CartItem.objects.get_or_create(
             buyer=request.user.buyer_profile,
@@ -201,7 +201,7 @@ class CheckoutSummaryView(APIView):
         if not items.exists():
             return Response({'detail': 'Your cart is empty.'}, status=status.HTTP_400_BAD_REQUEST)
 
-        unavailable_items = [item.product.title_en for item in items if item.product.status != 'live']
+        unavailable_items = [item.product.title_en for item in items if item.product.status != 'live' or getattr(item.product, 'sales_paused', False)]
         if unavailable_items:
             titles = ', '.join(unavailable_items)
             return Response(
@@ -244,7 +244,7 @@ class OrderCreateView(APIView):
         if not items.exists():
             return Response({'detail': 'Your cart is empty.'}, status=status.HTTP_400_BAD_REQUEST)
 
-        unavailable_items = [item.product.title_en for item in items if item.product.status != 'live']
+        unavailable_items = [item.product.title_en for item in items if item.product.status != 'live' or getattr(item.product, 'sales_paused', False)]
         if unavailable_items:
             titles = ', '.join(unavailable_items)
             return Response(

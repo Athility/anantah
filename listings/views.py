@@ -209,14 +209,18 @@ class ProductUploadView(APIView):
                 status=status.HTTP_400_BAD_REQUEST
             )
 
-        title_en = request.data.get('title_en')
+        title_en = request.data.get('title_en', '')
+        if isinstance(title_en, str):
+            title_en = title_en.strip()
         price = request.data.get('price')
         raw_image = request.FILES.get('raw_image')
 
         # Validation
         errors = {}
         if not title_en:
-            errors['title_en'] = ["This field is required."]
+            errors['title_en'] = ["Please enter a product title."]
+        elif len(title_en) > 200:
+            errors['title_en'] = ["Title must be 200 characters or fewer."]
         if not price:
             errors['price'] = ["This field is required."]
         if not raw_image:
@@ -535,6 +539,16 @@ class ConfirmCatalogView(APIView):
                 if value:
                     setattr(product, field, value)
 
+        price = request.data.get('price')
+        if price is not None:
+            try:
+                price_val = Decimal(str(price).strip())
+                if price_val < Decimal('0.01'):
+                    return Response({'detail': 'Price must be at least 0.01.'}, status=status.HTTP_400_BAD_REQUEST)
+                product.price = price_val
+            except Exception:
+                return Response({'detail': 'Must be a valid decimal number for price.'}, status=status.HTTP_400_BAD_REQUEST)
+
         # Publish the product
         product.status = 'live'
         product.save()
@@ -747,3 +761,39 @@ class IncrementProductViewView(APIView):
             return Response({"detail": "ok"}, status=status.HTTP_200_OK)
 
         return Response({"detail": "ok"}, status=status.HTTP_200_OK)
+
+class ProductPauseView(APIView):
+    permission_classes = [permissions.IsAuthenticated]
+
+    def patch(self, request, product_id):
+        try:
+            product = Product.objects.get(id=product_id, artisan__user=request.user)
+        except Product.DoesNotExist:
+            return Response({'detail': 'Not found or permission denied.'}, status=status.HTTP_404_NOT_FOUND)
+        
+        if 'sales_paused' in request.data:
+            product.sales_paused = bool(request.data.get('sales_paused'))
+            product.save(update_fields=['sales_paused'])
+            
+        return Response({'status': 'success', 'sales_paused': product.sales_paused}, status=status.HTTP_200_OK)
+
+
+class VoiceTranscriptionView(APIView):
+    permission_classes = [permissions.IsAuthenticated]
+    throttle_classes = [ScopedRateThrottle]
+    throttle_scope = 'voice_catalog'
+
+    def post(self, request):
+        if request.user.role != 'artisan':
+            return Response({'detail': 'Only artisans can use voice typing.'}, status=status.HTTP_403_FORBIDDEN)
+            
+        audio_file = request.FILES.get('file')
+        if not audio_file:
+            return Response({'detail': 'No audio file provided.'}, status=status.HTTP_400_BAD_REQUEST)
+            
+        try:
+            transcript = transcribe_and_translate(audio_file)
+            return Response({'transcript': transcript}, status=status.HTTP_200_OK)
+        except Exception as e:
+            logger.error(f"Voice transcription failed: {e}")
+            return Response({'detail': str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)

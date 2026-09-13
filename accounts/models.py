@@ -28,6 +28,7 @@ class ArtisanProfile(models.Model):
     )
     craft_type = models.CharField(max_length=100, default='')
     bio = models.TextField(null=True, blank=True)
+    profile_photo = models.ImageField(upload_to='profiles/artisan/', null=True, blank=True)
     verified = models.BooleanField(default=False)
 
     class Meta:

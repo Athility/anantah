@@ -175,3 +175,36 @@ class DeleteAccountView(APIView):
         return Response({'detail': 'Account deleted successfully.'}, status=status.HTTP_200_OK)
 
 
+from .models import ArtisanProfile
+from .serializers import ArtisanProfileSerializer
+
+class ArtisanProfileUpdateView(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def patch(self, request, *args, **kwargs):
+        user = request.user
+        if user.role != 'artisan':
+            return Response({'detail': 'Not an artisan'}, status=status.HTTP_403_FORBIDDEN)
+        
+        profile, _ = ArtisanProfile.objects.get_or_create(user=user)
+
+        first_name = request.data.get('first_name')
+        last_name = request.data.get('last_name')
+        
+        if first_name is not None:
+            user.first_name = first_name
+        if last_name is not None:
+            user.last_name = last_name
+        
+        user.save(update_fields=['first_name', 'last_name'])
+
+        if 'craft_type' in request.data:
+            profile.craft_type = request.data['craft_type']
+        if 'bio' in request.data:
+            profile.bio = request.data['bio']
+            
+        if 'profile_photo' in request.FILES:
+            profile.profile_photo = request.FILES['profile_photo']
+        
+        profile.save()
+        return Response(ArtisanProfileSerializer(profile).data, status=status.HTTP_200_OK)
