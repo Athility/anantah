@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="backend-url" content="https://longer-valium-robert-aluminium.trycloudflare.com">
+    <meta name="backend-url" content="">
     <title>Anantah - AI Marketplace for Artisans</title>
     <!-- Favicon -->
     <link rel="icon" type="image/png" href="favicon.png">
@@ -11,9 +11,9 @@
     <!-- Premium Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&family=Instrument+Serif:ital@0;1&family=Inter:wght@400;500;600;700&family=Playfair+Display:ital,wght@0,400..900;1,400..900&family=Poppins:ital,wght@0,100..900;1,100..900&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,600;0,700;1,600&family=Outfit:wght@300;400;500;600;700;800&family=Instrument+Serif:ital@0;1&family=Inter:wght@400;500;600;700&family=Playfair+Display:ital,wght@0,400..900;1,400..900&family=Poppins:ital,wght@0,100..900;1,100..900&display=swap" rel="stylesheet">
     <!-- Main Style -->
-    <link rel="stylesheet" href="style.css?v=6">
+    <link rel="stylesheet" href="style.css?v=13">
     <!-- Sentry Error Monitoring & PostHog Analytics SDKs (Placeholders) -->
     <script src="https://browser.sentry-cdn.com/7.100.0/bundle.min.js" crossorigin="anonymous"></script>
     <!-- QR Code Scanning & Decoding Libraries -->
@@ -36,21 +36,44 @@
     <!-- Header Navbar (Visible only when logged in) -->
     <header class="navbar" id="app-navbar" style="display: none;">
         <div class="navbar-container">
-            <div class="navbar-brand" style="display: flex; align-items: center; gap: 10px;">
-                <img src="anantah_logo.png" alt="Anantah Logo" style="height: 36px; width: auto; object-fit: contain; vertical-align: middle;">
-                <span>Anantah</span>
+            <div class="navbar-brand" id="mobile-brand-trigger" role="button" tabindex="0" onclick="handleNavbarBrandClick(event)" onkeydown="if(event.key==='Enter'||event.key===' ')handleNavbarBrandClick(event)" aria-label="Anantah Brand">
+                <img src="anantah_logo.png" alt="Anantah Logo" class="brand-logo-img">
+                <div class="brand-text-lockup">
+                    <span class="brand-name">Anantah</span>
+                    <span class="brand-accent-line" aria-hidden="true"></span>
+                </div>
+            </div>
+            
+            <!-- Desktop Horizontal Secondary Nav Strip (Visible on Desktop >=768px when logged in) -->
+            <nav class="desktop-nav-strip" id="desktop-nav-strip">
+                <div class="desktop-nav-container">
+                    <!-- Sliding Purple Active Badge Indicator -->
+                    <div class="desktop-nav-indicator" id="desktop-nav-indicator"></div>
+                    <ul class="desktop-nav-list" id="desktop-nav-list">
+                        <!-- Dynamically populated based on role -->
+                    </ul>
+                </div>
+            </nav>
+
+            <!-- Mobile Header Right-Side Action (Visible on Mobile <768px) -->
+            <div class="mobile-navbar-actions" id="mobile-navbar-actions">
+                <button type="button" class="mobile-nav-action-btn" id="mobile-header-wishlist" aria-label="My Wishlist" onclick="switchRoleNavTab('wishlist')">
+                    <svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>
+                    <span class="mobile-action-dot" id="mobile-wishlist-dot" style="display: none;"></span>
+                </button>
+                <button type="button" class="mobile-nav-action-btn" id="mobile-header-account" aria-label="Account Settings" onclick="openAccountSheet()" style="display: none;">
+                    <svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+                </button>
             </div>
         </div>
     </header>
 
-    <!-- Desktop Horizontal Secondary Nav Strip (Visible on Desktop >=768px when logged in) -->
-    <nav class="desktop-nav-strip" id="desktop-nav-strip">
-        <div class="desktop-nav-container">
-            <!-- Sliding Purple Active Badge Indicator -->
-            <div class="desktop-nav-indicator" id="desktop-nav-indicator"></div>
-            <ul class="desktop-nav-list" id="desktop-nav-list">
-                <!-- Dynamically populated based on role -->
-            </ul>
+    <!-- Desktop Contextual Sub-Navbar (Visible on Desktop >=768px when logged in) -->
+    <nav class="desktop-sub-navbar" id="desktop-sub-navbar" aria-label="Secondary contextual navigation">
+        <div class="desktop-sub-nav-container">
+            <div class="desktop-sub-nav-links" id="desktop-sub-nav-links">
+                <!-- Dynamically populated based on active screen and section -->
+            </div>
         </div>
     </nav>
 
@@ -377,7 +400,7 @@
         </section>
 
         <!-- 6. ARTISAN DASHBOARD SCREEN -->
-        <section id="screen-artisan-dashboard" class="screen" style="padding-top: 24px;">
+        <section id="screen-artisan-dashboard" class="screen">
             <div class="dashboard-header" style="margin-bottom: 16px;">
                 <div class="dashboard-title">
                     <h2>Artisan Studio</h2>
@@ -765,10 +788,18 @@
                             </div>
 
                             <div class="product-details-grid">
-                                <div class="form-group" id="group-upload-title" style="margin-bottom: 0;">
-                                    <label class="form-label" for="upload-title">Product Title (English) <span class="required-asterisk">*</span></label>
-                                    <input class="form-input" type="text" id="upload-title" placeholder="e.g. Handmade Terracotta Vase" required>
-                                    <div class="error-message">This field is required.</div>
+                                <div class="form-group" id="group-upload-title" style="margin-bottom: 0; position: relative;">
+                                    <label class="form-label" for="upload-title" style="display: flex; justify-content: space-between;">
+                                        <span>Product Title (English) <span class="required-asterisk">*</span></span>
+                                        <span id="upload-title-counter" style="font-size: 11px; color: var(--text-secondary); font-weight: normal;">0/200</span>
+                                    </label>
+                                    <div style="position: relative;">
+                                        <input class="form-input" type="text" id="upload-title" maxlength="200" placeholder="e.g. Handmade Terracotta Vase" required style="padding-right: 48px;" oninput="document.getElementById('upload-title-counter').textContent = this.value.length + '/200'">
+                                        <button type="button" id="btn-voice-title" onclick="toggleVoiceTitleRecording()" style="position: absolute; right: 8px; top: 50%; transform: translateY(-50%); background: none; border: none; padding: 8px; color: var(--primary-color); cursor: pointer; border-radius: 50%; display: flex; align-items: center; justify-content: center; transition: background 0.2s;">
+                                            <svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M12 2a3 3 0 0 0-3 3v7a3 3 0 0 0 6 0V5a3 3 0 0 0-3-3z"/><path d="M19 10v2a7 7 0 0 1-14 0v-2"/><line x1="12" y1="19" x2="12" y2="23"/><line x1="8" y1="23" x2="16" y2="23"/></svg>
+                                        </button>
+                                    </div>
+                                    <div class="error-message">This field is required and must be under 200 chars.</div>
                                 </div>
 
                                 <div class="form-group" id="group-upload-price" style="margin-bottom: 0;">
@@ -896,14 +927,14 @@
                                             <span>Product Title</span>
                                             <span class="lang-badge">English</span>
                                         </label>
-                                        <input type="text" id="results-title-en" class="form-input" required>
+                                        <input type="text" id="results-title-en" class="form-input" required maxlength="200">
                                     </div>
                                                                     <div>
                                         <label class="bilingual-field-label">
                                             <span>Product Title</span>
                                             <span class="lang-badge" id="results-title-lang-badge">Hindi</span>
                                         </label>
-                                        <input type="text" id="results-title-hi" class="form-input devanagari" required>
+                                        <input type="text" id="results-title-hi" class="form-input devanagari" required maxlength="200">
                                     </div>
                                 </div>
 
@@ -991,31 +1022,40 @@
 
             <!-- Tab 5: Artisan Account View -->
             <div id="artisan-view-account" class="artisan-tab-view" style="display: none;">
-                <div style="background: var(--bg-card); border: 1px solid var(--border-color); border-radius: 24px; padding: 32px; max-width: 600px; margin: 20px auto; box-shadow: var(--shadow-premium);">
-                    <div style="display: flex; align-items: center; gap: 16px; margin-bottom: 24px;">
-                        <div style="width: 60px; height: 60px; border-radius: 50%; background: var(--primary-light); color: var(--primary-color); display: flex; align-items: center; justify-content: center; font-size: 24px; font-weight: 700;" id="artisan-account-avatar">A</div>
-                        <div>
-                            <h3 class="brand-font" style="font-size: 20px; color: var(--text-primary); margin: 0;" id="artisan-account-name">Artisan Profile</h3>
-                            <span style="font-size: 13px; color: var(--text-secondary);" id="artisan-account-craft">Master Craftsperson</span>
+                <div style="background: var(--bg-card); border: 1px solid var(--border-color); border-radius: 24px; padding: 28px 32px; max-width: 560px; margin: 20px auto; box-shadow: var(--shadow-premium);">
+                    <div style="display: flex; align-items: center; justify-content: space-between; gap: 16px; margin-bottom: 24px; padding-bottom: 20px; border-bottom: 1px solid var(--border-color);">
+                        <div style="display: flex; align-items: center; gap: 16px; min-width: 0; flex: 1;">
+                            <div style="width: 64px; height: 64px; border-radius: 50%; background: var(--primary-light); color: var(--primary-color); display: flex; align-items: center; justify-content: center; font-size: 24px; font-weight: 700; flex-shrink: 0; overflow: hidden; border: 2px solid #fff; box-shadow: 0 4px 12px rgba(107, 76, 154, 0.12);" id="artisan-account-avatar">A</div>
+                            <div style="min-width: 0; flex: 1;">
+                                <h3 class="brand-font" style="font-size: 20px; font-weight: 700; color: var(--text-primary); margin: 0 0 4px 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;" id="artisan-account-name">Artisan Profile</h3>
+                                <span style="font-size: 13px; font-weight: 500; color: var(--text-secondary); display: block; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;" id="artisan-account-craft">Master Craftsperson</span>
+                            </div>
                         </div>
+                        <button type="button" id="btn-open-artisan-profile" onclick="openArtisanProfileModal()" class="btn-artisan-edit-profile" style="display: inline-flex; align-items: center; justify-content: center; gap: 6px; width: auto !important; max-width: fit-content; white-space: nowrap; flex-shrink: 0; padding: 8px 16px; border-radius: 20px; font-size: 13px; font-weight: 600; color: var(--primary-color); background: var(--primary-light); border: 1px solid rgba(107, 76, 154, 0.25); cursor: pointer; transition: all 0.2s ease;">
+                            <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
+                            <span>Edit Profile</span>
+                        </button>
                     </div>
                     <div style="display: flex; flex-direction: column; gap: 12px;">
-                        <div style="padding: 12px 16px; background: var(--bg-cream); border-radius: 12px; font-size: 14px; display: flex; justify-content: space-between;">
-                            <span style="color: var(--text-secondary);">Account Role</span>
-                            <strong style="color: var(--primary-color);">Artisan</strong>
+                        <div style="padding: 14px 18px; background: var(--bg-cream); border: 1px solid rgba(0,0,0,0.03); border-radius: 14px; font-size: 14px; display: flex; align-items: center; justify-content: space-between;">
+                            <span style="color: var(--text-secondary); font-weight: 500;">Account Role</span>
+                            <span style="color: var(--primary-color); font-weight: 700; background: #fff; padding: 4px 12px; border-radius: 20px; border: 1px solid rgba(107, 76, 154, 0.15); font-size: 13px;">Artisan</span>
                         </div>
-                        <div style="padding: 12px 16px; background: var(--bg-cream); border-radius: 12px; font-size: 14px; display: flex; justify-content: space-between;">
-                            <span style="color: var(--text-secondary);">Shop Status</span>
-                            <strong style="color: #2E7D32;">Verified Active</strong>
+                        <div style="padding: 14px 18px; background: var(--bg-cream); border: 1px solid rgba(0,0,0,0.03); border-radius: 14px; font-size: 14px; display: flex; align-items: center; justify-content: space-between;">
+                            <span style="color: var(--text-secondary); font-weight: 500;">Shop Status</span>
+                            <span style="color: #2E7D32; font-weight: 700; background: #E8F5E9; padding: 4px 12px; border-radius: 20px; border: 1px solid #C8E6C9; font-size: 13px; display: inline-flex; align-items: center; gap: 6px;"><span style="width: 7px; height: 7px; border-radius: 50%; background: #2E7D32;"></span>Verified Active</span>
                         </div>
-                        <button type="button" onclick="clearAuth()" class="btn btn-secondary" style="margin-top: 12px; color: var(--danger-color); border-color: var(--danger-color);">Logout of Account</button>
+                        <button type="button" onclick="clearAuth()" class="btn btn-secondary" style="margin-top: 14px; color: var(--danger-color); border: 1px solid rgba(198, 40, 40, 0.25); background: #FFF5F5; font-weight: 600; border-radius: 14px; padding: 12px; display: flex; align-items: center; justify-content: center; gap: 8px;">
+                            <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
+                            <span>Logout of Account</span>
+                        </button>
                     </div>
                 </div>
             </div>
         </section>
 
         <!-- 7. BUYER DASHBOARD SCREEN -->
-        <section id="screen-buyer-dashboard" class="screen" style="padding-top: 24px;">
+        <section id="screen-buyer-dashboard" class="screen">
             <!-- TAB: Shop -->
             <div id="buyer-view-shop">
                 <!-- 1. Editorial Hero & Discovery Section -->
@@ -1369,7 +1409,7 @@
                     </button>
                 </div>
 
-                <div style="background: var(--bg-card); border: 1px solid var(--border-color); border-radius: 24px; padding: 32px; box-shadow: var(--shadow-premium); display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 36px; align-items: start;" id="product-detail-page-container">
+                <div style="background: var(--bg-card); border: 1px solid var(--border-color); border-radius: 24px; padding: clamp(16px, 4vw, 32px); box-shadow: var(--shadow-premium); display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 280px), 1fr)); gap: clamp(16px, 4vw, 36px); align-items: start;" id="product-detail-page-container">
                     <!-- Left Side: Main Image & Gallery -->
                     <div style="display: flex; flex-direction: column; gap: 16px;">
                         <div style="position: relative; border-radius: 20px; overflow: hidden; background: #f9f6f0; box-shadow: var(--shadow-sm); border: 1px solid var(--border-color); display: flex; justify-content: center; align-items: center; min-height: 300px;">
@@ -1645,76 +1685,76 @@
             </button>
         </div>
 
-        <!-- Part 2: 4-Column Responsive Grid -->
+        <!-- Part 2: Main Layout (Left: Navigation Links, Right: Brand & Language Wing) -->
         <div class="footer-main-container">
-            <!-- Column 1: Get to Know Us -->
-            <div class="footer-column">
-                <h4 class="footer-col-title">Get to Know Us</h4>
-                <ul class="footer-links-list">
-                    <li class="footer-link-item">
-                        <a href="#about" class="footer-link" onclick="navigateTo('about'); return false;">About Anantah</a>
-                    </li>
-                    <li class="footer-link-item">
-                        <a href="#about-mission" class="footer-link" onclick="navigateToAboutSection('mission'); return false;">Our Mission</a>
-                    </li>
-                </ul>
+            <div class="footer-nav-section">
+                <!-- Column 1: Get to Know Us -->
+                <div class="footer-column">
+                    <h4 class="footer-col-title">Get to Know Us</h4>
+                    <ul class="footer-links-list">
+                        <li class="footer-link-item">
+                            <a href="#about" class="footer-link" onclick="navigateTo('about'); return false;">About Anantah</a>
+                        </li>
+                        <li class="footer-link-item">
+                            <a href="#about-mission" class="footer-link" onclick="navigateToAboutSection('mission'); return false;">Our Mission</a>
+                        </li>
+                    </ul>
+                </div>
+
+                <!-- Column 2: Connect with Us -->
+                <div class="footer-column">
+                    <h4 class="footer-col-title">Connect with Us</h4>
+                    <ul class="footer-links-list">
+                        <li class="footer-link-item">
+                            <a href="https://mail.google.com/mail/?view=cm&fs=1&to=anantahsupport@gmail.com" class="footer-link" target="_blank" rel="noopener noreferrer">
+                                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="20" height="16" x="2" y="4" rx="2"/><path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7"/></svg>
+                                <span>Email Us <span class="footer-subtext">(anantahsupport@gmail.com)</span></span>
+                            </a>
+                        </li>
+                        <li class="footer-link-item">
+                            <a href="https://www.instagram.com/anantah_ig/" class="footer-link" target="_blank" rel="noopener noreferrer">
+                                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="20" height="20" x="2" y="2" rx="5" ry="5"/><path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"/><line x1="17.5" x2="17.51" y1="6.5" y2="6.5"/></svg>
+                                <span>Instagram <span class="footer-subtext">(@anantah_ig)</span></span>
+                            </a>
+                        </li>
+                    </ul>
+                </div>
+
+                <!-- Column 3: Role-Specific Column -->
+                <div class="footer-column" id="footer-role-column">
+                    <!-- Dynamically populated based on logged-in role (Artisan, Buyer, or Logged Out) -->
+                </div>
+
+                <!-- Column 4: Let Us Help You -->
+                <div class="footer-column">
+                    <h4 class="footer-col-title">Let Us Help You</h4>
+                    <ul class="footer-links-list">
+                        <li class="footer-link-item">
+                            <a href="#" class="footer-link" onclick="openHelpFaqModal(); return false;">
+                                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+                                <span>Help &amp; FAQ</span>
+                            </a>
+                        </li>
+                        <li class="footer-link-item">
+                            <a href="https://mail.google.com/mail/?view=cm&fs=1&to=anantahsupport@gmail.com" class="footer-link" target="_blank" rel="noopener noreferrer">
+                                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"/></svg>
+                                <span>Contact Support</span>
+                            </a>
+                        </li>
+                    </ul>
+                </div>
             </div>
 
-            <!-- Column 2: Connect with Us -->
-            <div class="footer-column">
-                <h4 class="footer-col-title">Connect with Us</h4>
-                <ul class="footer-links-list">
-                    <li class="footer-link-item">
-                        <a href="https://mail.google.com/mail/?view=cm&fs=1&to=anantahsupport@gmail.com" class="footer-link" target="_blank" rel="noopener noreferrer">
-                            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="20" height="16" x="2" y="4" rx="2"/><path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7"/></svg>
-                            <span>Email Us <span class="footer-subtext">(anantahsupport@gmail.com)</span></span>
-                        </a>
-                    </li>
-                    <li class="footer-link-item">
-                        <a href="https://www.instagram.com/anantah_ig/" class="footer-link" target="_blank" rel="noopener noreferrer">
-                            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="20" height="20" x="2" y="2" rx="5" ry="5"/><path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"/><line x1="17.5" x2="17.51" y1="6.5" y2="6.5"/></svg>
-                            <span>Instagram <span class="footer-subtext">(@anantah_ig)</span></span>
-                        </a>
-                    </li>
-                </ul>
-            </div>
-
-            <!-- Column 3: Role-Specific Column -->
-            <div class="footer-column" id="footer-role-column">
-                <!-- Dynamically populated based on logged-in role (Artisan, Buyer, or Logged Out) -->
-            </div>
-
-            <!-- Column 4: Let Us Help You -->
-            <div class="footer-column">
-                <h4 class="footer-col-title">Let Us Help You</h4>
-                <ul class="footer-links-list">
-                    <li class="footer-link-item">
-                        <a href="#" class="footer-link" onclick="openHelpFaqModal(); return false;">
-                            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
-                            <span>Help &amp; FAQ</span>
-                        </a>
-                    </li>
-                    <li class="footer-link-item">
-                        <a href="https://mail.google.com/mail/?view=cm&fs=1&to=anantahsupport@gmail.com" class="footer-link" target="_blank" rel="noopener noreferrer">
-                            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"/></svg>
-                            <span>Contact Support</span>
-                        </a>
-                    </li>
-                </ul>
-            </div>
-        </div>
-
-        <!-- Part 3: Logo + Locale Bar -->
-        <div class="footer-middle-bar">
-            <div class="footer-middle-container">
-                <div class="footer-brand-lockup" onclick="handleFooterBrandClick();">
+            <!-- Dedicated Right-Aligned Brand & Locale Wing -->
+            <div class="footer-brand-aside">
+                <div class="footer-brand-lockup" onclick="handleFooterBrandClick();" role="button" tabindex="0" title="Go to Anantah home" aria-label="Anantah Home" onkeydown="if(event.key==='Enter'||event.key===' ')handleFooterBrandClick()">
                     <img src="anantah_logo.png" alt="Anantah Logo" class="footer-brand-logo-img">
                     <div class="footer-brand-text">
                         <span class="footer-brand-title">Anantah</span>
                         <span class="footer-brand-sub">Infinite Heritage</span>
                     </div>
                 </div>
-
+                <p class="footer-brand-tagline">Empowering marginalized Indian artisans with local AI studio cataloging and direct global reach.</p>
                 <div class="footer-locale-picker" title="Select platform language">
                     <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg>
                     <select id="footer-language-select" class="footer-locale-select" onchange="changeFooterLanguage(this.value)" aria-label="Change Language">
@@ -1728,7 +1768,7 @@
             </div>
         </div>
 
-        <!-- Part 4: Bottom Legal Bar -->
+        <!-- Part 3: Bottom Legal Bar -->
         <div class="footer-bottom-legal-bar">
             <div class="footer-bottom-container">
                 <span class="footer-copyright">&copy; 2026 Anantah. All rights reserved. Empowering Indian Master Artisans with AI.</span>
@@ -1827,6 +1867,7 @@
             }
 
             const dtStrip = document.getElementById('desktop-nav-strip');
+            const dtSubNav = document.getElementById('desktop-sub-navbar');
             const mbNav = document.getElementById('mobile-bottom-nav');
 
             // Hide navbar by default unless dashboard screens are active
@@ -1839,11 +1880,15 @@
                         navbarBadge.style.color = currentUser.role === 'artisan' ? 'var(--primary-color)' : '#2E7D32';
                     }
                     renderRoleNavbar();
+                    renderDesktopSubNavbar();
                 }
             } else {
                 navbar.style.display = 'none';
                 if (dtStrip) dtStrip.classList.remove('active');
+                if (dtSubNav) dtSubNav.classList.remove('active');
                 if (mbNav) mbNav.classList.remove('active');
+                if (typeof closeMobileBrandSheet === 'function') closeMobileBrandSheet();
+                if (typeof closeAccountSheet === 'function') closeAccountSheet();
             }
 
             if (screenKey === 'register') {
@@ -1902,6 +1947,8 @@
                         }
                     }
                 }
+            } else if (rawHash && screens[rawHash]) {
+                navigateTo(rawHash, false);
             } else if (rawHash === 'about') {
                 navigateTo('about', false);
             } else if (rawHash.startsWith('product-')) {
@@ -2091,6 +2138,12 @@
                 langSelect.value = curLang;
             }
 
+            // Sync Mobile Brand Sheet Language Pills
+            document.querySelectorAll('.mobile-lang-pill').forEach(pill => {
+                if (pill.getAttribute('data-lang') === curLang) pill.classList.add('active');
+                else pill.classList.remove('active');
+            });
+
             // Sync About CTA buttons
             renderAboutCtaButtons();
         }
@@ -2189,6 +2242,183 @@
                 navigateTo('onboarding');
             }
         }
+
+        // ─── Mobile Header Brand Pop-Up / Sheet Management ───────────────────
+        function isMobileViewport() {
+            return window.innerWidth < 768;
+        }
+
+        function handleNavbarBrandClick(e) {
+            handleFooterBrandClick();
+        }
+
+        function renderDesktopSubNavbar() {
+            const subNavbar = document.getElementById('desktop-sub-navbar');
+            const linksContainer = document.getElementById('desktop-sub-nav-links');
+            if (!subNavbar || !linksContainer) return;
+
+            // Hide on mobile or when logged out
+            if (!currentUser || window.innerWidth < 768) {
+                subNavbar.classList.remove('active');
+                return;
+            }
+
+            const role = currentUser.role === 'artisan' ? 'artisan' : 'buyer';
+            
+            let html = '';
+
+            if (role === 'buyer' && (!activeRoleNavTab || activeRoleNavTab === 'home' || activeRoleNavTab === 'discover')) {
+                const currentCat = (window._activeBuyerCategory || '').toLowerCase();
+                html = `
+                    <div class="desktop-sub-nav-card">
+                        <div class="context-eyebrow-pill">
+                            <span>✨</span>
+                            <span>Living Craft Heritage of India</span>
+                        </div>
+                        <h2 class="context-title">Explore India's <em>Living Craft Traditions</em></h2>
+                        <p class="context-subtitle">Direct from generational master artisans, handloom clusters & traditional studios across Bharat</p>
+                        <div class="context-craft-pills" role="navigation" aria-label="Curated Craft Categories">
+                            <button type="button" class="context-craft-pill ${(!currentCat || currentCat === 'all') ? 'active' : ''}" onclick="selectCraftCategory('all')" data-craft="all">
+                                <span class="pill-icon">🪷</span>
+                                <span>All Traditions</span>
+                            </button>
+                            <button type="button" class="context-craft-pill ${currentCat.includes('pottery') || currentCat.includes('terracotta') ? 'active' : ''}" onclick="selectCraftCategory('Pottery')" data-craft="pottery">
+                                <span class="pill-icon">🏺</span>
+                                <span>Pottery &amp; Terracotta</span>
+                            </button>
+                            <button type="button" class="context-craft-pill ${currentCat.includes('handloom') || currentCat.includes('textile') ? 'active' : ''}" onclick="selectCraftCategory('Handloom')" data-craft="handloom">
+                                <span class="pill-icon">🧵</span>
+                                <span>Handloom &amp; Silk</span>
+                            </button>
+                            <button type="button" class="context-craft-pill ${currentCat.includes('wood') ? 'active' : ''}" onclick="selectCraftCategory('Woodwork')" data-craft="woodwork">
+                                <span class="pill-icon">🪵</span>
+                                <span>Woodcraft &amp; Inlay</span>
+                            </button>
+                            <button type="button" class="context-craft-pill ${currentCat.includes('jewel') ? 'active' : ''}" onclick="selectCraftCategory('Jewellery')" data-craft="jewellery">
+                                <span class="pill-icon">💍</span>
+                                <span>Heritage Jewellery</span>
+                            </button>
+                            <button type="button" class="context-craft-pill ${currentCat.includes('folk') || currentCat.includes('art') || currentCat.includes('paint') ? 'active' : ''}" onclick="selectCraftCategory('Folk Art')" data-craft="folk art">
+                                <span class="pill-icon">🎨</span>
+                                <span>Folk &amp; Tribal Art</span>
+                            </button>
+                            <button type="button" class="context-craft-pill ${currentCat.includes('metal') || currentCat.includes('brass') ? 'active' : ''}" onclick="selectCraftCategory('Metalcraft')" data-craft="metalcraft">
+                                <span class="pill-icon">🪙</span>
+                                <span>Brass &amp; Metalcraft</span>
+                            </button>
+                        </div>
+                    </div>
+                `;
+            } else if (role === 'buyer' && activeRoleNavTab === 'reels') {
+                html = `
+                    <div class="desktop-sub-nav-card">
+                        <div class="context-eyebrow-pill">
+                            <span>🎬</span>
+                            <span>Living Craft Stories</span>
+                        </div>
+                        <h2 class="context-title">Behind the <em>Masterpieces</em></h2>
+                        <p class="context-subtitle">Immerse in authentic studio process, heritage techniques and generational master artisan stories</p>
+                        <div class="context-craft-pills">
+                            <button type="button" class="context-craft-pill active" onclick="if(window.FramesFeed)window.FramesFeed.fetchReels()">
+                                <span class="pill-icon">✨</span>
+                                <span>All Craft Frames</span>
+                            </button>
+                            <button type="button" class="context-craft-pill" onclick="showToastAlert('Filtering studio process & craft stories', 'info')">
+                                <span class="pill-icon">🏺</span>
+                                <span>Studio Process</span>
+                            </button>
+                            <button type="button" class="context-craft-pill" onclick="showToastAlert('Spotlighting master artisan videos', 'info')">
+                                <span class="pill-icon">🪷</span>
+                                <span>Master Artisans</span>
+                            </button>
+                        </div>
+                    </div>
+                `;
+            } else if (role === 'artisan') {
+                html = `
+                    <div class="desktop-sub-nav-card">
+                        <div class="context-eyebrow-pill">
+                            <span>🛠️</span>
+                            <span>Artisan Studio Console</span>
+                        </div>
+                        <h2 class="context-title">Manage Your <em>Craft Studio</em></h2>
+                        <p class="context-subtitle">Direct digital cataloging, AI refinement, craft reels & community connections</p>
+                        <div class="context-craft-pills">
+                            <button type="button" class="context-craft-pill ${activeRoleNavTab === 'home' ? 'active' : ''}" onclick="switchRoleNavTab('home')">
+                                <span class="pill-icon">🏺</span>
+                                <span>My Listings</span>
+                            </button>
+                            <button type="button" class="context-craft-pill ${activeRoleNavTab === 'my-listings' ? 'active' : ''}" onclick="switchRoleNavTab('my-listings')">
+                                <span class="pill-icon">🎬</span>
+                                <span>New Frame</span>
+                            </button>
+                            <button type="button" class="context-craft-pill ${activeRoleNavTab === 'communities' ? 'active' : ''}" onclick="switchRoleNavTab('communities')">
+                                <span class="pill-icon">👥</span>
+                                <span>Communities</span>
+                            </button>
+                            <button type="button" class="context-craft-pill ${activeRoleNavTab === 'analytics' ? 'active' : ''}" onclick="switchRoleNavTab('analytics')">
+                                <span class="pill-icon">📊</span>
+                                <span>Analytics</span>
+                            </button>
+                        </div>
+                    </div>
+                `;
+            }
+
+            if (html) {
+                linksContainer.innerHTML = html;
+                subNavbar.classList.add('active');
+            } else {
+                subNavbar.classList.remove('active');
+            }
+        }
+
+        // Global Craft Category Filter Bridge
+        window.selectCraftCategory = function(categoryName) {
+            if (activeRoleNavTab !== 'home') {
+                switchRoleNavTab('home');
+            }
+            if (!categoryName || categoryName === 'all') {
+                clearBuyerFilters();
+            } else {
+                window._activeBuyerCategory = categoryName;
+                const pillsContainer = document.getElementById('buyer-category-pills');
+                if (pillsContainer) {
+                    let matched = false;
+                    pillsContainer.querySelectorAll('.category-pill').forEach(pill => {
+                        const pCat = pill.getAttribute('data-category') || '';
+                        if (pCat.toLowerCase().includes(categoryName.toLowerCase()) || categoryName.toLowerCase().includes(pCat.toLowerCase())) {
+                            pill.classList.add('active');
+                            matched = true;
+                        } else {
+                            pill.classList.remove('active');
+                        }
+                    });
+                    if (!matched) {
+                        pillsContainer.querySelectorAll('.category-pill').forEach(p => p.classList.remove('active'));
+                    }
+                }
+                filterAndRenderBuyerProducts();
+            }
+
+            // Sync visual active state in discovery card pills
+            document.querySelectorAll('.context-craft-pill').forEach(btn => {
+                const bCraft = (btn.getAttribute('data-craft') || '').toLowerCase();
+                const target = (categoryName || 'all').toLowerCase();
+                if (bCraft === target || (target !== 'all' && bCraft.includes(target))) {
+                    btn.classList.add('active');
+                } else {
+                    btn.classList.remove('active');
+                }
+            });
+
+            // Smooth scroll down to explore crafts feed
+            const feed = document.getElementById('buyer-feed-title');
+            if (feed) {
+                feed.scrollIntoView({ behavior: 'smooth', block: 'start' });
+            }
+        };
+
 
         function handleArtisanOrdersToShip() {
             if (!currentUser || currentUser.role !== 'artisan') return;
@@ -2388,9 +2618,17 @@
                 const nameEl = document.getElementById('artisan-account-name');
                 const avatarEl = document.getElementById('artisan-account-avatar');
                 const craftEl = document.getElementById('artisan-account-craft');
-                if (nameEl) nameEl.textContent = currentUser.username || 'Artisan';
-                if (avatarEl) avatarEl.textContent = (currentUser.username || 'A')[0].toUpperCase();
-                if (craftEl && currentUser.craft_type) craftEl.textContent = currentUser.craft_type;
+                const p = (currentUser && currentUser.profile) || {};
+                const name = p.name || `${currentUser.first_name || ''} ${currentUser.last_name || ''}`.trim() || currentUser.username || 'Artisan';
+                if (nameEl) nameEl.textContent = name;
+                if (avatarEl) {
+                    if (p.profile_photo) {
+                        avatarEl.innerHTML = `<img src="${getMediaUrl(p.profile_photo)}" style="width: 100%; height: 100%; object-fit: cover; border-radius: 50%;">`;
+                    } else {
+                        avatarEl.textContent = name[0].toUpperCase();
+                    }
+                }
+                if (craftEl) craftEl.textContent = p.craft_type || currentUser.craft_type || 'Master Craftsperson';
             } else {
                 const nameEl = document.getElementById('buyer-account-name');
                 const avatarEl = document.getElementById('buyer-account-avatar');
@@ -2534,8 +2772,24 @@
             if (desktopStrip) desktopStrip.classList.add('active');
             if (mobileNav) mobileNav.classList.add('active');
 
+            // Sync Mobile Header Right-Side Action
+            const mWishlist = document.getElementById('mobile-header-wishlist');
+            const mAccount = document.getElementById('mobile-header-account');
+            if (mWishlist && mAccount) {
+                if (role === 'artisan') {
+                    mWishlist.style.display = 'none';
+                    mAccount.style.display = 'flex';
+                } else {
+                    mWishlist.style.display = 'flex';
+                    mAccount.style.display = 'none';
+                }
+            }
+
             // Attach Desktop Dropdown Mouse Events with 250ms Buffer
             setupDesktopDropdownEvents();
+
+            // Render Desktop Contextual Sub-Navbar
+            renderDesktopSubNavbar();
 
             // Position 0.5s sliding desktop active indicator badge
             setTimeout(updateDesktopNavIndicator, 20);
@@ -2568,16 +2822,23 @@
             // Calculate relative left offset and dimensions
             const left = itemRect.left - containerRect.left;
             const width = itemRect.width;
-            const height = itemRect.height || 38;
+            const height = itemRect.height || 36;
+            const top = itemRect.top - containerRect.top;
 
             indicator.style.left = `${left}px`;
+            indicator.style.top = `${top}px`;
             indicator.style.width = `${width}px`;
             indicator.style.height = `${height}px`;
             indicator.style.opacity = '1';
-            indicator.style.background = 'var(--primary-light)';
+            indicator.style.background = '#FFFFFF';
+            indicator.style.borderRadius = '999px';
+            indicator.style.boxShadow = '0 2px 8px rgba(44, 27, 77, 0.08), 0 1px 2px rgba(44, 27, 77, 0.04)';
         }
 
-        window.addEventListener('resize', updateDesktopNavIndicator);
+        window.addEventListener('resize', () => {
+            updateDesktopNavIndicator();
+            renderDesktopSubNavbar();
+        });
 
         function setupDesktopDropdownEvents() {
             const wrapper = document.querySelector('.desktop-account-menu-wrapper');
@@ -2727,6 +2988,7 @@
 
             const dropdown = document.getElementById('desktop-account-dropdown');
             if (dropdown) dropdown.classList.remove('show');
+            renderDesktopSubNavbar();
         }
 
         // Mobile Slide-Up Sheet Controls
@@ -2760,6 +3022,10 @@
             backdrop.classList.add('show');
             panel.classList.add('show');
             document.body.style.overflow = 'hidden';
+        }
+
+        function closeMobileBrandSheet() {
+            if (typeof closeAccountSheet === 'function') closeAccountSheet();
         }
 
         function closeAccountSheet() {
@@ -2846,7 +3112,9 @@
 
             if (!accessToken && !refreshToken) {
                 const rawHash = initialRawHash;
-                if (rawHash === 'about') {
+                if (rawHash && screens[rawHash]) {
+                    navigateTo(rawHash, false);
+                } else if (rawHash === 'about') {
                     navigateTo('about', false);
                 } else if (VALID_BUYER_ROUTES.includes(rawHash)) {
                     currentUser = { username: 'Guest', role: 'buyer', isGuest: true };
@@ -2874,6 +3142,7 @@
                 });
 
                 if (response.ok) {
+                    window._authRetryCount = 0;
                     currentUser = await response.json();
                     accessToken = localStorage.getItem('access_token');
                     refreshToken = localStorage.getItem('refresh_token');
@@ -2931,8 +3200,18 @@
             } catch (err) {
                 console.error("Auth check failed:", err);
                 // A temporary network failure should NOT clear auth tokens or session
-                if (typeof showToastAlert === 'function') {
-                    showToastAlert("Network issue while restoring session. Retrying...", "error");
+                window._authRetryCount = (window._authRetryCount || 0) + 1;
+                if (window._authRetryCount <= 3) {
+                    if (typeof showToastAlert === 'function') {
+                        showToastAlert("Network issue while restoring session. Retrying...", "error");
+                    }
+                    setTimeout(() => {
+                        if (!currentUser) checkAuthState();
+                    }, 2500);
+                } else {
+                    if (typeof showToastAlert === 'function') {
+                        showToastAlert("Unable to reach backend server. Please verify Django server is running.", "error");
+                    }
                 }
                 renderSiteFooter();
             }
@@ -3955,22 +4234,79 @@
                             card.className = 'product-card';
                             
                             const displayImage = getMediaUrl(p.refined_image_url || p.raw_image_url);
+                            
+                            let statusHtml = '';
+                            if (p.status === 'live') {
+                                if (p.sales_paused) {
+                                    statusHtml = `<span style="font-size: 11px; font-weight: 700; color: #ff9800; background: #fff3e0; padding: 4px 8px; border-radius: 12px; margin-bottom: 8px; display: inline-block;">● Sales Paused</span>`;
+                                } else {
+                                    statusHtml = `<span style="font-size: 11px; font-weight: 700; color: #2e7d32; background: #e8f5e9; padding: 4px 8px; border-radius: 12px; margin-bottom: 8px; display: inline-block;">● Live</span>`;
+                                }
+                            } else {
+                                statusHtml = `<span style="font-size: 11px; font-weight: 700; color: var(--text-secondary); background: var(--border-color); padding: 4px 8px; border-radius: 12px; margin-bottom: 8px; display: inline-block;">● Draft</span>`;
+                            }
 
                             card.innerHTML = `
                                 <div class="product-card-image-box">
                                     <img class="product-card-image" src="${displayImage}" alt="${escapeHTML(p.title_en)}" onerror="this.onerror=null; this.src='anantah_logo.png';">
                                 </div>
                                 <div class="product-card-info" style="padding: 16px; display: flex; flex-direction: column; flex-grow: 1;">
+                                    ${statusHtml}
                                     <h4 class="product-card-title" style="font-size: 15px; font-weight: 700; color: var(--text-primary); margin: 0 0 4px 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">${escapeHTML(p.title_en)}</h4>
                                     <div class="product-card-price" style="font-size: 16px; font-weight: 800; color: var(--primary-color); margin-bottom: 12px;">₹${parseFloat(p.price).toFixed(2)}</div>
-                                    <button class="btn-delete-listing" data-product-id="${p.id}" style="margin-top: auto; display: flex; align-items: center; gap: 6px; background: none; border: 1px solid #FFCDD2; border-radius: 8px; padding: 8px 12px; font-size: 12px; font-weight: 600; color: #C62828; cursor: pointer; transition: var(--transition-smooth); font-family: var(--font-inter); width: 100%; justify-content: center;">
-                                        <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M3 6h18M8 6V4h8v2M19 6l-1 14H6L5 6"/></svg>
-                                        Delete Listing
-                                    </button>
+                                    <div style="margin-top: auto; display: flex; flex-direction: column; gap: 8px;">
+                                        <button class="btn-edit-listing" data-product-id="${p.id}" style="width: 100%; border: 1.5px solid var(--primary-color); background: rgba(107, 76, 154, 0.08); color: var(--primary-color); border-radius: 12px; padding: 9px 12px; font-size: 13px; font-weight: 600; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 6px; transition: all 0.2s ease;">
+                                            <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
+                                            <span>Edit Listing</span>
+                                        </button>
+                                        <div style="display: flex; gap: 8px;">
+                                            ${p.status === 'live' ? `
+                                                <button class="btn-pause-listing" data-product-id="${p.id}" data-paused="${p.sales_paused}" style="flex: 1; border: 1px solid ${p.sales_paused ? '#4CAF50' : '#FF9800'}; background: ${p.sales_paused ? '#E8F5E9' : '#FFF3E0'}; color: ${p.sales_paused ? '#2E7D32' : '#E65100'}; border-radius: 10px; padding: 8px 10px; font-size: 12px; font-weight: 600; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 5px; transition: all 0.2s ease;">
+                                                    ${p.sales_paused ? '<svg width="13" height="13" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><polygon points="5 3 19 12 5 21 5 3"/></svg> Resume' : '<svg width="13" height="13" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><rect x="6" y="4" width="4" height="16"/><rect x="14" y="4" width="4" height="16"/></svg> Pause'}
+                                                </button>
+                                            ` : ''}
+                                            <button class="btn-delete-listing" data-product-id="${p.id}" style="${p.status === 'live' ? 'width: auto; padding: 8px 12px;' : 'flex: 1; padding: 8px 12px;'} display: flex; align-items: center; gap: 5px; background: #FFEBEE; border: 1px solid #FFCDD2; border-radius: 10px; font-size: 12px; font-weight: 600; color: #C62828; cursor: pointer; justify-content: center; transition: all 0.2s ease;">
+                                                <svg width="13" height="13" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M3 6h18M8 6V4h8v2M19 6l-1 14H6L5 6"/></svg>
+                                                <span>Delete</span>
+                                            </button>
+                                        </div>
+                                    </div>
                                 </div>
                             `;
 
                             container.appendChild(card);
+
+                            // Wire up edit button
+                            card.querySelector('.btn-edit-listing').addEventListener('click', () => {
+                                openEditListingModal(p);
+                            });
+
+                            if (p.status === 'live') {
+                                card.querySelector('.btn-pause-listing').addEventListener('click', async (e) => {
+                                    const btn = e.currentTarget;
+                                    const isPaused = btn.getAttribute('data-paused') === 'true';
+                                    btn.textContent = 'Updating...';
+                                    btn.disabled = true;
+                                    
+                                    try {
+                                        const r = await customFetch(`${CONFIG.API_BASE_URL}/listings/${p.id}/pause/`, {
+                                            method: 'PATCH',
+                                            headers: { 'Content-Type': 'application/json' },
+                                            body: JSON.stringify({ sales_paused: !isPaused })
+                                        });
+                                        if (r.ok) {
+                                            loadArtisanProducts();
+                                        } else {
+                                            alert('Failed to update status.');
+                                            btn.textContent = isPaused ? 'Resume Sales' : 'Pause Sales';
+                                            btn.disabled = false;
+                                        }
+                                    } catch (err) {
+                                        alert('Network error.');
+                                        btn.disabled = false;
+                                    }
+                                });
+                            }
 
                             // Wire up delete button
                             const productId = p.id;
@@ -4109,13 +4445,13 @@
                         <div class="frame-scrim-bottom">
                             <div class="frame-content-layer">
                                 <div class="frame-artisan-header">
-                                    <div class="frame-artisan-avatar">${reel.artisan_avatar || 'A'}</div>
+                                    <div class="frame-artisan-avatar">${escapeHTML(reel.artisan_avatar || 'A')}</div>
                                     <div class="frame-artisan-details">
-                                        <div class="frame-artisan-name">${reel.artisan_name || 'Master Artisan'}</div>
+                                        <div class="frame-artisan-name">${escapeHTML(reel.artisan_name || 'Master Artisan')}</div>
                                         <div class="frame-craft-badge">
                                             <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
-                                            <span>${reel.craft_type || 'Craft'}</span>
-                                            ${reel.artisan_region ? `<span style="opacity: 0.7;">• ${reel.artisan_region}</span>` : ''}
+                                            <span>${escapeHTML(reel.craft_type || 'Craft')}</span>
+                                            ${reel.artisan_region ? `<span style="opacity: 0.7;">• ${escapeHTML(reel.artisan_region)}</span>` : ''}
                                         </div>
                                     </div>
                                 </div>
@@ -4973,8 +5309,12 @@
         function updateWishlistBadges(count) {
             const badge = document.getElementById('wishlist-count-badge');
             const homeBadge = document.getElementById('home-wishlist-count-badge');
+            const mobileDot = document.getElementById('mobile-wishlist-dot');
             if (badge) badge.textContent = `${count} saved`;
             if (homeBadge) homeBadge.textContent = `${count} items`;
+            if (mobileDot) {
+                mobileDot.style.display = count > 0 ? 'block' : 'none';
+            }
         }
 
         function renderWishlistHeartBtn(productId) {
@@ -5464,7 +5804,7 @@
             
             uniqueCategories.forEach(cat => {
                 const isActive = window._activeBuyerCategory && window._activeBuyerCategory.toLowerCase() === cat.toLowerCase();
-                html += `<button type="button" class="category-pill ${isActive ? 'active' : ''}" data-category="${cat}">${cat}</button>`;
+                html += `<button type="button" class="category-pill ${isActive ? 'active' : ''}" data-category="${escapeHTML(cat)}">${escapeHTML(cat)}</button>`;
             });
 
             pillsContainer.innerHTML = html;
@@ -5876,7 +6216,7 @@
             let html = `<button type="button" class="category-pill premium-pill ${(!window._dedicatedSearchCategory || window._dedicatedSearchCategory === 'all') ? 'active' : ''}" data-category="all">All</button>`;
             uniqueCategories.forEach(cat => {
                 const isActive = window._dedicatedSearchCategory && window._dedicatedSearchCategory.toLowerCase() === cat.toLowerCase();
-                html += `<button type="button" class="category-pill premium-pill ${isActive ? 'active' : ''}" data-category="${cat}">${cat}</button>`;
+                html += `<button type="button" class="category-pill premium-pill ${isActive ? 'active' : ''}" data-category="${escapeHTML(cat)}">${escapeHTML(cat)}</button>`;
             });
 
             pillsContainer.innerHTML = html;
@@ -6705,6 +7045,9 @@
                 else dSearchTrigger.classList.remove('active');
             }
             updateDesktopNavIndicator();
+            if (typeof renderDesktopSubNavbar === 'function') {
+                renderDesktopSubNavbar();
+            }
             sessionStorage.setItem('anantah_active_tab', tab);
             if (window.history && currentUser) {
                 if (window.location.hash !== '#' + tab) {
@@ -7450,7 +7793,7 @@
                 if (placeholder) placeholder.style.display = 'block';
                 if (btnStart) btnStart.style.display = 'inline-flex';
                 if (btnStop) btnStop.style.display = 'none';
-                showVerifyStatus('error', `Unable to access camera (${err.message || 'Permission denied'}). Please allow camera access or use the "Upload QR" option.`);
+                showVerifyStatus('error', `Unable to access camera (${escapeHTML(err.message || 'Permission denied')}). Please allow camera access or use the "Upload QR" option.`);
             }
         }
 
@@ -7684,8 +8027,415 @@
         </div>
     </div>
 
+    <!-- Artisan Listing Edit Modal -->
+    <div id="artisan-edit-listing-modal" class="modal-overlay" onclick="if(event.target === this) closeEditListingModal();" style="display: none; z-index: 9999;">
+        <div class="modal-card" style="max-width: 500px; max-height: 90vh; overflow-y: auto; padding: 28px; border-radius: 24px; position: relative;">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+                <h3 class="brand-font" style="margin: 0; font-size: 20px; color: var(--text-primary);">Edit Listing</h3>
+                <button type="button" onclick="closeEditListingModal()" style="padding: 6px; border: none; background: transparent; cursor: pointer; color: var(--text-secondary); border-radius: 50%; display: flex; align-items: center; justify-content: center;">
+                    <svg width="22" height="22" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+                </button>
+            </div>
+            
+            <form id="artisan-edit-listing-form" onsubmit="handleEditListingSubmit(event)">
+                <input type="hidden" id="edit-listing-id">
+                
+                <div style="display: flex; gap: 16px; align-items: center; margin-bottom: 20px; background: var(--bg-cream); padding: 12px; border-radius: 12px;">
+                    <img id="edit-listing-image-preview" src="" alt="Listing" style="width: 64px; height: 64px; border-radius: 8px; object-fit: cover; background: #eee;">
+                    <div>
+                        <div id="edit-listing-id-display" style="font-size: 13px; color: var(--text-primary); font-weight: 700;">Listing #--</div>
+                        <div id="edit-listing-status-badge" style="display: inline-block; font-size: 11px; font-weight: 700; padding: 2px 8px; border-radius: 8px; margin-top: 4px;">Live</div>
+                    </div>
+                </div>
+
+                <div class="form-group" style="margin-bottom: 16px;">
+                    <label style="display: flex; justify-content: space-between; font-size: 13px; color: var(--text-secondary); margin-bottom: 4px;">
+                        <span>Product Title (English) <span style="color: var(--danger-color);">*</span></span>
+                        <span id="edit-listing-title-counter" style="font-size: 11px;">0/200</span>
+                    </label>
+                    <input type="text" id="edit-listing-title-en" class="form-input" required maxlength="200" style="width: 100%; border-radius: 12px;" oninput="document.getElementById('edit-listing-title-counter').textContent = this.value.length + '/200'">
+                </div>
+
+                <div class="form-group" style="margin-bottom: 16px;">
+                    <label style="display: flex; justify-content: space-between; font-size: 13px; color: var(--text-secondary); margin-bottom: 4px;">
+                        <span>Product Title (Regional / Hindi)</span>
+                        <span id="edit-listing-title-hi-counter" style="font-size: 11px;">0/200</span>
+                    </label>
+                    <input type="text" id="edit-listing-title-hi" class="form-input devanagari" maxlength="200" style="width: 100%; border-radius: 12px;" oninput="document.getElementById('edit-listing-title-hi-counter').textContent = this.value.length + '/200'">
+                </div>
+
+                <div class="form-group" style="margin-bottom: 16px;">
+                    <label style="font-size: 13px; color: var(--text-secondary); margin-bottom: 4px; display: block;">Price (₹ INR) <span style="color: var(--danger-color);">*</span></label>
+                    <input type="number" id="edit-listing-price" class="form-input" step="0.01" min="0.01" required style="width: 100%; border-radius: 12px;">
+                </div>
+
+                <div class="form-group" style="margin-bottom: 16px;">
+                    <label style="font-size: 13px; color: var(--text-secondary); margin-bottom: 4px; display: block;">Description (English)</label>
+                    <textarea id="edit-listing-desc-en" class="form-input" rows="3" style="width: 100%; border-radius: 12px; resize: vertical; min-height: 80px;"></textarea>
+                </div>
+
+                <div class="form-group" style="margin-bottom: 24px;">
+                    <label style="font-size: 13px; color: var(--text-secondary); margin-bottom: 4px; display: block;">Description (Regional / Hindi)</label>
+                    <textarea id="edit-listing-desc-hi" class="form-input devanagari" rows="3" style="width: 100%; border-radius: 12px; resize: vertical; min-height: 80px;"></textarea>
+                </div>
+
+                <div id="edit-listing-error" class="error-message" style="display: none; margin-bottom: 16px; text-align: center; color: var(--danger-color);"></div>
+
+                <div style="display: flex; gap: 12px;">
+                    <button type="button" class="btn btn-secondary" onclick="closeEditListingModal()" style="flex: 1; border-radius: 12px; height: 46px;">Cancel</button>
+                    <button type="submit" id="edit-listing-submit" class="btn btn-primary" style="flex: 2; border-radius: 12px; height: 46px;">Save Changes</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Artisan Profile Edit Modal -->
+    <div id="artisan-profile-modal" class="modal-overlay" onclick="if(event.target === this) closeArtisanProfileModal();" style="display: none; z-index: 9999;">
+        <div class="modal-card" style="max-width: 440px; padding: 28px; border-radius: 24px; position: relative;">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+                <h3 class="brand-font" style="margin: 0; font-size: 20px; color: var(--text-primary);">Edit Profile</h3>
+                <button type="button" onclick="closeArtisanProfileModal()" style="padding: 6px; border: none; background: transparent; cursor: pointer; color: var(--text-secondary); border-radius: 50%; display: flex; align-items: center; justify-content: center;">
+                    <svg width="22" height="22" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+                </button>
+            </div>
+            <form id="artisan-profile-form" onsubmit="handleArtisanProfileSubmit(event)">
+                <div style="text-align: center; margin-bottom: 20px;">
+                    <div id="artisan-profile-photo-preview" style="width: 80px; height: 80px; border-radius: 50%; background: var(--border-color); margin: 0 auto 10px; overflow: hidden; display: flex; align-items: center; justify-content: center; font-size: 32px; color: #fff;">
+                        A
+                    </div>
+                    <label for="artisan-profile-photo" style="cursor: pointer; color: var(--primary-color); font-size: 14px; font-weight: 500;">Change Photo</label>
+                    <input type="file" id="artisan-profile-photo" accept="image/*" style="display: none;" onchange="previewArtisanProfilePhoto(event)">
+                </div>
+                <div class="form-group" style="margin-bottom: 16px;">
+                    <label for="artisan-profile-first-name" style="font-size: 13px; color: var(--text-secondary); margin-bottom: 4px; display: block;">First Name</label>
+                    <input type="text" id="artisan-profile-first-name" class="form-input" style="width: 100%; border-radius: 12px;">
+                </div>
+                <div class="form-group" style="margin-bottom: 16px;">
+                    <label for="artisan-profile-last-name" style="font-size: 13px; color: var(--text-secondary); margin-bottom: 4px; display: block;">Last Name</label>
+                    <input type="text" id="artisan-profile-last-name" class="form-input" style="width: 100%; border-radius: 12px;">
+                </div>
+                <div class="form-group" style="margin-bottom: 16px;">
+                    <label for="artisan-profile-title" style="font-size: 13px; color: var(--text-secondary); margin-bottom: 4px; display: block;">Title</label>
+                    <input type="text" id="artisan-profile-title" class="form-input" placeholder="e.g. Master Weaver" style="width: 100%; border-radius: 12px;">
+                </div>
+                <div class="form-group" style="margin-bottom: 24px;">
+                    <label for="artisan-profile-bio" style="font-size: 13px; color: var(--text-secondary); margin-bottom: 4px; display: block;">About / Description</label>
+                    <textarea id="artisan-profile-bio" class="form-input" rows="3" style="width: 100%; border-radius: 12px; resize: vertical; min-height: 80px;"></textarea>
+                </div>
+                <div id="artisan-profile-error" class="error-message" style="display: none; margin-bottom: 16px; text-align: center;"></div>
+                <button type="submit" id="artisan-profile-submit" class="btn btn-primary" style="width: 100%; border-radius: 12px; height: 48px;">Save Changes</button>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        function openEditListingModal(product) {
+            if (!product) return;
+            document.getElementById('edit-listing-id').value = product.id;
+            document.getElementById('edit-listing-id-display').textContent = `Listing #${product.id}`;
+            
+            const badge = document.getElementById('edit-listing-status-badge');
+            if (product.status === 'live') {
+                if (product.sales_paused) {
+                    badge.textContent = 'Sales Paused';
+                    badge.style.background = '#fff3e0';
+                    badge.style.color = '#ff9800';
+                } else {
+                    badge.textContent = 'Live';
+                    badge.style.background = '#e8f5e9';
+                    badge.style.color = '#2e7d32';
+                }
+            } else {
+                badge.textContent = 'Draft';
+                badge.style.background = 'var(--border-color)';
+                badge.style.color = 'var(--text-secondary)';
+            }
+
+            const imgPreview = document.getElementById('edit-listing-image-preview');
+            imgPreview.src = getMediaUrl(product.refined_image_url || product.raw_image_url);
+
+            const titleEn = document.getElementById('edit-listing-title-en');
+            titleEn.value = product.title_en || '';
+            document.getElementById('edit-listing-title-counter').textContent = (product.title_en || '').length + '/200';
+
+            const titleHi = document.getElementById('edit-listing-title-hi');
+            titleHi.value = product.title_hi || '';
+            document.getElementById('edit-listing-title-hi-counter').textContent = (product.title_hi || '').length + '/200';
+
+            document.getElementById('edit-listing-price').value = parseFloat(product.price || 0).toFixed(2);
+            document.getElementById('edit-listing-desc-en').value = product.description_en || '';
+            document.getElementById('edit-listing-desc-hi').value = product.description_hi || '';
+
+            const errDiv = document.getElementById('edit-listing-error');
+            errDiv.style.display = 'none';
+
+            const modal = document.getElementById('artisan-edit-listing-modal');
+            if (modal) {
+                modal.style.display = 'flex';
+                modal.offsetHeight;
+                modal.classList.add('show');
+            }
+        }
+
+        function closeEditListingModal() {
+            const modal = document.getElementById('artisan-edit-listing-modal');
+            if (modal) {
+                modal.classList.remove('show');
+                setTimeout(() => {
+                    modal.style.display = 'none';
+                }, 200);
+            }
+        }
+
+        async function handleEditListingSubmit(e) {
+            e.preventDefault();
+            const btn = document.getElementById('edit-listing-submit');
+            const errDiv = document.getElementById('edit-listing-error');
+            const productId = document.getElementById('edit-listing-id').value;
+
+            btn.textContent = 'Saving...';
+            btn.disabled = true;
+            errDiv.style.display = 'none';
+
+            const payload = {
+                title_en: document.getElementById('edit-listing-title-en').value,
+                title_hi: document.getElementById('edit-listing-title-hi').value,
+                price: document.getElementById('edit-listing-price').value,
+                description_en: document.getElementById('edit-listing-desc-en').value,
+                description_hi: document.getElementById('edit-listing-desc-hi').value
+            };
+
+            try {
+                const res = await customFetch(`${CONFIG.API_BASE_URL}/listings/${productId}/confirm-catalog/`, {
+                    method: 'PATCH',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${accessToken}`
+                    },
+                    body: JSON.stringify(payload)
+                });
+
+                if (res.ok) {
+                    closeEditListingModal();
+                    if (typeof showToastAlert === 'function') showToastAlert('Listing updated successfully', 'success');
+                    loadArtisanProducts();
+                } else {
+                    const data = await res.json();
+                    errDiv.textContent = data.detail || 'Failed to update listing.';
+                    errDiv.style.display = 'block';
+                }
+            } catch (err) {
+                errDiv.textContent = 'Network error. Please try again.';
+                errDiv.style.display = 'block';
+            } finally {
+                btn.textContent = 'Save Changes';
+                btn.disabled = false;
+            }
+        }
+
+        function openArtisanProfileModal() {
+            if (!currentUser || currentUser.role !== 'artisan') {
+                console.warn("User is not an artisan or not logged in", currentUser);
+                return;
+            }
+            const profile = currentUser.profile || {};
+            
+            const fName = document.getElementById('artisan-profile-first-name');
+            const lName = document.getElementById('artisan-profile-last-name');
+            const titleEl = document.getElementById('artisan-profile-title');
+            const bioEl = document.getElementById('artisan-profile-bio');
+
+            if (fName) fName.value = currentUser.first_name || profile.first_name || '';
+            if (lName) lName.value = currentUser.last_name || profile.last_name || '';
+            if (titleEl) titleEl.value = profile.craft_type || currentUser.craft_type || '';
+            if (bioEl) bioEl.value = profile.bio || '';
+            
+            const preview = document.getElementById('artisan-profile-photo-preview');
+            if (preview) {
+                if (profile.profile_photo) {
+                    preview.innerHTML = '<img src="' + getMediaUrl(profile.profile_photo) + '" style="width: 100%; height: 100%; object-fit: cover;">';
+                } else {
+                    const displayName = profile.name || currentUser.first_name || currentUser.username || 'A';
+                    preview.innerHTML = displayName[0].toUpperCase();
+                    preview.style.backgroundColor = 'var(--primary-color)';
+                }
+            }
+            
+            const errDiv = document.getElementById('artisan-profile-error');
+            if (errDiv) errDiv.style.display = 'none';
+            
+            const modal = document.getElementById('artisan-profile-modal');
+            if (modal) {
+                modal.style.display = 'flex';
+                modal.offsetHeight;
+                modal.classList.add('show');
+            }
+        }
+
+        function closeArtisanProfileModal() {
+            const modal = document.getElementById('artisan-profile-modal');
+            if (modal) {
+                modal.classList.remove('show');
+                setTimeout(() => {
+                    modal.style.display = 'none';
+                }, 200);
+            }
+        }
+
+        function previewArtisanProfilePhoto(e) {
+            const file = e.target.files[0];
+            if (file) {
+                if (!file.type.startsWith('image/')) {
+                    alert('Please select a valid image file.');
+                    e.target.value = '';
+                    return;
+                }
+                const reader = new FileReader();
+                reader.onload = function(evt) {
+                    document.getElementById('artisan-profile-photo-preview').innerHTML = '<img src="' + evt.target.result + '" style="width: 100%; height: 100%; object-fit: cover;">';
+                }
+                reader.readAsDataURL(file);
+            }
+        }
+
+        async function handleArtisanProfileSubmit(e) {
+            e.preventDefault();
+            const btn = document.getElementById('artisan-profile-submit');
+            const errDiv = document.getElementById('artisan-profile-error');
+            
+            btn.textContent = 'Saving...';
+            btn.disabled = true;
+            errDiv.style.display = 'none';
+            
+            const formData = new FormData();
+            formData.append('first_name', document.getElementById('artisan-profile-first-name').value);
+            formData.append('last_name', document.getElementById('artisan-profile-last-name').value);
+            formData.append('craft_type', document.getElementById('artisan-profile-title').value);
+            formData.append('bio', document.getElementById('artisan-profile-bio').value);
+            
+            const photoFile = document.getElementById('artisan-profile-photo').files[0];
+            if (photoFile) {
+                formData.append('profile_photo', photoFile);
+            }
+
+            try {
+                const res = await customFetch(CONFIG.API_BASE_URL + '/accounts/profile/', {
+                    method: 'PATCH',
+                    body: formData
+                });
+                
+                if (res.ok) {
+                    const updatedProfile = await res.json();
+                    currentUser.profile = updatedProfile;
+                    currentUser.first_name = updatedProfile.first_name;
+                    currentUser.last_name = updatedProfile.last_name;
+                    currentUser.craft_type = updatedProfile.craft_type;
+                    
+                    // Update global UI
+                    const name = updatedProfile.name || `${currentUser.first_name || ''} ${currentUser.last_name || ''}`.trim() || currentUser.username;
+                    const init = name[0].toUpperCase();
+                    
+                    const elName = document.getElementById('artisan-account-name');
+                    if (elName) elName.textContent = name;
+                    
+                    const elTitle = document.getElementById('artisan-account-craft');
+                    if (elTitle) elTitle.textContent = updatedProfile.craft_type || 'Master Craftsperson';
+                    
+                    const avatars = [document.getElementById('sheet-user-avatar'), document.getElementById('artisan-account-avatar')];
+                    avatars.forEach(av => {
+                        if (av) {
+                            if (updatedProfile.profile_photo) {
+                                av.innerHTML = '<img src="' + getMediaUrl(updatedProfile.profile_photo) + '" style="width: 100%; height: 100%; object-fit: cover; border-radius: 50%;">';
+                            } else {
+                                av.textContent = init;
+                            }
+                        }
+                    });
+                    
+                    closeArtisanProfileModal();
+                    if (typeof showToastAlert === 'function') showToastAlert('Profile updated successfully', 'success');
+                } else {
+                    const data = await res.json();
+                    errDiv.textContent = data.detail || 'Failed to update profile.';
+                    errDiv.style.display = 'block';
+                }
+            } catch (err) {
+                errDiv.textContent = 'Network error. Please try again.';
+                errDiv.style.display = 'block';
+            } finally {
+                btn.textContent = 'Save Changes';
+                btn.disabled = false;
+            }
+        }
+    </script>
+
+    <script>
+        let titleMediaRecorder = null;
+        let titleAudioChunks = [];
+
+        async function toggleVoiceTitleRecording() {
+            const btn = document.getElementById('btn-voice-title');
+            const input = document.getElementById('upload-title');
+            const counter = document.getElementById('upload-title-counter');
+
+            if (titleMediaRecorder && titleMediaRecorder.state === 'recording') {
+                titleMediaRecorder.stop();
+                btn.innerHTML = '<svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M12 2a3 3 0 0 0-3 3v7a3 3 0 0 0 6 0V5a3 3 0 0 0-3-3z"/><path d="M19 10v2a7 7 0 0 1-14 0v-2"/><line x1="12" y1="19" x2="12" y2="23"/><line x1="8" y1="23" x2="16" y2="23"/></svg>';
+                btn.style.color = 'var(--primary-color)';
+                input.placeholder = 'Transcribing...';
+                return;
+            }
+
+            try {
+                const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+                titleMediaRecorder = new MediaRecorder(stream);
+                titleAudioChunks = [];
+
+                titleMediaRecorder.ondataavailable = e => {
+                    if (e.data.size > 0) titleAudioChunks.push(e.data);
+                };
+
+                titleMediaRecorder.onstop = async () => {
+                    stream.getTracks().forEach(track => track.stop());
+                    const audioBlob = new Blob(titleAudioChunks, { type: 'audio/webm' });
+                    
+                    const formData = new FormData();
+                    formData.append('file', audioBlob, 'title_audio.webm');
+                    
+                    try {
+                        const res = await customFetch(CONFIG.API_BASE_URL + '/listings/transcribe/', {
+                            method: 'POST',
+                            body: formData
+                        });
+                        
+                        if (res.ok) {
+                            const data = await res.json();
+                            let transcript = data.transcript || '';
+                            if (transcript.length > 200) {
+                                transcript = transcript.substring(0, 200);
+                            }
+                            input.value = transcript;
+                            counter.textContent = input.value.length + '/200';
+                        } else {
+                            alert('Transcription failed.');
+                        }
+                    } catch (err) {
+                        alert('Network error during transcription.');
+                    } finally {
+                        input.placeholder = 'e.g. Handmade Terracotta Vase';
+                    }
+                };
+
+                titleMediaRecorder.start();
+                btn.innerHTML = '<svg width="20" height="20" fill="currentColor" viewBox="0 0 24 24"><rect x="6" y="6" width="12" height="12" rx="2"/></svg>';
+                btn.style.color = 'red';
+                input.value = '';
+                input.placeholder = 'Listening...';
+                counter.textContent = '0/200';
+            } catch (err) {
+                alert('Could not access microphone.');
+            }
+        }
+    </script>
 </body>
 </html>
-
-
-

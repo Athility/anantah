@@ -6,9 +6,17 @@ from .models import ArtisanProfile, BuyerProfile
 User = get_user_model()
 
 class ArtisanProfileSerializer(serializers.ModelSerializer):
+    name = serializers.SerializerMethodField()
+    first_name = serializers.CharField(source='user.first_name', read_only=True)
+    last_name = serializers.CharField(source='user.last_name', read_only=True)
+    
     class Meta:
         model = ArtisanProfile
-        fields = ['id', 'craft_type', 'bio', 'verified']
+        fields = ['id', 'craft_type', 'bio', 'verified', 'profile_photo', 'name', 'first_name', 'last_name']
+        
+    def get_name(self, obj):
+        full_name = f"{obj.user.first_name} {obj.user.last_name}".strip()
+        return full_name or obj.user.username
 
 class BuyerProfileSerializer(serializers.ModelSerializer):
     class Meta:
@@ -20,7 +28,7 @@ class UserSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = User
-        fields = ['id', 'username', 'email', 'phone', 'role', 'region', 'preferred_language', 'profile']
+        fields = ['id', 'username', 'email', 'phone', 'role', 'region', 'preferred_language', 'profile', 'first_name', 'last_name']
 
     def get_profile(self, obj):
         if obj.role == 'artisan':

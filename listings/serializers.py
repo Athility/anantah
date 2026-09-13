@@ -19,7 +19,7 @@ class ProductSerializer(serializers.ModelSerializer):
         fields = [
             'id', 'title_en', 'title_hi', 'description_en', 'description_hi', 
             'price', 'raw_image_url', 'refined_image_url', 'raw_audio_url', 
-            'artisan_name', 'category_name', 'status', 'created_at'
+            'artisan_name', 'category_name', 'status', 'sales_paused', 'created_at'
         ]
 
     def get_raw_image_url(self, obj):

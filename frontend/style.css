@@ -21,6 +21,7 @@
     --font-outfit: 'Outfit', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
     --font-inter: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
     --font-serif: 'Instrument Serif', 'Playfair Display', serif;
+    --font-playfair: 'Playfair Display', 'Instrument Serif', Georgia, serif;
     
     /* Emil Kowalski Animation Principles */
     --ease-out: cubic-bezier(0.23, 1, 0.32, 1);
@@ -66,9 +67,9 @@ h1, h2, h3, h4, h5, h6, .brand-font {
     justify-content: flex-start;
 }
 
-@media (max-width: 539px) {
+@media (max-width: 767px) {
     .app-wrapper {
-        padding: 12px 14px 110px 14px !important;
+        padding: 14px 16px 110px 16px !important;
     }
 }
 
@@ -1227,12 +1228,11 @@ h1, h2, h3, h4, h5, h6, .brand-font {
 
 /* Top Navigation Bar */
 .navbar {
-    background: rgba(255, 255, 255, 0.85);
-    backdrop-filter: blur(16px);
-    -webkit-backdrop-filter: blur(16px);
-    border-bottom: 1px solid var(--border-color);
-    padding: 16px 24px;
-    box-shadow: 0 1px 2px rgba(44, 27, 77, 0.02), 0 4px 12px rgba(44, 27, 77, 0.04);
+    background: rgba(255, 255, 255, 0.95);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    border-bottom: 1px solid rgba(75, 40, 109, 0.08);
+    box-shadow: 0 1px 3px rgba(44, 27, 77, 0.03), 0 8px 24px rgba(44, 27, 77, 0.04);
     position: sticky;
     top: 0;
     z-index: 1000;
@@ -1241,19 +1241,214 @@ h1, h2, h3, h4, h5, h6, .brand-font {
 .navbar-container {
     padding: 0 clamp(16px, 4vw, 48px);
     margin: 0 auto;
+    height: 68px;
     display: flex;
     justify-content: space-between;
     align-items: center;
+    position: relative;
+    max-width: 1560px;
 }
 
 .navbar-brand {
-    font-size: 20px;
-    color: var(--primary-color);
-    font-weight: 800;
-    letter-spacing: 0.5px;
-    display: flex;
+    font-size: 24px;
+    color: #1A0E30;
+    font-weight: 700;
+    font-family: 'Playfair Display', 'Cormorant Garamond', Georgia, serif;
+    display: inline-flex;
     align-items: center;
-    gap: 8px;
+    gap: 10px;
+    cursor: pointer;
+    user-select: none;
+    border-radius: 12px;
+    padding: 6px 12px;
+    margin: -6px -12px;
+    transition: background 0.2s ease, transform 0.2s ease;
+    text-decoration: none;
+}
+
+.navbar-brand .brand-logo-img,
+.navbar-brand img {
+    height: 38px;
+    width: auto;
+    object-fit: contain;
+    mix-blend-mode: multiply;
+}
+
+.brand-text-lockup {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: flex-start;
+}
+
+.brand-name {
+    font-family: 'Playfair Display', 'Cormorant Garamond', Georgia, serif;
+    font-size: 24px;
+    font-weight: 700;
+    letter-spacing: 0.4px;
+    color: #1A0E30;
+    line-height: 1.05;
+}
+
+.brand-accent-line {
+    display: block;
+    height: 1.5px;
+    width: 24px;
+    background: #C4975E;
+    margin-top: 3px;
+    border-radius: 1px;
+    opacity: 0.85;
+}
+
+.navbar-brand:hover {
+    background: rgba(75, 40, 109, 0.04);
+}
+
+.navbar-brand:active {
+    transform: scale(0.98);
+}
+
+.navbar-brand:focus-visible {
+    outline: 2px solid var(--primary-color);
+    outline-offset: 2px;
+}
+
+/* ==========================================================================
+   Mobile Navbar System (Shorter, Refined Heritage Header)
+   ========================================================================== */
+.mobile-navbar-actions {
+    display: none;
+}
+
+@media (max-width: 767px) {
+    .navbar {
+        height: 62px;
+        background: rgba(253, 251, 248, 0.94);
+        backdrop-filter: blur(16px);
+        -webkit-backdrop-filter: blur(16px);
+        border-bottom: 1px solid rgba(72, 46, 131, 0.06);
+        box-shadow: 0 2px 10px rgba(44, 27, 77, 0.025);
+        position: sticky;
+        top: 0;
+        z-index: 1000;
+    }
+
+    .navbar-container {
+        height: 62px;
+        padding: 0 18px;
+        max-width: 100%;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
+
+    /* Refined Mobile Brand Lockup with Subtle Plaque "Stage" */
+    .navbar-brand {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        padding: 5px 12px 5px 8px;
+        margin: 0;
+        background: #FFFFFF;
+        border: 1px solid rgba(197, 160, 115, 0.32); /* 1px muted antique gold/sandstone border */
+        border-radius: 12px; /* Very subtle architectural rounded corners - NOT a pill */
+        box-shadow: 0 1px 3px rgba(44, 27, 77, 0.03), 0 3px 10px rgba(197, 160, 115, 0.08); /* Extremely soft warm shadow */
+        cursor: pointer;
+        user-select: none;
+        transition: transform 0.15s ease, box-shadow 0.15s ease;
+        -webkit-tap-highlight-color: transparent;
+    }
+
+    .navbar-brand:active {
+        transform: scale(0.97);
+        box-shadow: 0 1px 2px rgba(44, 27, 77, 0.03);
+    }
+
+    .navbar-brand .brand-logo-img,
+    .navbar-brand img {
+        height: 35px; /* ~13% increase from 31px */
+        width: auto;
+        object-fit: contain;
+        vertical-align: middle;
+        mix-blend-mode: multiply;
+        filter: drop-shadow(0 2px 5px rgba(75, 40, 109, 0.12));
+    }
+
+    .navbar-brand .brand-text-lockup {
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: flex-start;
+    }
+
+    .navbar-brand .brand-name,
+    .navbar-brand span {
+        font-family: 'Playfair Display', 'Cormorant Garamond', Georgia, serif;
+        font-size: 23px; /* 22-24px target */
+        font-weight: 700;
+        letter-spacing: 0.4px;
+        color: #1A0E30; /* Deepest regal Anantah purple - highest contrast */
+        line-height: 1;
+    }
+
+    .navbar-brand .brand-accent-line {
+        display: block;
+        height: 1.5px;
+        width: 100%;
+        max-width: 58px;
+        background: #C4975E; /* Muted gold / beige heritage accent */
+        margin-top: 2.5px;
+        border-radius: 1px;
+        opacity: 0.9;
+    }
+
+    /* Compact Right-Side Action */
+    .mobile-navbar-actions {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        flex-shrink: 0;
+    }
+
+    .mobile-nav-action-btn {
+        width: 38px;
+        height: 38px;
+        border-radius: 50%;
+        background: rgba(72, 46, 131, 0.04);
+        border: 1px solid rgba(72, 46, 131, 0.08);
+        color: var(--primary-color);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        cursor: pointer;
+        padding: 0;
+        position: relative;
+        transition: background 0.18s ease, transform 0.15s ease, box-shadow 0.18s ease;
+        -webkit-tap-highlight-color: transparent;
+        box-shadow: 0 1px 3px rgba(44, 27, 77, 0.02);
+    }
+
+    .mobile-nav-action-btn:hover {
+        background: rgba(72, 46, 131, 0.08);
+        border-color: rgba(72, 46, 131, 0.14);
+    }
+
+    .mobile-nav-action-btn:active {
+        transform: scale(0.92);
+        background: rgba(72, 46, 131, 0.12);
+    }
+
+    .mobile-action-dot {
+        position: absolute;
+        top: 7px;
+        right: 7px;
+        width: 6.5px;
+        height: 6.5px;
+        border-radius: 50%;
+        background: var(--accent-gold);
+        border: 1.5px solid #FAF8F5;
+        pointer-events: none;
+    }
 }
 
 .navbar-actions {
@@ -2174,12 +2369,14 @@ h1, h2, h3, h4, h5, h6, .brand-font {
 /* ── Desktop Horizontal Nav Strip (>= 768px) ── */
 .desktop-nav-strip {
     display: none;
-    width: 100%;
-    background: var(--bg-card);
-    border-bottom: 1px solid var(--border-color);
-    box-shadow: 0 4px 15px rgba(75, 40, 109, 0.03);
+    background: transparent;
+    border: none;
+    box-shadow: none;
     position: relative;
     z-index: 99;
+    flex-shrink: 0;
+    width: auto;
+    margin-left: auto;
 }
 
 @media (min-width: 768px) {
@@ -2189,63 +2386,64 @@ h1, h2, h3, h4, h5, h6, .brand-font {
 }
 
 .desktop-nav-container {
-    padding: 0 clamp(16px, 4vw, 48px);
-    margin: 0 auto;
-    height: 56px;
-    display: flex;
+    height: 44px;
+    display: inline-flex;
     align-items: center;
-    justify-content: space-between;
-    position: relative; /* Container for absolute 0.5s sliding indicator badge */
+    position: relative;
+    background: rgba(72, 46, 131, 0.04);
+    border: 1px solid rgba(72, 46, 131, 0.08);
+    border-radius: 999px;
+    padding: 4px;
+    box-shadow: inset 0 1px 2px rgba(44, 27, 77, 0.02);
 }
 
-/* Sliding Purple Active Badge Indicator for PC Navbar */
+/* Sliding Purple/White Active Badge Indicator for PC Navbar */
 .desktop-nav-indicator {
     position: absolute;
-    top: 50%;
+    top: 4px;
     left: 0;
-    height: 38px;
-    border-radius: 20px;
-    background: var(--primary-light);
-    border: 1px solid rgba(75, 40, 109, 0.12);
-    box-shadow: 0 4px 14px rgba(75, 40, 109, 0.12);
+    height: 36px;
+    border-radius: 999px;
+    background: #FFFFFF;
+    border: 1px solid rgba(72, 46, 131, 0.06);
+    box-shadow: 0 2px 8px rgba(44, 27, 77, 0.08), 0 1px 2px rgba(44, 27, 77, 0.04);
     pointer-events: none;
     z-index: 1;
     opacity: 0;
-    transform: translateY(-50%);
-    transition: left 0.5s cubic-bezier(0.25, 1, 0.5, 1),
-                width 0.5s cubic-bezier(0.25, 1, 0.5, 1),
-                height 0.5s cubic-bezier(0.25, 1, 0.5, 1),
-                background 0.5s ease,
-                box-shadow 0.5s ease,
-                opacity 0.3s ease;
-    will-change: left, width, height, opacity;
+    transform: none;
+    transition: left 0.32s cubic-bezier(0.25, 1, 0.5, 1),
+                width 0.32s cubic-bezier(0.25, 1, 0.5, 1),
+                opacity 0.2s ease;
+    will-change: left, width, opacity;
 }
 
 .desktop-nav-list {
-    display: flex;
+    display: inline-flex;
     align-items: center;
-    justify-content: space-around;
-    width: 100%;
-    gap: 12px;
+    gap: 4px;
     list-style: none;
     position: relative;
     z-index: 2; /* Sit cleanly above sliding indicator badge */
+    margin: 0;
+    padding: 0;
+    width: auto;
 }
 
 .desktop-nav-item {
     display: inline-flex;
     align-items: center;
     justify-content: center;
-    gap: 8px;
-    padding: 8px 18px;
-    border-radius: 20px;
-    font-family: var(--font-inter);
-    font-size: 14px;
+    gap: 6px;
+    height: 36px;
+    padding: 0 16px;
+    border-radius: 999px;
+    font-family: var(--font-outfit);
+    font-size: 13.5px;
     font-weight: 500;
     color: var(--text-secondary);
     cursor: pointer;
     text-decoration: none;
-    transition: color 0.2s ease;
+    transition: color 0.18s ease;
     position: relative;
     user-select: none;
     white-space: nowrap;
@@ -2273,13 +2471,13 @@ h1, h2, h3, h4, h5, h6, .brand-font {
 .desktop-search-affordance {
     display: inline-flex;
     align-items: center;
-    gap: 9px;
-    height: 38px;
+    gap: 8px;
+    height: 36px;
     padding: 0 14px 0 12px;
-    background: rgba(72, 46, 131, 0.04);
-    border: 1px solid rgba(72, 46, 131, 0.12);
+    background: #FFFFFF;
+    border: 1px solid rgba(72, 46, 131, 0.1);
     border-radius: 999px;
-    font-family: var(--font-inter);
+    font-family: var(--font-outfit);
     font-size: 13px;
     font-weight: 500;
     color: var(--text-secondary);
@@ -2291,7 +2489,7 @@ h1, h2, h3, h4, h5, h6, .brand-font {
                 transform 160ms cubic-bezier(0.16, 1, 0.3, 1),
                 box-shadow 180ms cubic-bezier(0.16, 1, 0.3, 1),
                 color 180ms ease;
-    box-shadow: 0 2px 6px rgba(72, 46, 131, 0.02);
+    box-shadow: 0 1px 3px rgba(44, 27, 77, 0.03);
 }
 
 @media (hover: hover) and (pointer: fine) {
@@ -2501,6 +2699,186 @@ h1, h2, h3, h4, h5, h6, .brand-font {
 .dropdown-nav-link.danger:hover {
     background: #FFF5F5;
     color: var(--danger-color);
+}
+
+/* ==========================================================================
+   Desktop Contextual Sub-Navbar / Craft Discovery Band
+   ========================================================================== */
+.desktop-sub-navbar {
+    display: none;
+    width: 100%;
+    background: transparent;
+    padding-top: 18px;
+    padding-bottom: 24px;
+    position: relative;
+    z-index: 98;
+}
+
+@media (min-width: 768px) {
+    .desktop-sub-navbar.active {
+        display: block;
+    }
+}
+
+.desktop-sub-nav-container {
+    padding: 0 clamp(16px, 4vw, 48px);
+    margin: 0 auto;
+    width: 100%;
+    max-width: 1560px;
+    display: flex;
+    justify-content: center;
+}
+
+.desktop-sub-nav-links {
+    width: 100%;
+    display: flex;
+    justify-content: center;
+}
+
+/* Premium Editorial Craft Discovery Card */
+.desktop-sub-nav-card {
+    width: 100%;
+    max-width: 1400px;
+    margin: 0 auto;
+    padding: 34px 38px 36px;
+    background: linear-gradient(135deg, rgba(254, 251, 246, 0.98) 0%, rgba(248, 242, 252, 0.92) 50%, rgba(255, 252, 247, 0.98) 100%);
+    border: 1px solid rgba(72, 46, 131, 0.09);
+    border-radius: 28px;
+    box-shadow: 0 12px 36px -8px rgba(44, 27, 77, 0.05), 0 1px 3px rgba(44, 27, 77, 0.02), inset 0 1px 0 rgba(255, 255, 255, 0.9);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    position: relative;
+    overflow: hidden;
+}
+
+/* Ambient Radial Glow & Watermark Motifs */
+.desktop-sub-nav-card::before {
+    content: '';
+    position: absolute;
+    top: -40%;
+    right: -8%;
+    width: 380px;
+    height: 380px;
+    background: radial-gradient(circle, rgba(217, 106, 61, 0.08) 0%, rgba(217, 106, 61, 0.02) 50%, transparent 70%);
+    border-radius: 50%;
+    pointer-events: none;
+    z-index: 0;
+}
+
+.desktop-sub-nav-card::after {
+    content: '';
+    position: absolute;
+    bottom: -40%;
+    left: -8%;
+    width: 380px;
+    height: 380px;
+    background: radial-gradient(circle, rgba(72, 46, 131, 0.06) 0%, rgba(72, 46, 131, 0.015) 50%, transparent 70%);
+    border-radius: 50%;
+    pointer-events: none;
+    z-index: 0;
+}
+
+.context-eyebrow-pill {
+    display: inline-flex;
+    align-items: center;
+    gap: 7px;
+    padding: 5px 15px;
+    border-radius: 999px;
+    background: rgba(217, 106, 61, 0.09);
+    border: 1px solid rgba(217, 106, 61, 0.22);
+    font-family: var(--font-outfit);
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 1.8px;
+    text-transform: uppercase;
+    color: #9E4820;
+    margin-bottom: 12px;
+    position: relative;
+    z-index: 1;
+    box-shadow: 0 1px 3px rgba(217, 106, 61, 0.05);
+}
+
+.context-title {
+    font-family: var(--font-serif);
+    font-size: 38px;
+    font-weight: 400;
+    color: var(--primary-color);
+    line-height: 1.18;
+    letter-spacing: -0.4px;
+    margin: 0 0 8px 0;
+    position: relative;
+    z-index: 1;
+}
+
+.context-title em {
+    font-style: italic;
+    color: var(--accent-gold);
+}
+
+.context-subtitle {
+    font-family: var(--font-outfit);
+    font-size: 14px;
+    color: var(--text-secondary);
+    max-width: 560px;
+    line-height: 1.5;
+    margin: 0 0 22px 0;
+    position: relative;
+    z-index: 1;
+}
+
+/* Interactive Craft Category Pills */
+.context-craft-pills {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    flex-wrap: wrap;
+    position: relative;
+    z-index: 2;
+}
+
+.context-craft-pill {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 9px 18px;
+    border-radius: 999px;
+    background: #FFFFFF;
+    border: 1px solid rgba(72, 46, 131, 0.1);
+    font-family: var(--font-outfit);
+    font-size: 13.5px;
+    font-weight: 600;
+    color: #2C1B4D;
+    cursor: pointer;
+    text-decoration: none;
+    box-shadow: 0 2px 6px rgba(44, 27, 77, 0.03);
+    transition: all 0.22s cubic-bezier(0.2, 0, 0, 1);
+    user-select: none;
+}
+
+.context-craft-pill .pill-icon {
+    font-size: 15px;
+    line-height: 1;
+}
+
+.context-craft-pill:hover {
+    transform: translateY(-2px);
+    border-color: var(--primary-color);
+    color: var(--primary-color);
+    box-shadow: 0 6px 18px rgba(44, 27, 77, 0.09);
+}
+
+.context-craft-pill:active {
+    transform: scale(0.97);
+}
+
+.context-craft-pill.active {
+    background: var(--primary-color);
+    color: #FFFFFF;
+    border-color: var(--primary-color);
+    box-shadow: 0 4px 14px rgba(44, 27, 77, 0.2);
 }
 
 
@@ -3816,15 +4194,28 @@ h1, h2, h3, h4, h5, h6, .brand-font {
 /* 5. Responsive Styles */
 @media (max-width: 768px) {
     .buyer-hero {
-        padding: 22px 18px;
-        border-radius: 20px;
-        margin-bottom: 20px;
+        padding: 24px 20px 22px;
+        border-radius: 22px;
+        margin-top: 0;
+        margin-bottom: 22px;
+        background: linear-gradient(135deg, rgba(255, 255, 255, 0.84) 0%, rgba(247, 241, 252, 0.65) 100%);
+        border: 1px solid rgba(72, 46, 131, 0.08);
+        box-shadow: 0 4px 18px -4px rgba(44, 27, 77, 0.035), 0 1px 2px rgba(44, 27, 77, 0.02);
     }
     .buyer-hero-title {
-        font-size: 22px;
+        font-family: var(--font-serif);
+        font-size: 25px;
+        font-weight: 400;
+        line-height: 1.18;
+        letter-spacing: -0.3px;
+        color: var(--primary-color);
+        margin-bottom: 8px;
     }
     .buyer-hero-subtitle {
-        font-size: 13px;
+        font-family: var(--font-outfit);
+        font-size: 13.5px;
+        line-height: 1.5;
+        color: var(--text-secondary);
         margin-bottom: 0;
     }
     .search-input-box input {
@@ -4577,11 +4968,11 @@ h1, h2, h3, h4, h5, h6, .brand-font {
 }
 
 /* ==========================================================================
-   Desktop-Only Site Footer System (Amazon-Inspired Layout, Anantah Theme)
+   Site Footer System (Anantah Theme, Responsive Desktop & Mobile)
    ========================================================================== */
 
 .desktop-site-footer {
-    display: none;
+    display: block;
     width: 100%;
     margin-top: auto;
     background: #1C1033;
@@ -4592,15 +4983,9 @@ h1, h2, h3, h4, h5, h6, .brand-font {
     box-shadow: 0 -4px 20px rgba(28, 16, 51, 0.08);
 }
 
-@media (min-width: 768px) {
-    .desktop-site-footer {
-        display: block;
-    }
-}
-
 @media (max-width: 767px) {
     .desktop-site-footer {
-        display: none !important;
+        padding-bottom: 96px; /* Clearance for floating mobile bottom navigation */
     }
 }
 
@@ -4649,21 +5034,90 @@ h1, h2, h3, h4, h5, h6, .brand-font {
     transform: translateY(-2px);
 }
 
-/* Part 2: 4-Column Responsive Grid */
+/* Part 2: Main Layout (Left: Nav Links, Right: Brand & Language Selector) */
 .footer-main-container {
-    max-width: 1200px;
+    max-width: 1280px;
     margin: 0 auto;
     padding: 48px 28px 40px;
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    gap: 48px;
+}
+
+.footer-nav-section {
+    flex: 1;
     display: grid;
     grid-template-columns: repeat(4, minmax(0, 1fr));
-    gap: 36px;
+    gap: 32px;
+}
+
+.footer-brand-aside {
+    width: 290px;
+    flex-shrink: 0;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    text-align: right;
+    gap: 16px;
+}
+
+.footer-brand-tagline {
+    font-size: 12.5px;
+    line-height: 1.55;
+    color: #A99BBF;
+    margin: 0;
+    max-width: 280px;
 }
 
 @media (max-width: 1024px) {
     .footer-main-container {
+        flex-direction: column;
+        gap: 36px;
+        padding: 40px 24px 32px;
+    }
+    .footer-nav-section {
+        width: 100%;
         grid-template-columns: repeat(2, minmax(0, 1fr));
-        gap: 32px 28px;
-        padding: 36px 24px 32px;
+        gap: 28px;
+    }
+    .footer-brand-aside {
+        width: 100%;
+        align-items: flex-start;
+        text-align: left;
+        padding-top: 24px;
+        border-top: 1px solid rgba(255, 255, 255, 0.08);
+    }
+    .footer-brand-tagline {
+        max-width: 100%;
+    }
+}
+
+@media (max-width: 767px) {
+    .footer-main-container {
+        padding: 32px 18px 24px;
+        gap: 28px;
+    }
+    .footer-nav-section {
+        grid-template-columns: 1fr;
+        gap: 24px;
+    }
+    .footer-brand-aside {
+        padding-top: 20px;
+        gap: 14px;
+    }
+    .footer-locale-picker {
+        width: 100%;
+        justify-content: space-between;
+        min-height: 44px;
+    }
+    .footer-bottom-container {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 12px;
+    }
+    .footer-legal-links {
+        gap: 14px;
     }
 }
 
@@ -4752,31 +5206,6 @@ h1, h2, h3, h4, h5, h6, .brand-font {
     margin-left: 6px;
 }
 
-/* Part 3: Logo + Locale Bar */
-.footer-divider {
-    border: none;
-    border-top: 1px solid rgba(255, 255, 255, 0.08);
-    margin: 0;
-    width: 100%;
-}
-
-.footer-middle-bar {
-    background: #160D29;
-    border-top: 1px solid rgba(255, 255, 255, 0.06);
-    border-bottom: 1px solid rgba(255, 255, 255, 0.06);
-    padding: 24px 28px;
-}
-
-.footer-middle-container {
-    max-width: 1200px;
-    margin: 0 auto;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 36px;
-    flex-wrap: wrap;
-}
-
 .footer-brand-lockup {
     display: inline-flex;
     align-items: center;
@@ -4826,7 +5255,7 @@ h1, h2, h3, h4, h5, h6, .brand-font {
     background: rgba(255, 255, 255, 0.07);
     border: 1px solid rgba(255, 255, 255, 0.16);
     border-radius: 24px;
-    padding: 6px 16px;
+    padding: 7px 16px;
     color: #FFFFFF;
     transition: background 0.2s ease, border-color 0.2s ease, box-shadow 0.2s ease;
 }
