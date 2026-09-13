@@ -168,7 +168,7 @@ USE_TZ = True
 STATIC_URL = '/static/'
 STATICFILES_DIRS = [
     BASE_DIR / 'static',
-]
+] if (BASE_DIR / 'static').exists() else []
 STATIC_ROOT = BASE_DIR / 'staticfiles'
 
 # Media files setup (for raw and refined artisan images)
@@ -262,20 +262,33 @@ SIMPLE_JWT = {
     'USER_ID_CLAIM': 'user_id',
 }
 
-# CORS Configuration
+# CORS & CSRF Configuration
+LOCAL_DEV_ORIGINS = [
+    'http://localhost:3000',
+    'http://127.0.0.1:3000',
+    'http://localhost:5500',
+    'http://127.0.0.1:5500',
+    'http://localhost:8000',
+    'http://127.0.0.1:8000',
+    'http://localhost:8088',
+    'http://127.0.0.1:8088',
+    'http://localhost:5173',
+    'http://127.0.0.1:5173',
+]
+
 CORS_ALLOWED_ORIGINS_CONFIG = config('CORS_ALLOWED_ORIGINS', default='')
 if CORS_ALLOWED_ORIGINS_CONFIG:
-    CORS_ALLOWED_ORIGINS = [o.strip() for o in CORS_ALLOWED_ORIGINS_CONFIG.split(',') if o.strip()]
+    configured = [o.strip() for o in CORS_ALLOWED_ORIGINS_CONFIG.split(',') if o.strip()]
+    CORS_ALLOWED_ORIGINS = list(dict.fromkeys(configured + LOCAL_DEV_ORIGINS))
     CORS_ALLOW_ALL_ORIGINS = False
 elif DEBUG:
     CORS_ALLOW_ALL_ORIGINS = True
 else:
     CORS_ALLOW_ALL_ORIGINS = False
-    CORS_ALLOWED_ORIGINS = [
-        'http://localhost:3000',
-        'http://127.0.0.1:3000',
+    CORS_ALLOWED_ORIGINS = list(dict.fromkeys(LOCAL_DEV_ORIGINS + [
         'https://anantah.vercel.app',
-    ]
+        'https://anantah-lac.vercel.app',
+    ]))
 
 # Proxy / SSL Headers Configuration (for Cloudflare Tunnel / Reverse Proxies)
 SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
@@ -285,16 +298,14 @@ USE_X_FORWARDED_PORT = True
 # CSRF Configuration
 CSRF_TRUSTED_ORIGINS_CONFIG = config('CSRF_TRUSTED_ORIGINS', default='')
 if CSRF_TRUSTED_ORIGINS_CONFIG:
-    CSRF_TRUSTED_ORIGINS = [o.strip() for o in CSRF_TRUSTED_ORIGINS_CONFIG.split(',') if o.strip()]
+    configured_csrf = [o.strip() for o in CSRF_TRUSTED_ORIGINS_CONFIG.split(',') if o.strip()]
+    CSRF_TRUSTED_ORIGINS = list(dict.fromkeys(configured_csrf + LOCAL_DEV_ORIGINS))
 else:
-    CSRF_TRUSTED_ORIGINS = [
-        'http://localhost:3000',
-        'http://127.0.0.1:3000',
-        'http://localhost:8000',
-        'http://127.0.0.1:8000',
+    CSRF_TRUSTED_ORIGINS = list(dict.fromkeys(LOCAL_DEV_ORIGINS + [
         'https://*.trycloudflare.com',
         'https://anantah.vercel.app',
-    ]
+        'https://anantah-lac.vercel.app',
+    ]))
 
 if not DEBUG:
     # Django Security Headers (Production)

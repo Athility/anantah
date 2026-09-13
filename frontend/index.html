@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="backend-url" content="https://longer-valium-robert-aluminium.trycloudflare.com">
+    <meta name="backend-url" content="">
     <title>Anantah - AI Marketplace for Artisans</title>
     <!-- Favicon -->
     <link rel="icon" type="image/png" href="favicon.png">
@@ -13,7 +13,7 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&family=Instrument+Serif:ital@0;1&family=Inter:wght@400;500;600;700&family=Playfair+Display:ital,wght@0,400..900;1,400..900&family=Poppins:ital,wght@0,100..900;1,100..900&display=swap" rel="stylesheet">
     <!-- Main Style -->
-    <link rel="stylesheet" href="style.css?v=6">
+    <link rel="stylesheet" href="style.css?v=11">
     <!-- Sentry Error Monitoring & PostHog Analytics SDKs (Placeholders) -->
     <script src="https://browser.sentry-cdn.com/7.100.0/bundle.min.js" crossorigin="anonymous"></script>
     <!-- QR Code Scanning & Decoding Libraries -->
@@ -36,21 +36,30 @@
     <!-- Header Navbar (Visible only when logged in) -->
     <header class="navbar" id="app-navbar" style="display: none;">
         <div class="navbar-container">
-            <div class="navbar-brand" style="display: flex; align-items: center; gap: 10px;">
-                <img src="anantah_logo.png" alt="Anantah Logo" style="height: 36px; width: auto; object-fit: contain; vertical-align: middle;">
+            <div class="navbar-brand" id="mobile-brand-trigger" role="button" tabindex="0" onclick="handleNavbarBrandClick(event)" onkeydown="if(event.key==='Enter'||event.key===' ')handleNavbarBrandClick(event)">
+                <img src="anantah_logo.png" alt="Anantah Logo">
                 <span>Anantah</span>
             </div>
+            
+            <!-- Desktop Horizontal Secondary Nav Strip (Visible on Desktop >=768px when logged in) -->
+            <nav class="desktop-nav-strip" id="desktop-nav-strip">
+                <div class="desktop-nav-container">
+                    <!-- Sliding Purple Active Badge Indicator -->
+                    <div class="desktop-nav-indicator" id="desktop-nav-indicator"></div>
+                    <ul class="desktop-nav-list" id="desktop-nav-list">
+                        <!-- Dynamically populated based on role -->
+                    </ul>
+                </div>
+            </nav>
         </div>
     </header>
 
-    <!-- Desktop Horizontal Secondary Nav Strip (Visible on Desktop >=768px when logged in) -->
-    <nav class="desktop-nav-strip" id="desktop-nav-strip">
-        <div class="desktop-nav-container">
-            <!-- Sliding Purple Active Badge Indicator -->
-            <div class="desktop-nav-indicator" id="desktop-nav-indicator"></div>
-            <ul class="desktop-nav-list" id="desktop-nav-list">
-                <!-- Dynamically populated based on role -->
-            </ul>
+    <!-- Desktop Contextual Sub-Navbar (Visible on Desktop >=768px when logged in) -->
+    <nav class="desktop-sub-navbar" id="desktop-sub-navbar" aria-label="Secondary contextual navigation">
+        <div class="desktop-sub-nav-container">
+            <div class="desktop-sub-nav-links" id="desktop-sub-nav-links">
+                <!-- Dynamically populated based on active screen and section -->
+            </div>
         </div>
     </nav>
 
@@ -377,7 +386,7 @@
         </section>
 
         <!-- 6. ARTISAN DASHBOARD SCREEN -->
-        <section id="screen-artisan-dashboard" class="screen" style="padding-top: 24px;">
+        <section id="screen-artisan-dashboard" class="screen">
             <div class="dashboard-header" style="margin-bottom: 16px;">
                 <div class="dashboard-title">
                     <h2>Artisan Studio</h2>
@@ -1015,7 +1024,7 @@
         </section>
 
         <!-- 7. BUYER DASHBOARD SCREEN -->
-        <section id="screen-buyer-dashboard" class="screen" style="padding-top: 24px;">
+        <section id="screen-buyer-dashboard" class="screen">
             <!-- TAB: Shop -->
             <div id="buyer-view-shop">
                 <!-- 1. Editorial Hero & Discovery Section -->
@@ -1645,76 +1654,76 @@
             </button>
         </div>
 
-        <!-- Part 2: 4-Column Responsive Grid -->
+        <!-- Part 2: Main Layout (Left: Navigation Links, Right: Brand & Language Wing) -->
         <div class="footer-main-container">
-            <!-- Column 1: Get to Know Us -->
-            <div class="footer-column">
-                <h4 class="footer-col-title">Get to Know Us</h4>
-                <ul class="footer-links-list">
-                    <li class="footer-link-item">
-                        <a href="#about" class="footer-link" onclick="navigateTo('about'); return false;">About Anantah</a>
-                    </li>
-                    <li class="footer-link-item">
-                        <a href="#about-mission" class="footer-link" onclick="navigateToAboutSection('mission'); return false;">Our Mission</a>
-                    </li>
-                </ul>
+            <div class="footer-nav-section">
+                <!-- Column 1: Get to Know Us -->
+                <div class="footer-column">
+                    <h4 class="footer-col-title">Get to Know Us</h4>
+                    <ul class="footer-links-list">
+                        <li class="footer-link-item">
+                            <a href="#about" class="footer-link" onclick="navigateTo('about'); return false;">About Anantah</a>
+                        </li>
+                        <li class="footer-link-item">
+                            <a href="#about-mission" class="footer-link" onclick="navigateToAboutSection('mission'); return false;">Our Mission</a>
+                        </li>
+                    </ul>
+                </div>
+
+                <!-- Column 2: Connect with Us -->
+                <div class="footer-column">
+                    <h4 class="footer-col-title">Connect with Us</h4>
+                    <ul class="footer-links-list">
+                        <li class="footer-link-item">
+                            <a href="https://mail.google.com/mail/?view=cm&fs=1&to=anantahsupport@gmail.com" class="footer-link" target="_blank" rel="noopener noreferrer">
+                                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="20" height="16" x="2" y="4" rx="2"/><path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7"/></svg>
+                                <span>Email Us <span class="footer-subtext">(anantahsupport@gmail.com)</span></span>
+                            </a>
+                        </li>
+                        <li class="footer-link-item">
+                            <a href="https://www.instagram.com/anantah_ig/" class="footer-link" target="_blank" rel="noopener noreferrer">
+                                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="20" height="20" x="2" y="2" rx="5" ry="5"/><path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"/><line x1="17.5" x2="17.51" y1="6.5" y2="6.5"/></svg>
+                                <span>Instagram <span class="footer-subtext">(@anantah_ig)</span></span>
+                            </a>
+                        </li>
+                    </ul>
+                </div>
+
+                <!-- Column 3: Role-Specific Column -->
+                <div class="footer-column" id="footer-role-column">
+                    <!-- Dynamically populated based on logged-in role (Artisan, Buyer, or Logged Out) -->
+                </div>
+
+                <!-- Column 4: Let Us Help You -->
+                <div class="footer-column">
+                    <h4 class="footer-col-title">Let Us Help You</h4>
+                    <ul class="footer-links-list">
+                        <li class="footer-link-item">
+                            <a href="#" class="footer-link" onclick="openHelpFaqModal(); return false;">
+                                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+                                <span>Help &amp; FAQ</span>
+                            </a>
+                        </li>
+                        <li class="footer-link-item">
+                            <a href="https://mail.google.com/mail/?view=cm&fs=1&to=anantahsupport@gmail.com" class="footer-link" target="_blank" rel="noopener noreferrer">
+                                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"/></svg>
+                                <span>Contact Support</span>
+                            </a>
+                        </li>
+                    </ul>
+                </div>
             </div>
 
-            <!-- Column 2: Connect with Us -->
-            <div class="footer-column">
-                <h4 class="footer-col-title">Connect with Us</h4>
-                <ul class="footer-links-list">
-                    <li class="footer-link-item">
-                        <a href="https://mail.google.com/mail/?view=cm&fs=1&to=anantahsupport@gmail.com" class="footer-link" target="_blank" rel="noopener noreferrer">
-                            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="20" height="16" x="2" y="4" rx="2"/><path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7"/></svg>
-                            <span>Email Us <span class="footer-subtext">(anantahsupport@gmail.com)</span></span>
-                        </a>
-                    </li>
-                    <li class="footer-link-item">
-                        <a href="https://www.instagram.com/anantah_ig/" class="footer-link" target="_blank" rel="noopener noreferrer">
-                            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="20" height="20" x="2" y="2" rx="5" ry="5"/><path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"/><line x1="17.5" x2="17.51" y1="6.5" y2="6.5"/></svg>
-                            <span>Instagram <span class="footer-subtext">(@anantah_ig)</span></span>
-                        </a>
-                    </li>
-                </ul>
-            </div>
-
-            <!-- Column 3: Role-Specific Column -->
-            <div class="footer-column" id="footer-role-column">
-                <!-- Dynamically populated based on logged-in role (Artisan, Buyer, or Logged Out) -->
-            </div>
-
-            <!-- Column 4: Let Us Help You -->
-            <div class="footer-column">
-                <h4 class="footer-col-title">Let Us Help You</h4>
-                <ul class="footer-links-list">
-                    <li class="footer-link-item">
-                        <a href="#" class="footer-link" onclick="openHelpFaqModal(); return false;">
-                            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
-                            <span>Help &amp; FAQ</span>
-                        </a>
-                    </li>
-                    <li class="footer-link-item">
-                        <a href="https://mail.google.com/mail/?view=cm&fs=1&to=anantahsupport@gmail.com" class="footer-link" target="_blank" rel="noopener noreferrer">
-                            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"/></svg>
-                            <span>Contact Support</span>
-                        </a>
-                    </li>
-                </ul>
-            </div>
-        </div>
-
-        <!-- Part 3: Logo + Locale Bar -->
-        <div class="footer-middle-bar">
-            <div class="footer-middle-container">
-                <div class="footer-brand-lockup" onclick="handleFooterBrandClick();">
+            <!-- Dedicated Right-Aligned Brand & Locale Wing -->
+            <div class="footer-brand-aside">
+                <div class="footer-brand-lockup" onclick="handleFooterBrandClick();" role="button" tabindex="0" title="Go to Anantah home" aria-label="Anantah Home" onkeydown="if(event.key==='Enter'||event.key===' ')handleFooterBrandClick()">
                     <img src="anantah_logo.png" alt="Anantah Logo" class="footer-brand-logo-img">
                     <div class="footer-brand-text">
                         <span class="footer-brand-title">Anantah</span>
                         <span class="footer-brand-sub">Infinite Heritage</span>
                     </div>
                 </div>
-
+                <p class="footer-brand-tagline">Empowering marginalized Indian artisans with local AI studio cataloging and direct global reach.</p>
                 <div class="footer-locale-picker" title="Select platform language">
                     <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg>
                     <select id="footer-language-select" class="footer-locale-select" onchange="changeFooterLanguage(this.value)" aria-label="Change Language">
@@ -1728,7 +1737,7 @@
             </div>
         </div>
 
-        <!-- Part 4: Bottom Legal Bar -->
+        <!-- Part 3: Bottom Legal Bar -->
         <div class="footer-bottom-legal-bar">
             <div class="footer-bottom-container">
                 <span class="footer-copyright">&copy; 2026 Anantah. All rights reserved. Empowering Indian Master Artisans with AI.</span>
@@ -1827,6 +1836,7 @@
             }
 
             const dtStrip = document.getElementById('desktop-nav-strip');
+            const dtSubNav = document.getElementById('desktop-sub-navbar');
             const mbNav = document.getElementById('mobile-bottom-nav');
 
             // Hide navbar by default unless dashboard screens are active
@@ -1839,11 +1849,14 @@
                         navbarBadge.style.color = currentUser.role === 'artisan' ? 'var(--primary-color)' : '#2E7D32';
                     }
                     renderRoleNavbar();
+                    renderDesktopSubNavbar();
                 }
             } else {
                 navbar.style.display = 'none';
                 if (dtStrip) dtStrip.classList.remove('active');
+                if (dtSubNav) dtSubNav.classList.remove('active');
                 if (mbNav) mbNav.classList.remove('active');
+                closeMobileBrandSheet();
             }
 
             if (screenKey === 'register') {
@@ -2091,6 +2104,12 @@
                 langSelect.value = curLang;
             }
 
+            // Sync Mobile Brand Sheet Language Pills
+            document.querySelectorAll('.mobile-lang-pill').forEach(pill => {
+                if (pill.getAttribute('data-lang') === curLang) pill.classList.add('active');
+                else pill.classList.remove('active');
+            });
+
             // Sync About CTA buttons
             renderAboutCtaButtons();
         }
@@ -2189,6 +2208,183 @@
                 navigateTo('onboarding');
             }
         }
+
+        // ─── Mobile Header Brand Pop-Up / Sheet Management ───────────────────
+        function isMobileViewport() {
+            return window.innerWidth < 768;
+        }
+
+        function handleNavbarBrandClick(e) {
+            handleFooterBrandClick();
+        }
+
+        function renderDesktopSubNavbar() {
+            const subNavbar = document.getElementById('desktop-sub-navbar');
+            const linksContainer = document.getElementById('desktop-sub-nav-links');
+            if (!subNavbar || !linksContainer) return;
+
+            // Hide on mobile or when logged out
+            if (!currentUser || window.innerWidth < 768) {
+                subNavbar.classList.remove('active');
+                return;
+            }
+
+            const role = currentUser.role === 'artisan' ? 'artisan' : 'buyer';
+            
+            let html = '';
+
+            if (role === 'buyer' && (!activeRoleNavTab || activeRoleNavTab === 'home' || activeRoleNavTab === 'discover')) {
+                const currentCat = (window._activeBuyerCategory || '').toLowerCase();
+                html = `
+                    <div class="desktop-sub-nav-card">
+                        <div class="context-eyebrow-pill">
+                            <span>✨</span>
+                            <span>Living Craft Heritage of India</span>
+                        </div>
+                        <h2 class="context-title">Explore India's <em>Living Craft Traditions</em></h2>
+                        <p class="context-subtitle">Direct from generational master artisans, handloom clusters & traditional studios across Bharat</p>
+                        <div class="context-craft-pills" role="navigation" aria-label="Curated Craft Categories">
+                            <button type="button" class="context-craft-pill ${(!currentCat || currentCat === 'all') ? 'active' : ''}" onclick="selectCraftCategory('all')" data-craft="all">
+                                <span class="pill-icon">🪷</span>
+                                <span>All Traditions</span>
+                            </button>
+                            <button type="button" class="context-craft-pill ${currentCat.includes('pottery') || currentCat.includes('terracotta') ? 'active' : ''}" onclick="selectCraftCategory('Pottery')" data-craft="pottery">
+                                <span class="pill-icon">🏺</span>
+                                <span>Pottery &amp; Terracotta</span>
+                            </button>
+                            <button type="button" class="context-craft-pill ${currentCat.includes('handloom') || currentCat.includes('textile') ? 'active' : ''}" onclick="selectCraftCategory('Handloom')" data-craft="handloom">
+                                <span class="pill-icon">🧵</span>
+                                <span>Handloom &amp; Silk</span>
+                            </button>
+                            <button type="button" class="context-craft-pill ${currentCat.includes('wood') ? 'active' : ''}" onclick="selectCraftCategory('Woodwork')" data-craft="woodwork">
+                                <span class="pill-icon">🪵</span>
+                                <span>Woodcraft &amp; Inlay</span>
+                            </button>
+                            <button type="button" class="context-craft-pill ${currentCat.includes('jewel') ? 'active' : ''}" onclick="selectCraftCategory('Jewellery')" data-craft="jewellery">
+                                <span class="pill-icon">💍</span>
+                                <span>Heritage Jewellery</span>
+                            </button>
+                            <button type="button" class="context-craft-pill ${currentCat.includes('folk') || currentCat.includes('art') || currentCat.includes('paint') ? 'active' : ''}" onclick="selectCraftCategory('Folk Art')" data-craft="folk art">
+                                <span class="pill-icon">🎨</span>
+                                <span>Folk &amp; Tribal Art</span>
+                            </button>
+                            <button type="button" class="context-craft-pill ${currentCat.includes('metal') || currentCat.includes('brass') ? 'active' : ''}" onclick="selectCraftCategory('Metalcraft')" data-craft="metalcraft">
+                                <span class="pill-icon">🪙</span>
+                                <span>Brass &amp; Metalcraft</span>
+                            </button>
+                        </div>
+                    </div>
+                `;
+            } else if (role === 'buyer' && activeRoleNavTab === 'reels') {
+                html = `
+                    <div class="desktop-sub-nav-card">
+                        <div class="context-eyebrow-pill">
+                            <span>🎬</span>
+                            <span>Living Craft Stories</span>
+                        </div>
+                        <h2 class="context-title">Behind the <em>Masterpieces</em></h2>
+                        <p class="context-subtitle">Immerse in authentic studio process, heritage techniques and generational master artisan stories</p>
+                        <div class="context-craft-pills">
+                            <button type="button" class="context-craft-pill active" onclick="if(window.FramesFeed)window.FramesFeed.fetchReels()">
+                                <span class="pill-icon">✨</span>
+                                <span>All Craft Frames</span>
+                            </button>
+                            <button type="button" class="context-craft-pill" onclick="showToastAlert('Filtering studio process & craft stories', 'info')">
+                                <span class="pill-icon">🏺</span>
+                                <span>Studio Process</span>
+                            </button>
+                            <button type="button" class="context-craft-pill" onclick="showToastAlert('Spotlighting master artisan videos', 'info')">
+                                <span class="pill-icon">🪷</span>
+                                <span>Master Artisans</span>
+                            </button>
+                        </div>
+                    </div>
+                `;
+            } else if (role === 'artisan') {
+                html = `
+                    <div class="desktop-sub-nav-card">
+                        <div class="context-eyebrow-pill">
+                            <span>🛠️</span>
+                            <span>Artisan Studio Console</span>
+                        </div>
+                        <h2 class="context-title">Manage Your <em>Craft Studio</em></h2>
+                        <p class="context-subtitle">Direct digital cataloging, AI refinement, craft reels & community connections</p>
+                        <div class="context-craft-pills">
+                            <button type="button" class="context-craft-pill ${activeRoleNavTab === 'home' ? 'active' : ''}" onclick="switchRoleNavTab('home')">
+                                <span class="pill-icon">🏺</span>
+                                <span>My Listings</span>
+                            </button>
+                            <button type="button" class="context-craft-pill ${activeRoleNavTab === 'my-listings' ? 'active' : ''}" onclick="switchRoleNavTab('my-listings')">
+                                <span class="pill-icon">🎬</span>
+                                <span>New Frame</span>
+                            </button>
+                            <button type="button" class="context-craft-pill ${activeRoleNavTab === 'communities' ? 'active' : ''}" onclick="switchRoleNavTab('communities')">
+                                <span class="pill-icon">👥</span>
+                                <span>Communities</span>
+                            </button>
+                            <button type="button" class="context-craft-pill ${activeRoleNavTab === 'analytics' ? 'active' : ''}" onclick="switchRoleNavTab('analytics')">
+                                <span class="pill-icon">📊</span>
+                                <span>Analytics</span>
+                            </button>
+                        </div>
+                    </div>
+                `;
+            }
+
+            if (html) {
+                linksContainer.innerHTML = html;
+                subNavbar.classList.add('active');
+            } else {
+                subNavbar.classList.remove('active');
+            }
+        }
+
+        // Global Craft Category Filter Bridge
+        window.selectCraftCategory = function(categoryName) {
+            if (activeRoleNavTab !== 'home') {
+                switchRoleNavTab('home');
+            }
+            if (!categoryName || categoryName === 'all') {
+                clearBuyerFilters();
+            } else {
+                window._activeBuyerCategory = categoryName;
+                const pillsContainer = document.getElementById('buyer-category-pills');
+                if (pillsContainer) {
+                    let matched = false;
+                    pillsContainer.querySelectorAll('.category-pill').forEach(pill => {
+                        const pCat = pill.getAttribute('data-category') || '';
+                        if (pCat.toLowerCase().includes(categoryName.toLowerCase()) || categoryName.toLowerCase().includes(pCat.toLowerCase())) {
+                            pill.classList.add('active');
+                            matched = true;
+                        } else {
+                            pill.classList.remove('active');
+                        }
+                    });
+                    if (!matched) {
+                        pillsContainer.querySelectorAll('.category-pill').forEach(p => p.classList.remove('active'));
+                    }
+                }
+                filterAndRenderBuyerProducts();
+            }
+
+            // Sync visual active state in discovery card pills
+            document.querySelectorAll('.context-craft-pill').forEach(btn => {
+                const bCraft = (btn.getAttribute('data-craft') || '').toLowerCase();
+                const target = (categoryName || 'all').toLowerCase();
+                if (bCraft === target || (target !== 'all' && bCraft.includes(target))) {
+                    btn.classList.add('active');
+                } else {
+                    btn.classList.remove('active');
+                }
+            });
+
+            // Smooth scroll down to explore crafts feed
+            const feed = document.getElementById('buyer-feed-title');
+            if (feed) {
+                feed.scrollIntoView({ behavior: 'smooth', block: 'start' });
+            }
+        };
+
 
         function handleArtisanOrdersToShip() {
             if (!currentUser || currentUser.role !== 'artisan') return;
@@ -2537,6 +2733,9 @@
             // Attach Desktop Dropdown Mouse Events with 250ms Buffer
             setupDesktopDropdownEvents();
 
+            // Render Desktop Contextual Sub-Navbar
+            renderDesktopSubNavbar();
+
             // Position 0.5s sliding desktop active indicator badge
             setTimeout(updateDesktopNavIndicator, 20);
         }
@@ -2568,16 +2767,23 @@
             // Calculate relative left offset and dimensions
             const left = itemRect.left - containerRect.left;
             const width = itemRect.width;
-            const height = itemRect.height || 38;
+            const height = itemRect.height || 36;
+            const top = itemRect.top - containerRect.top;
 
             indicator.style.left = `${left}px`;
+            indicator.style.top = `${top}px`;
             indicator.style.width = `${width}px`;
             indicator.style.height = `${height}px`;
             indicator.style.opacity = '1';
-            indicator.style.background = 'var(--primary-light)';
+            indicator.style.background = '#FFFFFF';
+            indicator.style.borderRadius = '999px';
+            indicator.style.boxShadow = '0 2px 8px rgba(44, 27, 77, 0.08), 0 1px 2px rgba(44, 27, 77, 0.04)';
         }
 
-        window.addEventListener('resize', updateDesktopNavIndicator);
+        window.addEventListener('resize', () => {
+            updateDesktopNavIndicator();
+            renderDesktopSubNavbar();
+        });
 
         function setupDesktopDropdownEvents() {
             const wrapper = document.querySelector('.desktop-account-menu-wrapper');
@@ -2727,6 +2933,7 @@
 
             const dropdown = document.getElementById('desktop-account-dropdown');
             if (dropdown) dropdown.classList.remove('show');
+            renderDesktopSubNavbar();
         }
 
         // Mobile Slide-Up Sheet Controls
@@ -2874,6 +3081,7 @@
                 });
 
                 if (response.ok) {
+                    window._authRetryCount = 0;
                     currentUser = await response.json();
                     accessToken = localStorage.getItem('access_token');
                     refreshToken = localStorage.getItem('refresh_token');
@@ -2931,8 +3139,18 @@
             } catch (err) {
                 console.error("Auth check failed:", err);
                 // A temporary network failure should NOT clear auth tokens or session
-                if (typeof showToastAlert === 'function') {
-                    showToastAlert("Network issue while restoring session. Retrying...", "error");
+                window._authRetryCount = (window._authRetryCount || 0) + 1;
+                if (window._authRetryCount <= 3) {
+                    if (typeof showToastAlert === 'function') {
+                        showToastAlert("Network issue while restoring session. Retrying...", "error");
+                    }
+                    setTimeout(() => {
+                        if (!currentUser) checkAuthState();
+                    }, 2500);
+                } else {
+                    if (typeof showToastAlert === 'function') {
+                        showToastAlert("Unable to reach backend server. Please verify Django server is running.", "error");
+                    }
                 }
                 renderSiteFooter();
             }
@@ -6705,6 +6923,9 @@
                 else dSearchTrigger.classList.remove('active');
             }
             updateDesktopNavIndicator();
+            if (typeof renderDesktopSubNavbar === 'function') {
+                renderDesktopSubNavbar();
+            }
             sessionStorage.setItem('anantah_active_tab', tab);
             if (window.history && currentUser) {
                 if (window.location.hash !== '#' + tab) {
