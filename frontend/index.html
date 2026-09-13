@@ -11,9 +11,9 @@
     <!-- Premium Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&family=Instrument+Serif:ital@0;1&family=Inter:wght@400;500;600;700&family=Playfair+Display:ital,wght@0,400..900;1,400..900&family=Poppins:ital,wght@0,100..900;1,100..900&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,600;0,700;1,600&family=Outfit:wght@300;400;500;600;700;800&family=Instrument+Serif:ital@0;1&family=Inter:wght@400;500;600;700&family=Playfair+Display:ital,wght@0,400..900;1,400..900&family=Poppins:ital,wght@0,100..900;1,100..900&display=swap" rel="stylesheet">
     <!-- Main Style -->
-    <link rel="stylesheet" href="style.css?v=11">
+    <link rel="stylesheet" href="style.css?v=13">
     <!-- Sentry Error Monitoring & PostHog Analytics SDKs (Placeholders) -->
     <script src="https://browser.sentry-cdn.com/7.100.0/bundle.min.js" crossorigin="anonymous"></script>
     <!-- QR Code Scanning & Decoding Libraries -->
@@ -36,9 +36,12 @@
     <!-- Header Navbar (Visible only when logged in) -->
     <header class="navbar" id="app-navbar" style="display: none;">
         <div class="navbar-container">
-            <div class="navbar-brand" id="mobile-brand-trigger" role="button" tabindex="0" onclick="handleNavbarBrandClick(event)" onkeydown="if(event.key==='Enter'||event.key===' ')handleNavbarBrandClick(event)">
-                <img src="anantah_logo.png" alt="Anantah Logo">
-                <span>Anantah</span>
+            <div class="navbar-brand" id="mobile-brand-trigger" role="button" tabindex="0" onclick="handleNavbarBrandClick(event)" onkeydown="if(event.key==='Enter'||event.key===' ')handleNavbarBrandClick(event)" aria-label="Anantah Brand">
+                <img src="anantah_logo.png" alt="Anantah Logo" class="brand-logo-img">
+                <div class="brand-text-lockup">
+                    <span class="brand-name">Anantah</span>
+                    <span class="brand-accent-line" aria-hidden="true"></span>
+                </div>
             </div>
             
             <!-- Desktop Horizontal Secondary Nav Strip (Visible on Desktop >=768px when logged in) -->
@@ -51,6 +54,17 @@
                     </ul>
                 </div>
             </nav>
+
+            <!-- Mobile Header Right-Side Action (Visible on Mobile <768px) -->
+            <div class="mobile-navbar-actions" id="mobile-navbar-actions">
+                <button type="button" class="mobile-nav-action-btn" id="mobile-header-wishlist" aria-label="My Wishlist" onclick="switchRoleNavTab('wishlist')">
+                    <svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>
+                    <span class="mobile-action-dot" id="mobile-wishlist-dot" style="display: none;"></span>
+                </button>
+                <button type="button" class="mobile-nav-action-btn" id="mobile-header-account" aria-label="Account Settings" onclick="openAccountSheet()" style="display: none;">
+                    <svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+                </button>
+            </div>
         </div>
     </header>
 
@@ -2730,6 +2744,19 @@
             if (desktopStrip) desktopStrip.classList.add('active');
             if (mobileNav) mobileNav.classList.add('active');
 
+            // Sync Mobile Header Right-Side Action
+            const mWishlist = document.getElementById('mobile-header-wishlist');
+            const mAccount = document.getElementById('mobile-header-account');
+            if (mWishlist && mAccount) {
+                if (role === 'artisan') {
+                    mWishlist.style.display = 'none';
+                    mAccount.style.display = 'flex';
+                } else {
+                    mWishlist.style.display = 'flex';
+                    mAccount.style.display = 'none';
+                }
+            }
+
             // Attach Desktop Dropdown Mouse Events with 250ms Buffer
             setupDesktopDropdownEvents();
 
@@ -5191,8 +5218,12 @@
         function updateWishlistBadges(count) {
             const badge = document.getElementById('wishlist-count-badge');
             const homeBadge = document.getElementById('home-wishlist-count-badge');
+            const mobileDot = document.getElementById('mobile-wishlist-dot');
             if (badge) badge.textContent = `${count} saved`;
             if (homeBadge) homeBadge.textContent = `${count} items`;
+            if (mobileDot) {
+                mobileDot.style.display = count > 0 ? 'block' : 'none';
+            }
         }
 
         function renderWishlistHeartBtn(productId) {

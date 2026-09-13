@@ -67,9 +67,9 @@ h1, h2, h3, h4, h5, h6, .brand-font {
     justify-content: flex-start;
 }
 
-@media (max-width: 539px) {
+@media (max-width: 767px) {
     .app-wrapper {
-        padding: 12px 14px 110px 14px !important;
+        padding: 14px 16px 110px 16px !important;
     }
 }
 
@@ -1250,12 +1250,11 @@ h1, h2, h3, h4, h5, h6, .brand-font {
 }
 
 .navbar-brand {
-    font-size: 22px;
-    color: var(--primary-color);
-    font-weight: 800;
-    letter-spacing: 0.5px;
-    font-family: var(--font-outfit);
-    display: flex;
+    font-size: 24px;
+    color: #1A0E30;
+    font-weight: 700;
+    font-family: 'Playfair Display', 'Cormorant Garamond', Georgia, serif;
+    display: inline-flex;
     align-items: center;
     gap: 10px;
     cursor: pointer;
@@ -1264,12 +1263,41 @@ h1, h2, h3, h4, h5, h6, .brand-font {
     padding: 6px 12px;
     margin: -6px -12px;
     transition: background 0.2s ease, transform 0.2s ease;
+    text-decoration: none;
 }
 
+.navbar-brand .brand-logo-img,
 .navbar-brand img {
     height: 38px;
     width: auto;
     object-fit: contain;
+    mix-blend-mode: multiply;
+}
+
+.brand-text-lockup {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: flex-start;
+}
+
+.brand-name {
+    font-family: 'Playfair Display', 'Cormorant Garamond', Georgia, serif;
+    font-size: 24px;
+    font-weight: 700;
+    letter-spacing: 0.4px;
+    color: #1A0E30;
+    line-height: 1.05;
+}
+
+.brand-accent-line {
+    display: block;
+    height: 1.5px;
+    width: 24px;
+    background: #C4975E;
+    margin-top: 3px;
+    border-radius: 1px;
+    opacity: 0.85;
 }
 
 .navbar-brand:hover {
@@ -1285,253 +1313,142 @@ h1, h2, h3, h4, h5, h6, .brand-font {
     outline-offset: 2px;
 }
 
-.mobile-brand-chevron {
+/* ==========================================================================
+   Mobile Navbar System (Shorter, Refined Heritage Header)
+   ========================================================================== */
+.mobile-navbar-actions {
     display: none;
-    color: var(--text-secondary);
-    transition: transform 0.22s cubic-bezier(0.16, 1, 0.3, 1), color 0.18s ease;
 }
 
 @media (max-width: 767px) {
-    .mobile-brand-chevron {
-        display: inline-block;
-        margin-left: 2px;
-        opacity: 0.7;
+    .navbar {
+        height: 62px;
+        background: rgba(253, 251, 248, 0.94);
+        backdrop-filter: blur(16px);
+        -webkit-backdrop-filter: blur(16px);
+        border-bottom: 1px solid rgba(72, 46, 131, 0.06);
+        box-shadow: 0 2px 10px rgba(44, 27, 77, 0.025);
+        position: sticky;
+        top: 0;
+        z-index: 1000;
     }
-    .navbar-brand.sheet-open .mobile-brand-chevron {
-        transform: rotate(180deg);
+
+    .navbar-container {
+        height: 62px;
+        padding: 0 18px;
+        max-width: 100%;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
+
+    /* Refined Mobile Brand Lockup with Subtle Plaque "Stage" */
+    .navbar-brand {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        padding: 5px 12px 5px 8px;
+        margin: 0;
+        background: #FFFFFF;
+        border: 1px solid rgba(197, 160, 115, 0.32); /* 1px muted antique gold/sandstone border */
+        border-radius: 12px; /* Very subtle architectural rounded corners - NOT a pill */
+        box-shadow: 0 1px 3px rgba(44, 27, 77, 0.03), 0 3px 10px rgba(197, 160, 115, 0.08); /* Extremely soft warm shadow */
+        cursor: pointer;
+        user-select: none;
+        transition: transform 0.15s ease, box-shadow 0.15s ease;
+        -webkit-tap-highlight-color: transparent;
+    }
+
+    .navbar-brand:active {
+        transform: scale(0.97);
+        box-shadow: 0 1px 2px rgba(44, 27, 77, 0.03);
+    }
+
+    .navbar-brand .brand-logo-img,
+    .navbar-brand img {
+        height: 35px; /* ~13% increase from 31px */
+        width: auto;
+        object-fit: contain;
+        vertical-align: middle;
+        mix-blend-mode: multiply;
+        filter: drop-shadow(0 2px 5px rgba(75, 40, 109, 0.12));
+    }
+
+    .navbar-brand .brand-text-lockup {
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: flex-start;
+    }
+
+    .navbar-brand .brand-name,
+    .navbar-brand span {
+        font-family: 'Playfair Display', 'Cormorant Garamond', Georgia, serif;
+        font-size: 23px; /* 22-24px target */
+        font-weight: 700;
+        letter-spacing: 0.4px;
+        color: #1A0E30; /* Deepest regal Anantah purple - highest contrast */
+        line-height: 1;
+    }
+
+    .navbar-brand .brand-accent-line {
+        display: block;
+        height: 1.5px;
+        width: 100%;
+        max-width: 58px;
+        background: #C4975E; /* Muted gold / beige heritage accent */
+        margin-top: 2.5px;
+        border-radius: 1px;
+        opacity: 0.9;
+    }
+
+    /* Compact Right-Side Action */
+    .mobile-navbar-actions {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        flex-shrink: 0;
+    }
+
+    .mobile-nav-action-btn {
+        width: 38px;
+        height: 38px;
+        border-radius: 50%;
+        background: rgba(72, 46, 131, 0.04);
+        border: 1px solid rgba(72, 46, 131, 0.08);
         color: var(--primary-color);
-        opacity: 1;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        cursor: pointer;
+        padding: 0;
+        position: relative;
+        transition: background 0.18s ease, transform 0.15s ease, box-shadow 0.18s ease;
+        -webkit-tap-highlight-color: transparent;
+        box-shadow: 0 1px 3px rgba(44, 27, 77, 0.02);
     }
-}
 
-/* Mobile Brand Sheet Backdrop */
-.mobile-brand-backdrop {
-    display: none;
-    position: fixed;
-    inset: 0;
-    background: rgba(28, 16, 51, 0.32);
-    backdrop-filter: blur(4px);
-    -webkit-backdrop-filter: blur(4px);
-    z-index: 1001;
-    opacity: 0;
-    transition: opacity 0.22s ease;
-}
-
-.mobile-brand-backdrop.show {
-    display: block;
-    opacity: 1;
-}
-
-/* Mobile Brand Pop-Up Sheet */
-.mobile-brand-sheet {
-    display: none;
-    position: fixed;
-    top: 66px;
-    left: 50%;
-    transform: translate(-50%, -8px) scale(0.97);
-    width: calc(100% - 24px);
-    max-width: 380px;
-    margin: 0;
-    background: var(--bg-card, #FFFFFF);
-    border: 1px solid var(--border-color);
-    border-radius: 20px;
-    box-shadow: 0 16px 40px rgba(44, 27, 77, 0.16), 0 2px 10px rgba(0, 0, 0, 0.05);
-    z-index: 1002;
-    padding: 20px;
-    opacity: 0;
-    transform-origin: top center;
-    transition: transform 0.22s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.22s ease;
-    box-sizing: border-box;
-    max-height: calc(100vh - 84px);
-    overflow-y: auto;
-}
-
-.mobile-brand-sheet.show {
-    display: block;
-    opacity: 1;
-    transform: translate(-50%, 0) scale(1);
-}
-
-@media (min-width: 768px) {
-    .mobile-brand-sheet,
-    .mobile-brand-backdrop {
-        display: none !important;
+    .mobile-nav-action-btn:hover {
+        background: rgba(72, 46, 131, 0.08);
+        border-color: rgba(72, 46, 131, 0.14);
     }
-}
 
-@media (prefers-reduced-motion: reduce) {
-    .mobile-brand-sheet,
-    .mobile-brand-backdrop,
-    .mobile-brand-chevron {
-        transition: none !important;
+    .mobile-nav-action-btn:active {
+        transform: scale(0.92);
+        background: rgba(72, 46, 131, 0.12);
     }
-    .mobile-brand-sheet.show {
-        transform: translate(-50%, 0) !important;
+
+    .mobile-action-dot {
+        position: absolute;
+        top: 7px;
+        right: 7px;
+        width: 6.5px;
+        height: 6.5px;
+        border-radius: 50%;
+        background: var(--accent-gold);
+        border: 1.5px solid #FAF8F5;
+        pointer-events: none;
     }
-}
-
-.mobile-brand-sheet-header {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    padding-bottom: 14px;
-    border-bottom: 1px solid var(--border-color);
-    margin-bottom: 14px;
-}
-
-.mobile-brand-sheet-brand {
-    display: flex;
-    align-items: center;
-    gap: 10px;
-}
-
-.mobile-brand-sheet-logo {
-    height: 32px;
-    width: auto;
-    object-fit: contain;
-}
-
-.mobile-brand-sheet-title {
-    font-family: var(--font-outfit);
-    font-size: 17px;
-    font-weight: 700;
-    color: var(--primary-color);
-    line-height: 1.1;
-}
-
-.mobile-brand-sheet-subtitle {
-    font-size: 10.5px;
-    color: var(--text-secondary);
-    text-transform: uppercase;
-    letter-spacing: 1.2px;
-    font-weight: 600;
-}
-
-.mobile-brand-sheet-close {
-    background: rgba(75, 40, 109, 0.06);
-    border: none;
-    border-radius: 50%;
-    width: 32px;
-    height: 32px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    color: var(--text-secondary);
-    cursor: pointer;
-    transition: background 0.18s ease, color 0.18s ease;
-}
-
-.mobile-brand-sheet-close:hover {
-    background: rgba(75, 40, 109, 0.12);
-    color: var(--primary-color);
-}
-
-.mobile-brand-sheet-tagline {
-    display: flex;
-    align-items: center;
-    gap: 6px;
-    font-size: 13px;
-    font-weight: 600;
-    color: var(--primary-color);
-    margin-bottom: 8px;
-    font-family: var(--brand-font, serif);
-}
-
-.mobile-brand-sheet-desc {
-    font-size: 12.5px;
-    line-height: 1.5;
-    color: var(--text-secondary);
-    margin: 0 0 16px 0;
-}
-
-.mobile-brand-lang-section {
-    background: var(--bg-cream, #FAF7F2);
-    border: 1px solid rgba(75, 40, 109, 0.08);
-    border-radius: 14px;
-    padding: 12px;
-    margin-bottom: 16px;
-}
-
-.mobile-brand-section-label {
-    display: flex;
-    align-items: center;
-    gap: 6px;
-    font-size: 12px;
-    font-weight: 600;
-    color: var(--primary-color);
-    margin-bottom: 8px;
-}
-
-.mobile-brand-lang-pills {
-    display: flex;
-    gap: 6px;
-    flex-wrap: wrap;
-}
-
-.mobile-lang-pill {
-    background: #FFFFFF;
-    border: 1px solid var(--border-color);
-    border-radius: 22px;
-    padding: 8px 14px;
-    font-size: 13px;
-    font-weight: 500;
-    color: var(--text-primary);
-    cursor: pointer;
-    min-height: 44px;
-    transition: all 0.15s ease;
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-}
-
-.mobile-lang-pill:hover,
-.mobile-lang-pill.active {
-    background: var(--primary-color);
-    color: #FFFFFF;
-    border-color: var(--primary-color);
-}
-
-.mobile-brand-links-list {
-    display: flex;
-    flex-direction: column;
-    gap: 8px;
-}
-
-.mobile-brand-link-btn {
-    display: flex;
-    align-items: center;
-    gap: 12px;
-    width: 100%;
-    min-height: 44px;
-    padding: 10px 14px;
-    border-radius: 12px;
-    background: transparent;
-    border: 1px solid rgba(75, 40, 109, 0.08);
-    color: var(--text-primary);
-    font-family: var(--font-inter);
-    font-size: 13.5px;
-    font-weight: 500;
-    text-decoration: none;
-    cursor: pointer;
-    transition: background 0.18s ease, border-color 0.18s ease, color 0.18s ease;
-    text-align: left;
-}
-
-.mobile-brand-link-btn svg:first-child {
-    color: var(--primary-color);
-    flex-shrink: 0;
-}
-
-.mobile-brand-link-btn .chevron-right {
-    margin-left: auto;
-    color: var(--text-secondary);
-    opacity: 0.6;
-}
-
-.mobile-brand-link-btn:hover {
-    background: rgba(75, 40, 109, 0.04);
-    border-color: rgba(75, 40, 109, 0.16);
-    color: var(--primary-color);
 }
 
 .navbar-actions {
@@ -4277,15 +4194,28 @@ h1, h2, h3, h4, h5, h6, .brand-font {
 /* 5. Responsive Styles */
 @media (max-width: 768px) {
     .buyer-hero {
-        padding: 22px 18px;
-        border-radius: 20px;
-        margin-bottom: 20px;
+        padding: 24px 20px 22px;
+        border-radius: 22px;
+        margin-top: 0;
+        margin-bottom: 22px;
+        background: linear-gradient(135deg, rgba(255, 255, 255, 0.84) 0%, rgba(247, 241, 252, 0.65) 100%);
+        border: 1px solid rgba(72, 46, 131, 0.08);
+        box-shadow: 0 4px 18px -4px rgba(44, 27, 77, 0.035), 0 1px 2px rgba(44, 27, 77, 0.02);
     }
     .buyer-hero-title {
-        font-size: 22px;
+        font-family: var(--font-serif);
+        font-size: 25px;
+        font-weight: 400;
+        line-height: 1.18;
+        letter-spacing: -0.3px;
+        color: var(--primary-color);
+        margin-bottom: 8px;
     }
     .buyer-hero-subtitle {
-        font-size: 13px;
+        font-family: var(--font-outfit);
+        font-size: 13.5px;
+        line-height: 1.5;
+        color: var(--text-secondary);
         margin-bottom: 0;
     }
     .search-input-box input {
